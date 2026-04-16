@@ -1,0 +1,16 @@
+# 1. BẢO MẬT: CHỐNG NHÌN TRỘM THƯ MỤC
+Options -Indexes
+
+# 2. ĐIỀU HƯỚNG TÀNG HÌNH (URL REWRITE)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /webctylvc/
+
+    # NGOẠI LỆ: Nếu đang truy cập admin, uploads, hoặc ĐÃ VÀO public rồi thì BỎ QUA
+    RewriteCond %{REQUEST_URI} !^/webctylvc/admin/
+    RewriteCond %{REQUEST_URI} !^/webctylvc/uploads/
+    RewriteCond %{REQUEST_URI} !^/webctylvc/public/
+
+    # CÁC TRƯỜNG HỢP CÒN LẠI: Mới điều hướng vào thư mục public
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
