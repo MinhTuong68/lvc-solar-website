@@ -5,9 +5,10 @@
 
     // Hứng biến slug trên URL (ví dụ: ?page=product-detail&slug=tam-pin-canadian-550w)
     $slug = isset($_GET['slug']) ? trim($_GET['slug']) : '';
+    $id   = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-    if (empty($slug)) {
-        // Nếu không có slug, đẩy khách về lại trang danh sách sản phẩm
+    // Nếu cả slug và id đều không có thì mới cho về trang sản phẩm
+    if (empty($slug) && $id <= 0) {
         echo "<script>window.location.href='?page=products';</script>";
         exit;
     }
@@ -18,9 +19,17 @@
     $product = null;
 
     foreach ($allProducts as $p) {
-        if ($p['slug'] === $slug && $p['status'] == 1) {
-            $product = $p;
-            break; // Tìm thấy thì dừng vòng lặp ngay cho nhẹ server
+        if ($p['status'] == 1) {
+            // Ưu tiên khớp Slug
+            if (!empty($slug) && $p['slug'] === $slug) {
+                $product = $p;
+                break;
+            }
+            // Nếu không có slug trên URL, kiểm tra khớp ID
+            if (empty($slug) && $id > 0 && $p['id'] == $id) {
+                $product = $p;
+                break;
+            }
         }
     }
 
@@ -55,7 +64,7 @@
         <div class="breadcrumb">
             <a href="?page=home">Trang chủ</a><span class="sep">/</span>
             <a href="?page=products">Sản phẩm</a><span class="sep">/</span>
-            <span class="current"><?= e($product['name']) ?></span>
+            <a href="?page=products">Sản phẩm</a><span class="sep">/</span>
         </div>
     </div>
 </div>
@@ -108,7 +117,15 @@
                 <div class="pd-info">
                     <div class="pd-brand-cat">
                         <span class="pd-tag cat"><?= e($product['category_name'] ?? 'Chưa phân loại') ?></span>
-                        <span class="pd-tag brand"><?= e($product['brand_name'] ?? 'Đang cập nhật') ?></span>
+                        <?php
+                            if(!empty($product['brand_name']) && isset($product['brand_status']) && $product['brand_status'] == 1){
+                                $brand_display = $product['brand_name'];
+                            }
+                            else{
+                                $brand_display = 'Đang cập nhật';
+                            }
+                        ?>
+                        <span class="pd-tag brand"><?php echo $brand_display ?></span>
                     </div>
                     
                     <h1 class="pd-title"><?= e($product['name']) ?></h1>
@@ -203,6 +220,78 @@
             </div>
         </div>
 
+        <div class="pd-content-card">
+            <div class="card-flex" style="justify-content: space-between;">
+                <?php
+                    if(!empty($product)){
+                        ?>  
+                            <div class="card-flex">
+                                <div class="card-item">
+                                    <img class="card-item-img" src="<?= ROOT_URL ?>uploads/products/images/<?= e($product['image']) ?>" alt="Thumbnail" onerror="this.src='https://placehold.co/100x100/f1f5f9/94a3b8?text=Loi';">
+                                </div>
+                                <div>
+                                    <h3><?php echo $product['name'] ?></h3>
+                                    <div>
+                                        <?php 
+                                            if ($product['old_price'] > 0): 
+                                                ?>
+                                                    <div class="card-flex" style="gap: 10px">
+                                                        <?php
+                                                            ?>
+                                                                <div class="card-price-old">
+                                                                    <?= number_format($product['old_price'], 0, ',', '.') ?>đ
+                                                                </div>
+                                                            <?php
+                                                            $discount = round((($product['old_price'] - $product['price']) / $product['old_price']) * 100); 
+                                                            ?>
+                                                                <div class="pd-discount-badge">
+                                                                    -<?= $discount ?>%
+                                                                </div>
+                                                            <?php
+                                                        ?>
+                                                    </div>
+                                                    
+                                                <?php
+                                            if ($product['price'] > 0): 
+                                                ?>
+                                                    <div class="card-price-current">
+                                                        <?= number_format($product['price'], 0, ',', '.') ?>đ
+                                                    </div>
+                                                <?php         
+                                            endif; 
+                                                ?>
+                                                <?php 
+                                            else: 
+                                                ?>
+                                                    <div><p class="card-contact">Liên hệ báo giá</p></div>
+                                                <?php 
+                                            endif; 
+                                        ?>
+                                    </div> 
+                                </div>
+                            </div>
+                        <?php
+                    }
+                ?> 
+                <div class="card-flex">    
+                    <div class="card-flex" style="gap: 10px; align-items: center;">
+                        <div class="card-quantity-wrap">
+                            <label>Số lượng:</label>
+                            <div class="pd-qty-control">
+                                <button type="button" class="qty-btn" onclick="updateQty(-1)"><i class="fa-solid fa-minus"></i></button>
+                                <input type="number" id="pdQuantity" name="quantity" value="1" min="1" max="<?= $product['stock'] ?>">
+                                <button type="button" class="qty-btn" onclick="updateQty(1)"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                        </div>
+                        <div>
+                            <button type="submit" name="add_to_cart" class="btn-add-card">
+                                <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 

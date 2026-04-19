@@ -1,6 +1,5 @@
 <?php
-// BẮT BUỘC PHẢI CÓ DÒNG NÀY ĐỂ KÍCH HOẠT BỘ NHỚ TRÌNH DUYỆT
-session_start();
+    session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Nhận ID sản phẩm từ Javascript gửi qua

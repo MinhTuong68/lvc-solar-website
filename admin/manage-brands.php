@@ -50,6 +50,30 @@
     $total_pages = ceil($total_records / $limit);
 
     $listBrands = $brandManager->getBrandsPaginated($limit, $offset);
+
+    // BẮT SỰ KIỆN ĐỔI TRẠNG THÁI THƯƠNG HIỆU
+    if (isset($_GET['action']) && $_GET['action'] == 'toggle_status' && isset($_GET['id'])) {
+        $cat_id = (int)$_GET['id'];
+        $current_status = (int)$_GET['current'];
+        
+        // Dùng if - else rành mạch, dễ hiểu
+        $new_status = 0;
+        if ($current_status == 1) {
+            $new_status = 0; // Nếu đang là 1 (Hiện) thì đổi thành 0 (Ẩn)
+        } else {
+            $new_status = 1; // Nếu đang là 0 (Ẩn) thì đổi thành 1 (Hiện)
+        }
+
+        // Cập nhật vào CSDL
+        $stmt = $conn->prepare("UPDATE tbl_brands SET status = ? WHERE id = ?");
+        
+        if ($stmt) {
+            $stmt->bind_param("ii", $new_status, $cat_id);
+            $stmt->execute();
+        }
+        header("Location: index.php?page=manage-brands");
+        exit();
+    }
 ?>
 <div class="wrapper">
     <div class="page-header-add">
@@ -118,11 +142,21 @@
                                 if (!empty($listBrands)){
                                     $stt = $offset + 1;
                                     foreach ($listBrands as $brand){
-                                        if ($brand['status'] == 1) {
-                                            $status_html = '<span class="status-badge status-active">Đang hoạt động</span>';
-                                        } else {
-                                            $status_html = '<span class="status-badge status-hidden">Tạm ẩn</span>';
-                                        }
+                                        $check_prod = $conn->prepare("SELECT COUNT(id) FROM tbl_products WHERE brand_id = ?");
+                                        $check_prod->bind_param("i", $brand['id']);
+                                        $check_prod->execute();
+                                        $product_count = $check_prod->get_result()->fetch_row()[0];
+
+                                         $eye_icon = ($brand['status'] == 1) ? 'fa-eye' : 'fa-eye-slash';
+                                            $badge_class = ($brand['status'] == 1) ? 'status-active' : 'status-hidden';
+                                            $badge_text = ($brand['status'] == 1) ? 'Hoạt động' : 'Tạm ẩn';
+                                            $status_html = '
+                                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                                                <a href="index.php?page=manage-brands&action=toggle_status&id='.$brand['id'].'&current='.$brand['status'].'" style="color: #64748b; font-size: 1.1rem;" title="Đổi trạng thái">
+                                                    <i class="fa-solid '.$eye_icon.'"></i>
+                                                </a>
+                                                <span class="status-badge '.$badge_class.'">'.$badge_text.'</span>
+                                            </div>';
                                         ?>
                                             <tr>
                                                 <td><?= $stt++; ?></td>
@@ -135,10 +169,12 @@
                                                 <td><?= $brand['slug'] ?></td>
                                                 <td class="text-center"><?= $status_html ?></td>
                                                 <td class="text-center">
-                                                    <a href="#" class="action-btn btn-edit" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></a>
-                                                    <a href="javascript:void(0)" class="action-btn btn-delete" title="Xóa" onclick="openModal(<?= $brand['id'] ?>, 'brand')">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </a>
+                                                    <div class="action-btns">
+                                                        <a href="#" class="btn-icon btn-edit-icon" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></a>
+                                                        <a href="javascript:void(0)" class="btn-icon btn-delete-icon" title="Xóa" onclick="openModal(<?= $brand['id'] ?>, 'brand')">
+                                                            <i class="fa-solid fa-trash"></i>
+                                                        </a>
+                                                    </div>        
                                                 </td>
                                             </tr>
                                         <?php
@@ -183,3 +219,7 @@
         </div>
     </form><br><br><br>
 </div>
+
+<script>
+    autoSlug('brand_name', 'brand_slug');
+</script>

@@ -37,7 +37,7 @@
     $filteredProducts = [];
 
     foreach ($allProducts as $p) {
-        if ($p['status'] == 1) {
+        if ($p['status'] == 1 && ($p['category_status'] === null || $p['category_status'] == 1)) {
             $totalActiveProducts++; 
             
             if ($selectedCatId !== null && $p['category_id'] != $selectedCatId) continue;
@@ -251,7 +251,7 @@
                                         $brandCount = 0;
 
                                         foreach ($allProducts as $p) {
-                                            if ($p['status'] == 1 && $p['brand_id'] == $b['id']) {
+                                            if ($p['status'] == 1 && ($p['category_status'] === null || $p['category_status'] == 1) && $p['brand_id'] == $b['id']) {
                                                 $brandCount++;
                                             }
                                         }
@@ -516,7 +516,7 @@
                                                 // Tạo tham số linh hoạt: ưu tiên slug, không có thì dùng id
                                                 $params = !empty($p['slug']) ? 'slug=' . e($p['slug']) : 'id=' . $p['id'];
                                             ?>
-                                            <a href="?page=detail_product_test&<?= $params ?>" class="btn btn-ghost btn-sm frame-black">Chi tiết</a>
+                                            <a href="?page=detail_product&<?= $params ?>" class="btn btn-ghost btn-sm frame-black">Chi tiết</a>
                                             <?php if ($p['price'] > 0 && $p['stock'] > 0) { ?>
                                                 <button class="btn btn-primary btn-sm btn-add-cart" data-id="<?= $p['id'] ?>" data-name="<?= e($p['name']) ?>" data-price="<?= $p['price'] ?>" data-img="<?= ROOT_URL ?>uploads/products/images/<?= e($p['image']) ?>">
                                                     <i class="fa-solid fa-cart-plus"></i>

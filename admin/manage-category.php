@@ -41,6 +41,30 @@
     // Lấy dữ liệu cho trang hiện tại
     $listCategories = $categoryManager->getCategoriesPaginated($limit, $offset);
     // --- KẾT THÚC PHÂN TRANG ---
+
+    // BẮT SỰ KIỆN ĐỔI TRẠNG THÁI DANH MỤC
+    if (isset($_GET['action']) && $_GET['action'] == 'toggle_status' && isset($_GET['id'])) {
+        $cat_id = (int)$_GET['id'];
+        $current_status = (int)$_GET['current'];
+        
+        // Dùng if - else rành mạch, dễ hiểu
+        $new_status = 0;
+        if ($current_status == 1) {
+            $new_status = 0; // Nếu đang là 1 (Hiện) thì đổi thành 0 (Ẩn)
+        } else {
+            $new_status = 1; // Nếu đang là 0 (Ẩn) thì đổi thành 1 (Hiện)
+        }
+
+        // Cập nhật vào CSDL
+        $stmt = $conn->prepare("UPDATE tbl_categories SET status = ? WHERE id = ?");
+        
+        if ($stmt) {
+            $stmt->bind_param("ii", $new_status, $cat_id);
+            $stmt->execute();
+        }
+        header("Location: index.php?page=manage-category");
+        exit();
+    }
 ?>
 
 <div class="wrapper">
@@ -99,12 +123,20 @@
                                     if (!empty($listCategories)){
                                         $stt = 1;
                                         foreach ($listCategories as $cat){
-                                            // Tạo màu trạng thái bằng class
-                                            if ($cat['status'] == 1) {
-                                                $status_html = '<span class="status-badge status-active">Đang hoạt động</span>';
-                                            } else {
-                                                $status_html = '<span class="status-badge status-hidden">Tạm ẩn</span>';
-                                            }
+                                            $check_prod = $conn->prepare("SELECT COUNT(id) FROM tbl_products WHERE category_id = ?");
+                                            $check_prod->bind_param("i", $cat['id']);
+                                            $check_prod->execute();
+                                            $product_count = $check_prod->get_result()->fetch_row()[0];
+                                            $eye_icon = ($cat['status'] == 1) ? 'fa-eye' : 'fa-eye-slash';
+                                            $badge_class = ($cat['status'] == 1) ? 'status-active' : 'status-hidden';
+                                            $badge_text = ($cat['status'] == 1) ? 'Hoạt động' : 'Tạm ẩn';
+                                            $status_html = '
+                                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                                                <a href="index.php?page=manage-category&action=toggle_status&id='.$cat['id'].'&current='.$cat['status'].'" style="color: #64748b; font-size: 1.1rem;" title="Đổi trạng thái">
+                                                    <i class="fa-solid '.$eye_icon.'"></i>
+                                                </a>
+                                                <span class="status-badge '.$badge_class.'">'.$badge_text.'</span>
+                                            </div>';
                                             ?>
                                                 <tr>
                                                     <td><?= $stt++ ?></td>
@@ -112,10 +144,30 @@
                                                     <td class="text-center"><?= $cat['slug'] ?></td>
                                                     <td class="text-center"><?= $status_html ?></td>
                                                     <td class="text-center">
-                                                        <a href="index.php?page=edit-category&id=<?= $cat['id'] ?>" class="action-btn btn-edit" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></a>
-                                                        <a href="javascript:void(0)" class="action-btn btn-delete" title="Xóa" onclick="openModal(<?= $cat['id'] ?>, 'category')">
-                                                            <i class="fa-solid fa-trash"></i>
-                                                        </a>
+                                                        <?php
+                                                            if($product_count > 0){
+                                                                ?>     
+                                                                    <div class="action-btns">
+                                                                        <button class="btn-icon btn-lock-icon" disabled title="Không thể xóa vì đang có <?= $product_count ?> sản phẩm">
+                                                                            <i class="fa-solid fa-lock"></i>
+                                                                        </button>
+                                                                        <a href="javascript:void(0)" class="btn-icon btn-delete-icon" title="Xóa" onclick="openModal(<?= $cat['id'] ?>, 'category')">
+                                                                            <i class="fa-solid fa-trash"></i>
+                                                                        </a> 
+                                                                    </div>           
+                                                                <?php
+                                                            }
+                                                            else{
+                                                                ?>           
+                                                                    <div class="action-btns">
+                                                                        <a href="index.php?page=edit-category&id=<?= $cat['id'] ?>" class="btn-icon btn-edit-icon" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></a>
+                                                                        <a href="javascript:void(0)" class="btn-icon btn-delete-icon" title="Xóa" onclick="openModal(<?= $cat['id'] ?>, 'category')">
+                                                                            <i class="fa-solid fa-trash"></i>
+                                                                        </a> 
+                                                                    </div>    
+                                                                <?php
+                                                            }
+                                                        ?>
                                                     </td>
                                                 </tr>
                                             <?php
@@ -156,3 +208,6 @@
         </div>
     </form>
 </div>
+<script>
+    autoSlug('category_name', 'category_slug');
+</script>

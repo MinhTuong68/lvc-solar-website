@@ -1,21 +1,4 @@
 <?php
-    /*
-    ==========================================================
-    TODO BACKEND - BẠN TỰ NỐI
-    1. Lấy id từ URL:
-       $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-
-    2. Query dữ liệu danh mục theo id từ tbl_categories
-
-    3. Nếu submit POST:
-       - lấy name, slug, status
-       - validate
-       - gọi hàm updateCategory(...)
-       - set toast + redirect
-    ==========================================================
-    */
-
-    // DEMO DATA - thay bằng dữ liệu DB sau
     $category = [
         'id' => 7,
         'name' => 'Tấm pin mặt trời',
@@ -225,10 +208,11 @@
                     <div class="form-field form-field-no-margin">
                         <label>Hook backend</label>
                         <textarea class="form-textarea" rows="5" readonly>TODO:
-- Lấy category theo ID
-- Validate name / slug
-- Update tbl_categories
-- Toast + redirect manage-category</textarea>
+                            - Lấy category theo ID
+                            - Validate name / slug
+                            - Update tbl_categories
+                            - Toast + redirect manage-category
+                        </textarea>
                     </div>
                 </section>
 

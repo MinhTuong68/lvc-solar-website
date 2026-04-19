@@ -16,7 +16,7 @@
             <form action="" method="GET" class = "filter-bar">
                 <input type="hidden" name="page" value="manage-news">
                 <input type="hidden" name="status" value="<?php echo htmlspecialchars($status); ?>">
-                <a href="?page=add-news" class="cs-btn-addservices"><i class="fa-solid fa-plus"></i> Thêm Blog mới</a>
+                <a href="?page=manage-add-news" class="cs-btn-addservices"><i class="fa-solid fa-plus"></i> Thêm Blog mới</a>
                 <input type="text" name="search" class="cs-select" placeholder="🔍 Tìm khách hàng, SĐT..." value="<?php echo htmlspecialchars($current_search); ?>">
                 <button type="submit" class="cs-btn-filter"><i class="fa-solid fa-filter"></i> Lọc</button>
                 <a href="index.php?page=manage-service" class="cs-btn-clear">Xóa</a>

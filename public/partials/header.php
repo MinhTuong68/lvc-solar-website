@@ -1,4 +1,5 @@
 <?php
+    define('IS_SECURE', true);
     include('../config/publics/constants.php');
 ?>
 <!DOCTYPE html>
@@ -20,13 +21,16 @@
             $page_map = [
                 'home' => 'home.php',
                 'products'  => 'products.php',
-                'detail_product_test'      => 'detail_product_test.php',
+                'detail_product'      => 'detail_product.php',
                 'add-products'     => 'add-products.php',
                 'services'  => 'services.php',
                 'about'  => 'about.php',
                 'contact' => 'contact.php',
                 'manage-brands'    => 'manage-brands.php',
                 'cart'     => 'cart.php',
+                'news'     => 'news.php',
+                'news_detail'     => 'news_detail.php',
+                'checkout'     => 'checkout.php',
                 'edit-product'     => 'actions/edit-product.php',
                 'edit-category'     => 'actions/edit-category.php',
                 'edit-product-test'     => 'actions/edit-product-test.php'

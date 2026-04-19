@@ -12,10 +12,10 @@
         'manage-service'    => 'manage-service.php',
         'manage-contact'    => 'manage-contact.php',
         'manage-news'    => 'manage-news.php',
-        'edit-product'     => 'actions/edit-product.php',
-        'edit-category'     => 'actions/edit-category.php',
-        'edit-product-test'     => 'actions/edit-product-test.php',
-        'service_type'     => 'actions/service_type.php',
+        'manage-add-news'    => 'manage-add-news.php',
+        'edit-product'     => 'edit-product.php',
+        'edit-category'     => 'edit-category.php',
+        'service_type'     => 'service_type.php',
         'add-news'     => 'actions/add-news.php'
     ];
     include("partials/header.php");

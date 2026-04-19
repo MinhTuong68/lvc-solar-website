@@ -52,5 +52,52 @@ class News {
         }
         return null;
     }
+    // Hàm thêm bài viết mới vào CSDL
+    public function addNews($title, $slug, $image_name, $summary, $content, $status, $author) {
+        // Chuẩn bị câu lệnh SQL
+        $sql = "INSERT INTO tbl_news (title, slug, image, summary, content, status, author) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+                
+        // Sử dụng Prepare Statement để bảo mật (Chống SQL Injection)
+        $stmt = $this->conn->prepare($sql);
+        
+        if ($stmt) {
+            // Liên kết dữ liệu (s = string, i = integer)
+            $stmt->bind_param("sssssis", $title, $slug, $image_name, $summary, $content, $status, $author);
+            
+            // Thực thi và trả về kết quả
+            if($stmt->execute()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Thêm hàm này vào file classes/news.php
+    // Hàm lấy bài viết nổi bật (Chuẩn MySQLi)
+    public function getPopularNews($limit = 5) {
+        // Dùng đúng tên bảng tbl_news và dấu ? cho tham số
+        $sql = "SELECT * FROM tbl_news WHERE status = 1 ORDER BY views DESC LIMIT ?";
+        
+        $stmt = $this->conn->prepare($sql);
+        $news = [];
+        
+        if ($stmt) {
+            // 'i' đại diện cho kiểu số nguyên (integer)
+            $stmt->bind_param("i", $limit);
+            $stmt->execute();
+            
+            // Lấy kết quả trả về
+            $result = $stmt->get_result();
+            
+            if ($result && $result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $news[] = $row;
+                }
+            }
+        }
+        
+        return $news;
+    }
 }
 ?>

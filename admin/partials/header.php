@@ -1,4 +1,5 @@
 <?php
+    define('IS_SECURE', true);
     include('../config/admin/constants.php');
 ?>
 <!DOCTYPE html>
@@ -10,6 +11,7 @@
         <link rel="stylesheet" href="assets/css/admin.css">
         <script src="assets/js/admin.js"></script>
         <script src="assets/js/delete.js"></script>
+        <script src="assets/js/slug.js"></script>
         <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"

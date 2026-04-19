@@ -84,7 +84,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="index.php?page=manage-news" class="<?= ($current_page == 'manage-news' || 'add-news')? 'active': ''?>">
+                    <a href="index.php?page=manage-news" class="<?= ($current_page == 'manage-news' || $current_page == 'add-news')? 'active': ''?>">
                         <i class="icon fa-solid fa-newspaper"></i>
                         <span class="text">Blog (SEO)</span>
                     </a>
@@ -99,7 +99,7 @@
         </li>
 
         <!-- Chăm sóc khách hàng -->
-        <li class="menu-group active">
+        <!-- <li class="menu-group active">
             <div class="menu-title toggle-group">
                 Chăm sóc khách hàng
                 <span class="arrow">▾</span>
@@ -114,11 +114,11 @@
                 <li>
                     <a href="">
                         <i class="icon fa-solid fa-message"></i>
-                        <span class="text">Phàn hồi người dùng</span>
+                        <span class="text">Phản hồi người dùng</span>
                     </a>
                 </li>
             </ul>
-        </li>
+        </li> -->
 
         <!-- Marketing & Khuyến mãi -->
         <li class="menu-group active">
@@ -155,12 +155,12 @@
                         <span class="text">Quản lý admin</span>
                     </a>
                 </li>
-                <li>
+                <!-- <li>
                     <a href="">
                         <i class="icon fa-solid fa-users"></i>
                         <span class="text">Quản lý người dùng</span>
                     </a>
-                </li>
+                </li> -->
             </ul>
         </li>
 

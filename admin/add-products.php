@@ -235,3 +235,6 @@
     <p style="color: #64748b; font-size: 14px;">Vui lòng không đóng trình duyệt!</p>
 </div>
 
+<script>
+    autoSlug('products_name', 'products_slug');
+</script>

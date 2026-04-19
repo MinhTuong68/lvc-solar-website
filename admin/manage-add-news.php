@@ -37,11 +37,15 @@
                             </select>
                         </div>
                     </div>
-                </div>
+                </div><br>
 
-                <div class="form-group mb-3" style="margin-top: 20px;">
+                <div class="form-group">
                     <label><strong>Nội dung chi tiết bài viết</strong></label>
-                    <textarea name="content" id="editor_content"></textarea>
+                    <textarea name="content" 
+        id="content" 
+        class="form-control news-content-editor" 
+        rows="12"
+        placeholder="Viết nội dung chi tiết bài viết ở đây..."></textarea>
                 </div>
 
                 <div class="mt-4">
@@ -54,3 +58,10 @@
         </form>
     </div>
 </div>
+<script>
+    autoSlug('title', 'slug');
+</script>
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('content'); 
+</script>

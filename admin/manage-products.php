@@ -164,10 +164,12 @@
                                     </td>
 
                                     <td class="align-middle">
-                                        <a href="index.php?page=edit-product&id=<?= $sp['id'] ?>" class="action-btn btn-edit" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></a>
-                                        <a href="javascript:void(0)" class="action-btn btn-delete" title="Xóa" onclick="openModal(<?= $sp['id'] ?>, 'product')">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </a>
+                                        <div class="action-btns">
+                                            <a href="index.php?page=edit-product&id=<?= $sp['id'] ?>" class="btn-icon btn-edit-icon" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></a>
+                                            <a href="javascript:void(0)" class="btn-icon btn-delete-icon" title="Xóa" onclick="openModal(<?= $sp['id'] ?>, 'product')">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php

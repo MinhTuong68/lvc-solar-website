@@ -1,56 +1,53 @@
-<div class="wrapper">
-    <div class="container-fluid">
-        <div class="page-header-v2">
-            <h2 class="page-title">Viết bài mới</h2>
-        </div>
+<?php
+session_start();
+include_once("../../config/admin/constants.php"); 
+include_once("../../classes/news.php"); 
 
-        <form action="actions/add-news.php" method="POST" enctype="multipart/form-data">
-            <div class="card-v2 p-4">
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="form-group mb-3">
-                            <label>Tiêu đề bài viết <span class="text-danger">*</span></label>
-                            <input type="text" name="title" id="title" class="form-control" required placeholder="Ví dụ: Lợi ích của điện mặt trời">
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label>Đường dẫn (Slug) - Tự động tạo</label>
-                            <input type="text" name="slug" id="slug" class="form-control" readonly>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label>Mô tả ngắn (Tóm tắt hiện ngoài danh sách)</label>
-                            <textarea name="summary" class="form-control" rows="3"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="form-group mb-3">
-                            <label>Ảnh đại diện bài viết</label>
-                            <input type="file" name="image" class="form-control" accept="image/*">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label>Trạng thái</label>
-                            <select name="status" class="form-control">
-                                <option value="1">Hiển thị ngay</option>
-                                <option value="0">Lưu bản nháp</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group mb-3" style="margin-top: 20px;">
-                    <label><strong>Nội dung chi tiết bài viết</strong></label>
-                    <textarea name="content" id="editor_content"></textarea>
-                </div>
-
-                <div class="mt-4">
-                    <button type="submit" name="btn_add_news" class="btn btn-primary btn-lg">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> Đăng bài viết
-                    </button>
-                    <a href="index.php?page=manage-news" class="btn btn-outline">Hủy bỏ</a>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
+if (isset($_POST['btn_add_news'])) {
+    $title   = $_POST['title'];
+    $slug    = $_POST['slug'];
+    $summary = $_POST['summary'];
+    $content = $_POST['content'];
+    $status  = $_POST['status'];
+    $author  = 'Admin';
+    
+    // --- XỬ LÝ UPLOAD ẢNH ĐẠI DIỆN ---
+    $image_name = "default-news.png"; // Ảnh mặc định nếu không chọn ảnh
+    
+    if (isset($_FILES['image']['name']) && $_FILES['image']['name'] != "") {
+        
+        $file_name = $_FILES['image']['name'];
+       
+        $image_name = time() . '_' . $file_name; 
+        
+        $source_path = $_FILES['image']['tmp_name'];
+       
+        $destination_path = "../../uploads/news/images/" . $image_name; 
+        
+        
+        $upload = move_uploaded_file($source_path, $destination_path);
+        if (!$upload) {
+            die("Lỗi: Không thể tải ảnh lên hệ thống.");
+        }
+    }
+    
+   
+    $news_obj = new News($conn);
+    
+    $is_inserted = $news_obj->addNews($title, $slug, $image_name, $summary, $content, $status, $author);
+    
+    if ($is_inserted) {
+        $_SESSION['toast_message'] = "Thêm thành công!";
+        $_SESSION['toast_type'] = 'success';  
+        header("Location: ../index.php?page=manage-add-news"); 
+    } else {
+        $_SESSION['toast_message'] = "Thêm thất bại, vui lòng thử lại!";
+        $_SESSION['toast_type'] = 'error';  
+        header("Location: ../index.php?page=service_type");
+    }
+    exit();
+} else {
+    header("location: ../index.php?page=manage-news");
+    exit();
+}
+?>

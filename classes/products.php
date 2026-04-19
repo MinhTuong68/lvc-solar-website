@@ -50,7 +50,7 @@
         }
 
         public function getAllProducts(){
-            $sql = "SELECT p.*, c.name as category_name, b.name as brand_name, b.logo as brand_logo
+            $sql = "SELECT p.*, c.name as category_name, c.status as category_status, b.name as brand_name, b.logo as brand_logo, b.status as brand_status
                     FROM tbl_products p
                     LEFT JOIN tbl_categories c ON p.category_id = c.id
                     LEFT JOIN tbl_brands b ON p.brand_id = b.id

@@ -1,4 +1,5 @@
 <?php
+    if (!defined('IS_SECURE')) { die('Bạn không có quyền truy cập file này!'); }
     class Service{
         private $conn;
 

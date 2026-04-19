@@ -1,8 +1,10 @@
 <?php
     // Gọi Class Service để lấy dữ liệu từ Database
     // (Đảm bảo đường dẫn này đúng với cấu trúc thư mục của bạn)
-    include_once("../classes/services.php");
-    
+    include("../classes/services.php");
+    include("../classes/news.php");
+    $news_obj = new News($conn);
+    $popularNews = $news_obj->getPopularNews(3);
     // Khởi tạo đối tượng (biến $conn đã được nối từ file index.php)
     $service_obj = new Service($conn);
     
@@ -22,7 +24,7 @@
     $sql_prod = "SELECT p.*, c.name AS category_name
              FROM tbl_products p
              LEFT JOIN tbl_categories c ON p.category_id = c.id
-             WHERE p.status = 1
+             WHERE p.status = 1 AND c.status = 1
              ORDER BY p.id DESC LIMIT 8";
     $res_prod = mysqli_query($conn, $sql_prod);
     if (!$res_prod) {
@@ -70,10 +72,10 @@
                 </p>
 
                 <div class="hero-actions">
-                    <a href="" class="btn btn-primary btn-lg">
+                    <a href="#" class="btn btn-primary btn-lg">
                         <i class="fa-solid fa-calendar-check"></i> Đặt lịch khảo sát
                     </a>
-                    <a href="" class="btn btn-outline btn-lg">
+                    <a href="?page=products" class="btn btn-outline btn-lg">
                         <i class="fa-solid fa-solar-panel"></i> Xem sản phẩm
                     </a>
                 </div>
@@ -424,6 +426,58 @@
       </a>
     </div>
   </div>
+</section>
+
+<section style="background:var(--white)">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label">Kiến thức Solar</span>
+            <h2 class="section-title">Blog & Tin Tức</h2>
+            <p class="section-sub">Cập nhật kiến thức mới nhất về năng lượng mặt trời, chính sách điện, và công nghệ xanh.</p>
+        </div>
+        <div class="grid-3">
+            <?php
+                if(!empty($popularNews)){
+                    foreach($popularNews as $n){
+                        ?>
+                            <div class="blog-card animate-on-scroll">
+                                <a href="?page=news_detail&slug=<?php echo $n['slug'] ?>">
+                                    <img src="<?php echo ROOT_URL ?>/uploads/news/images/<?= htmlspecialchars($n['image']) ?>" alt="<?= htmlspecialchars($n['title']) ?>" loading="lazy">
+                                </a>
+                                <div class="blog-body">
+                                    <div class="blog-meta">
+                                        <span class="tag">Kiến thức</span>
+                                        <span><i class="fa-regular fa-calendar"></i> <?= date('d/m/Y', strtotime($n['created_at'])) ?></span>
+                                        <span><i class="fa-solid fa-eye"></i> <?= $n['views'] ?></span>
+                                    </div>
+                                    <a href="?page=news_detail&slug=<?= $n['slug'] ?>">
+                                        <h4>  <?= htmlspecialchars($n['title']) ?></h4>
+                                    </a>
+                                    <p>
+                                        <?php
+                                            $clean_text = strip_tags(html_entity_decode($n['content']));
+                                            echo mb_strimwidth($clean_text, 0, 50, "...");
+                                        ?>
+                                    </p>
+                                    <a href="?page=news_detail&slug=<?= $n['slug'] ?>" class="read-more">
+                                        Đọc thêm <i class="fa-solid fa-arrow-right-long"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        <?php
+                    }
+                }
+                else{
+                    ?>
+                        <p style="color: var(--gray-400); font-size: 0.85rem; text-align: center;">Chưa có bài viết nào.</p>
+                    <?php
+                }
+            ?>
+        </div><br><br>
+         <div style="text-align:center;">
+            <a href="?page=blog.php" class="btn btn-ghost btn-lg-blog">Xem tất cả bài viết</a>
+        </div>
+    </div>
 </section>
 
 <section class="contact-section" id="contact">
