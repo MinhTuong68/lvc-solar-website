@@ -4,7 +4,7 @@
     include("../classes/services.php");
     include("../classes/news.php");
     $news_obj = new News($conn);
-    $popularNews = $news_obj->getPopularNews(3);
+    $popularNews = $news_obj->getPopularNews(6);
     // Khởi tạo đối tượng (biến $conn đã được nối từ file index.php)
     $service_obj = new Service($conn);
     
@@ -36,8 +36,9 @@
         <div class="banner-slider">
             <div class="slider-track" id="bannerTrack">
                 <div class="slide"><img src="../webctylvc/uploads/web/banner/anh2.jpg" alt="Banner LVC 1"></div>
-                <div class="slide"><img src="../webctylvc/uploads/web/banner/lvc1.jpg" alt="Banner LVC 2"></div>
+                <div class="slide"><img src="https://globalenergy.vn/wp-content/uploads/2024/02/dien-nang-luong-mat-troi-va-ung-dung.jpg" alt="Banner LVC 2"></div>
                 <div class="slide"><img src="../webctylvc/uploads/web/banner/lvc2.jpg" alt="Banner LVC 3"></div>
+                <div class="slide"><img src="https://unisolar.com.vn/wp-content/uploads/2024/06/nang-luong-mat-troi-202309171559573222.jpg" alt="Banner LVC 3"></div>
             </div>
             
             <button class="slider-btn prev-btn" onclick="moveSlide(-1)"><i class="fa-solid fa-chevron-left"></i></button>
@@ -277,8 +278,8 @@
                                 </div>
                                 
                                 <div class="product-actions">
-                                    <button class="btn btn-ghost" title="Thêm giỏ hàng"><i class="fa-solid fa-cart-plus"></i></button>
-                                    <button class="btn btn-amber">Mua ngay</button>
+                                    <button class="btn btn-ghost" title="Thêm giỏ hàng" onclick="addToCartAjax(<?= $row['id'] ?>, 1, 'add_cart')"><i class="fa-solid fa-cart-plus"></i></button>
+                                    <button class="btn btn-amber" onclick="addToCartAjax(<?= $row['id'] ?>, 1, 'buy_now')">Mua ngay</button>
                                 </div>
                             </div>
                         </div>

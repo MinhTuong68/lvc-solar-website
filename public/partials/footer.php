@@ -89,5 +89,48 @@
                 </div>
             </div>
         </footer>
+        <div class="floating-contact">
+            <a href="https://zalo.me/0912345678" target="_blank" class="contact-btn zalo-btn">
+                <div class="ring-circle"></div>
+                <div class="ring-circle-fill"></div>
+                <div class="icon-wrap">
+                    <span>Zalo</span> 
+                </div>
+            </a>
+
+            <a href="tel:0912345678" class="contact-btn phone-btn">
+                <div class="ring-circle"></div>
+                <div class="ring-circle-fill"></div>
+                <div class="icon-wrap">
+                    <i class="fa-solid fa-phone"></i>
+                </div>
+            </a>
+        </div>
+        
+        <div id="globalLoading" class="global-loading-overlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text" id="loadingText">Đang xử lý, vui lòng đợi...</div>
+        </div>
+        
+        <script src="assets/js/modal.js"></script>
+        <script src="assets/js/showloading.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+            const message = sessionStorage.getItem('pendingToast');
+            const type = sessionStorage.getItem('pendingToastType');
+
+            if (message) {
+                // Đợi 500ms cho trang chủ hiện lên mượt rồi mới bắn Toast
+                setTimeout(() => {
+                    showToast(message, type);
+                }, 500);
+
+                // Xóa ngay để không bị hiện lại khi F5
+                sessionStorage.removeItem('pendingToast');
+                sessionStorage.removeItem('pendingToastType');
+            }
+        });
+        </script>
+        <script src="assets/js/add-product.js"></script>
     </body>
 </html>

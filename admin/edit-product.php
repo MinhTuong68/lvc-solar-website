@@ -60,7 +60,7 @@
                     <span>Quay lại</span>
                 </a>
 
-                <button type="button" class="form-btn form-btn-primary" onclick="document.getElementById('editProductForm').submit();">
+                <button type="submit" form="editProductForm" name="btn_edit_product" class="form-btn form-btn-primary">
                     <i class="fa-solid fa-floppy-disk"></i>
                     <span>Lưu thay đổi</span>
                 </button>
@@ -114,11 +114,11 @@
                         <label for="form_desc">Mô tả chi tiết sản phẩm</label>
                         <textarea
                             id="form_desc"
-                            name="description"
+                            name="short_description"
                             class="form-textarea"
                             rows="6"
                             placeholder="Nhập mô tả sản phẩm"   
-                        ><?php echo htmlspecialchars($sp['short_description'])?></textarea>
+                        ><?php echo htmlspecialchars($sp['short_description']) ?></textarea>
                     </div>
                 </section>
 
@@ -143,12 +143,12 @@
 
                             <div class="form-media-preview">
                                 <img style="border-radius: 10px;"
-                                    src="../uploads/products/images/<?php echo $sp['image'] ?>"
+                                    src="<?php echo ROOT_URL ?>/uploads/products/images/<?php echo $sp['image'] ?>"
                                     alt="Ảnh sản phẩm"
                                 >
                             </div><br>
 
-                            <input type="hidden" name="old_image" value="">
+                            <input type="hidden" name="old_image" value="<?php echo $sp['image']; ?>">
 
                             <div class="form-field form-field-no-margin">
                                 <input type="file" name="image" class="form-file" accept="image/*">
@@ -168,7 +168,7 @@
                                         ?>
                                             <div class="form-video-text">
                                                 <video controls class ="form-video">
-                                                    <source src="../uploads/products/videos/<?php echo $sp['video'] ?>" type="video/mp4">
+                                                    <source src="<?php echo ROOT_URL ?>/uploads/products/videos/<?php echo $sp['video'] ?>" type="video/mp4">
                                                     Trình duyệt của bạn không hỗ trợ xem video.
                                                 </video>                
                                             </div>

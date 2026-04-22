@@ -10,6 +10,27 @@
     $listCategories = $categoryManager->getAllCategories();
     $listBrands = $brandManager->getAllBrands();
     $listProducts = $productManager->getAllProducts();
+
+    if (isset($_GET['action']) && $_GET['action'] == 'toggle_status' && isset($_GET['id'])) {
+        $product_id = (int)$_GET['id'];
+        $current_status = (int)$_GET['current'];
+    
+        $new_status = 0;
+        if ($current_status == 1) {
+            $new_status = 0;
+        } else {
+            $new_status = 1;
+        }
+
+        $stmt = $conn->prepare("UPDATE tbl_products SET status = ? WHERE id = ?");
+        
+        if ($stmt) {
+            $stmt->bind_param("ii", $new_status, $product_id);
+            $stmt->execute();
+        }
+        header("Location: index.php?page=manage-products");
+        exit();
+    }
 ?>
 <div class="wrapper">
     <div class="page-header">
@@ -83,9 +104,17 @@
                     if (!empty($listProducts)){
                         $stt = 1;
                         foreach ($listProducts as $sp){
-                            $status_html = ($sp['status'] == 1) 
-                                ? '<span class="status-badge status-active" style = "padding: 10px">Đang bán</span>' 
-                                : '<span class="status-badge status-hidden" style = "padding: 10px">Tạm ẩn</span>';
+
+                            $eye_icon = ($sp['status'] == 1) ? 'fa-eye' : 'fa-eye-slash';
+                            $badge_class = ($sp['status'] == 1) ? 'status-active' : 'status-hidden';
+                            $badge_text = ($sp['status'] == 1) ? 'Hoạt động' : 'Tạm ẩn';
+                            $status_html = '
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                                <a href="index.php?page=manage-products&action=toggle_status&id='.$sp['id'].'&current='.$sp['status'].'" style="color: #64748b; font-size: 1.1rem;" title="Đổi trạng thái">
+                                    <i class="fa-solid '.$eye_icon.'"></i>
+                                </a>
+                                <span class="status-badge '.$badge_class.'">'.$badge_text.'</span>
+                            </div>';
                             
                             // Xử lý Giá Bán: Thêm ký hiệu '₫' và xử lý nếu giá = 0
                             if ($sp['price'] > 0) {

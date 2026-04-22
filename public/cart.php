@@ -1,6 +1,21 @@
 <?php
     // Đọc từ Session cho khớp với add-cart.php
     $cartItems = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+    // #region agent log
+    file_put_contents(__DIR__ . '/../debug-6a4c11.log', json_encode([
+        'sessionId' => '6a4c11',
+        'runId' => 'initial',
+        'hypothesisId' => 'H4',
+        'location' => 'public/cart.php:4',
+        'message' => 'cart page session read',
+        'data' => [
+            'phpSessionId' => session_id(),
+            'sessionCart' => $cartItems,
+            'sessionCartCount' => is_array($cartItems) ? count($cartItems) : -1
+        ],
+        'timestamp' => round(microtime(true) * 1000)
+    ], JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
+    // #endregion
     
     $cartIds = array_keys($cartItems);
     $cartProducts = [];
@@ -18,6 +33,20 @@
             while ($row = $result->fetch_assoc()) {
                 $cartProducts[] = $row;
             }
+            // #region agent log
+            file_put_contents(__DIR__ . '/../debug-6a4c11.log', json_encode([
+                'sessionId' => '6a4c11',
+                'runId' => 'initial',
+                'hypothesisId' => 'H5',
+                'location' => 'public/cart.php:34',
+                'message' => 'cart product query completed',
+                'data' => [
+                    'cartIds' => $safeIds,
+                    'productRows' => count($cartProducts)
+                ],
+                'timestamp' => round(microtime(true) * 1000)
+            ], JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
+            // #endregion
         }
     }
 ?>

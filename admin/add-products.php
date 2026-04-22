@@ -16,6 +16,7 @@
         $power_capacity = $_POST['power_capacity'];
         $warranty = $_POST['warranty'];
         $short_description = $_POST['short_description'];
+        $content = $_POST['content'];
         $status = $_POST['status'];
 
         if(isset($_FILES['image']['name']) && $_FILES['image']['name'] != ""){
@@ -42,7 +43,7 @@
             $video_name = "";
         }
 
-        $new_product_id = $productManager->addProduct($category_id, $brand_id, $name, $slug, $image_name, $video_name, $power_capacity, $price, $old_price, $warranty, $stock, $short_description, $status);
+        $new_product_id = $productManager->addProduct($category_id, $brand_id, $name, $slug, $image_name, $video_name, $power_capacity, $price, $old_price, $warranty, $stock, $short_description, $content, $status);
         // GỌI DATABASE LƯU SẢN PHẨM TRƯỚC
         if($new_product_id){
             if(isset($_FILES['gallery']['name']) && $_FILES['gallery']['name'][0] != ""){
@@ -144,6 +145,16 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="form-panel-add">
+                    <h3 class="panel-title-add">3. THÊM NỘI DUNG CƠ BẢN</h3><br>
+                    <textarea name="content" 
+                        id="content" 
+                        class="form-control news-content-editor" 
+                        rows="12"
+                        placeholder="Viết nội dung chi tiết bài viết ở đây...">
+                    </textarea>
+                </div>
             </div>
 
             <div class="form-col-right-add">
@@ -237,4 +248,10 @@
 
 <script>
     autoSlug('products_name', 'products_slug');
+</script>
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('content',{
+        height: 600
+    }); 
 </script>

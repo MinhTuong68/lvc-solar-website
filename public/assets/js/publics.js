@@ -25,7 +25,7 @@ function showToast(message, type = 'success') {
         toast.addEventListener('animationend', function() {
             toast.remove();
         });
-    }, 2000); 
+    }, 1500); 
 }
 
 // =========================================
@@ -83,6 +83,7 @@ function closeModal() {
         modal.classList.remove('active');
     }
 }
+
 // Khởi động Slider ngay khi tải trang xong
 document.addEventListener("DOMContentLoaded", () => {
     if(document.getElementById("bannerTrack")) {

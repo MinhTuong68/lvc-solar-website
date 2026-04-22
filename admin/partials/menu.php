@@ -56,7 +56,7 @@
             </div>
             <ul class="submenu">
                 <li>
-                    <a href="">
+                    <a href="index.php?page=manage-order" class="<?= ($current_page == 'manage-order')? 'active': ''?>">
                         <i class="icon fa-solid fa-cart-arrow-down"></i>
                         <span class="text">Đơn hàng</span>
                     </a>
@@ -78,7 +78,7 @@
             </div>
             <ul class="submenu">
                 <li>
-                    <a href="">
+                    <a href="index.php?page=manage-projects" class="<?= ($current_page == 'manage-projects')? 'active': ''?>">
                         <i class="icon fa-solid fa-bars-progress"></i>
                         <span class="text">Dự án</span>
                     </a>

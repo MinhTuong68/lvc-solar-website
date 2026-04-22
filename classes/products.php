@@ -6,10 +6,11 @@
             $this->conn = $db_connection;
         }
 
-        public function addProduct($category_id, $brand_id, $name, $slug, $image, $video, $power_capacity, $price, $old_price, $warranty, $stock, $short_description, $status ){
+        public function addProduct($category_id, $brand_id, $name, $slug, $image, $video, $power_capacity, $price, $old_price, $warranty, $stock, $short_description,$content, $status ){
             $name = mysqli_real_escape_string($this->conn, $name);
             $slug = mysqli_real_escape_string($this->conn, $slug);
             $short_description = mysqli_real_escape_string($this->conn, $short_description);
+            $content = mysqli_real_escape_string($this->conn, $content);
             $power_capacity = mysqli_real_escape_string($this->conn, $power_capacity);
             $warranty = mysqli_real_escape_string($this->conn, $warranty);
             
@@ -26,9 +27,9 @@
             }
 
             $sql = "INSERT INTO tbl_products 
-                (category_id, brand_id, name, slug, image, video, power_capacity, price, old_price, warranty, stock, short_description, status) 
+                (category_id, brand_id, name, slug, image, video, power_capacity, price, old_price, warranty, stock, short_description, content, status) 
                 VALUES 
-                ($category_id, $brand_sql, '$name', '$slug', '$image', $video_sql, '$power_capacity', $price, $old_price_sql, '$warranty', $stock, '$short_description', $status)";
+                ($category_id, $brand_sql, '$name', '$slug', '$image', $video_sql, '$power_capacity', $price, $old_price_sql, '$warranty', $stock, '$short_description', '$content', $status)";
 
             if (mysqli_query($this->conn, $sql)) {
                 return mysqli_insert_id($this->conn); 
@@ -156,6 +157,47 @@
                 }
             }
             return $count;
+        }
+        public function updateProduct($id, $category_id, $brand_id, $name, $slug, $image, $power_capacity, $price, $old_price, $warranty, $stock, $short_description,$content, $status) {
+            $id = (int)$id;
+            $name = mysqli_real_escape_string($this->conn, $name);
+            $slug = mysqli_real_escape_string($this->conn, $slug);
+            $short_description = mysqli_real_escape_string($this->conn, $short_description);
+            $content = mysqli_real_escape_string($this->conn, $content);
+            $power_capacity = mysqli_real_escape_string($this->conn, $power_capacity);
+            $warranty = mysqli_real_escape_string($this->conn, $warranty);
+
+            $brand_sql = ($brand_id != '') ? (int)$brand_id : "NULL";
+            $category_id = ($category_id != '') ? (int)$category_id : "NULL";
+            $price = ($price != '') ? (int)$price : 0;
+            $old_price_sql = ($old_price != '') ? (int)$old_price : "NULL";
+            $stock = (int)$stock;
+            $status = (int)$status;
+
+            // Xử lý câu lệnh update ảnh (chỉ update nếu có file ảnh mới truyền vào)
+            $image_query = "";
+            if ($image != "") {
+                $image = mysqli_real_escape_string($this->conn, $image);
+                $image_query = ", image = '$image'";
+            }
+
+            $sql = "UPDATE tbl_products SET 
+                    category_id = $category_id,
+                    brand_id = $brand_sql,
+                    name = '$name',
+                    slug = '$slug',
+                    power_capacity = '$power_capacity',
+                    price = $price,
+                    old_price = $old_price_sql,
+                    warranty = '$warranty',
+                    stock = $stock,
+                    short_description = '$short_description',
+                    content = '$content',
+                    status = $status
+                    $image_query
+                    WHERE id = $id";
+
+            return mysqli_query($this->conn, $sql);
         }
     }
 ?>

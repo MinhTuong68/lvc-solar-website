@@ -64,7 +64,7 @@
         <div class="breadcrumb">
             <a href="?page=home">Trang chủ</a><span class="sep">/</span>
             <a href="?page=products">Sản phẩm</a><span class="sep">/</span>
-            <a href="?page=products">Sản phẩm</a><span class="sep">/</span>
+            <a href="?page=products" class="current">Sản phẩm</a>
         </div>
     </div>
 </div>
@@ -103,7 +103,7 @@
                         <?php endif; ?>
 
                         <div class="pd-thumb-item <?= empty($product['video']) ? 'active' : '' ?>" onclick="changeMainMedia(this, 'image', '<?= ROOT_URL ?>uploads/products/images/<?= e($product['image']) ?>')">
-                            <img src="<?= ROOT_URL ?>uploads/products/images/<?= e($product['image']) ?>" alt="Thumbnail" onerror="this.src='https://placehold.co/100x100/f1f5f9/94a3b8?text=Loi';">
+                            <img src="<?= ROOT_URL ?>uploads/products/images/<?= e($product['image']) ?>" alt="Thumbnail" onerror="this.src='https://placehold.co/100x100/f1f5f9/94a3b8?text=No image';">
                         </div>
                         
                         <?php if (!empty($galleries)): foreach ($galleries as $gal): ?>
@@ -161,12 +161,12 @@
                     </div>
 
                     <div class="pd-short-desc">
-                        <?= !empty($product['short_desc']) ? nl2br(e($product['short_desc'])) : 'Sản phẩm năng lượng mặt trời chính hãng phân phối bởi LVC Solar.' ?>
+                        <?= !empty($product['short_description']) ? nl2br(e($product['short_description'])) : 'Sản phẩm năng lượng mặt trời chính hãng phân phối bởi LVC Solar.' ?>
                     </div>
 
                     <hr class="pd-divider">
 
-                    <form action="?page=cart_process" method="POST" class="pd-action-form">
+                    <form method="POST" id="mainCartForm" class="pd-action-form">
                         <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
                         
                         <div class="pd-quantity-wrap">
@@ -180,10 +180,10 @@
 
                         <div class="pd-action-buttons">
                             <?php if ($product['price'] > 0 && $product['stock'] > 0): ?>
-                                <button type="submit" name="add_to_cart" class="btn btn-outline btn-lg pd-btn-add">
-                                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                                <button type="button" onclick="addToCartAjax(<?= $product['id'] ?>, document.getElementById('pdQuantity').value, 'add_cart')" class="btn btn-outline btn-lg pd-btn-add">
+                                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
                                 </button>
-                                <button type="button" class="btn btn-primary btn-lg pd-btn-buy">
+                                <button type="button" onclick="addToCartAjax(<?= $product['id'] ?>, document.getElementById('pdQuantity').value, 'buy_now')" class="btn btn-primary btn-lg pd-btn-buy">
                                     Mua ngay
                                 </button>
                             <?php else: ?>
@@ -209,9 +209,9 @@
                 <div class="pd-desc-content">
                     <?php 
                         // Kiểm tra xem có nội dung không, có thì in ra, không thì báo trống
-                        if (!empty($product['short_description'])) {
+                        if (!empty($product['content'])) {
                             // In nội dung ra (Không dùng hàm e() để giữ nguyên các thẻ HTML in đậm, in nghiêng, hình ảnh từ CKEditor)
-                            echo $product['short_description']; 
+                            echo $product['content']; 
                         } else {
                             echo "<p>Chưa có bài viết mô tả cho sản phẩm này.</p>";
                         }
@@ -225,17 +225,20 @@
                 <?php
                     if(!empty($product)){
                         ?>  
-                            <div class="card-flex">
+                            <div class="card-flex" style="gap: 10px;">
                                 <div class="card-item">
-                                    <img class="card-item-img" src="<?= ROOT_URL ?>uploads/products/images/<?= e($product['image']) ?>" alt="Thumbnail" onerror="this.src='https://placehold.co/100x100/f1f5f9/94a3b8?text=Loi';">
+                                    <img class="card-item-img" src="<?= ROOT_URL ?>uploads/products/images/<?= e($product['image']) ?>" alt="Thumbnail" onerror="this.src='https://placehold.co/100x100/f1f5f9/94a3b8?text=No image';">
                                 </div>
+
                                 <div>
-                                    <h3><?php echo $product['name'] ?></h3>
+                                    <div class="card-info">
+                                        <h3 class="card-product-title"><?php echo $product['name'] ?></h3>
+                                    </div>           
                                     <div>
                                         <?php 
-                                            if ($product['old_price'] > 0): 
+                                            if ($product['old_price'] > 0){
                                                 ?>
-                                                    <div class="card-flex" style="gap: 10px">
+                                                    <div class="card-flex" style="gap: 10px;">
                                                         <?php
                                                             ?>
                                                                 <div class="card-price-old">
@@ -252,20 +255,21 @@
                                                     </div>
                                                     
                                                 <?php
-                                            if ($product['price'] > 0): 
+                                            }
+                                            if ($product['price'] > 0){
                                                 ?>
                                                     <div class="card-price-current">
                                                         <?= number_format($product['price'], 0, ',', '.') ?>đ
                                                     </div>
-                                                <?php         
-                                            endif; 
-                                                ?>
-                                                <?php 
-                                            else: 
+                                                <?php   
+                                                
+                                            }
+            
+                                            else{
                                                 ?>
                                                     <div><p class="card-contact">Liên hệ báo giá</p></div>
                                                 <?php 
-                                            endif; 
+                                            }
                                         ?>
                                     </div> 
                                 </div>
@@ -273,23 +277,32 @@
                         <?php
                     }
                 ?> 
-                <div class="card-flex">    
-                    <div class="card-flex" style="gap: 10px; align-items: center;">
-                        <div class="card-quantity-wrap">
-                            <label>Số lượng:</label>
-                            <div class="pd-qty-control">
-                                <button type="button" class="qty-btn" onclick="updateQty(-1)"><i class="fa-solid fa-minus"></i></button>
-                                <input type="number" id="pdQuantity" name="quantity" value="1" min="1" max="<?= $product['stock'] ?>">
-                                <button type="button" class="qty-btn" onclick="updateQty(1)"><i class="fa-solid fa-plus"></i></button>
+                <?php
+                    if($product['price'] > 0 && $product['stock'] > 0){
+                        ?>
+                            <div class="card-flex">    
+                                <div class="card-flex" style="gap: 10px; align-items: center;">
+                                    <div class="card-quantity-wrap">
+                                        <label>Số lượng:</label>
+                                        <div class="pd-qty-control">
+                                            <button type="button" class="qty-btn" onclick="updateQty(-1,'pdQuantityButton')"><i class="fa-solid fa-minus"></i></button>
+                                            <input type="number" id="pdQuantityButton" name="quantity" value="1" min="1" max="<?= $product['stock'] ?>">
+                                            <button type="button" class="qty-btn" onclick="updateQty(1,'pdQuantityButton')"><i class="fa-solid fa-plus"></i></button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button type="button"  onclick="addToCartAjax(<?= $product['id'] ?>, document.getElementById('pdQuantityButton').value, 'add_cart')" class="btn-add-card">
+                                            <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <button type="submit" name="add_to_cart" class="btn-add-card">
-                                <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                        <?php
+                    }
+                    else{
+                 
+                    }
+                ?>
             </div>
         </div>
     </div>
@@ -344,13 +357,19 @@
         thumbElement.classList.add('active');
     }
 
-    // Nút tăng giảm số lượng an toàn
-    function updateQty(change) {
-        let qtyInput = document.getElementById('pdQuantity');
-        let currentVal = parseInt(qtyInput.value);
-        let maxVal = parseInt(qtyInput.getAttribute('max'));
+    function updateQty(change, inputId = 'pdQuantity') {
+        let qtyInput = document.getElementById(inputId);
+        if (!qtyInput) return; // Không tìm thấy ô thì dừng lại
+
+        let currentVal = parseInt(qtyInput.value) || 1;
+        
+        // Sửa lỗi: Nếu DB chưa có tồn kho (max bị rỗng) thì cho mặc định max là 9999 để không bị liệt nút
+        let maxStr = qtyInput.getAttribute('max');
+        let maxVal = (maxStr && maxStr !== "") ? parseInt(maxStr) : 9999; 
+        
         let newVal = currentVal + change;
         
+        // Nếu số lượng hợp lệ thì mới cập nhật
         if (newVal >= 1 && newVal <= maxVal) {
             qtyInput.value = newVal;
         }

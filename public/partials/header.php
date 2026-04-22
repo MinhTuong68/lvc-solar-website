@@ -31,6 +31,7 @@
                 'news'     => 'news.php',
                 'news_detail'     => 'news_detail.php',
                 'checkout'     => 'checkout.php',
+                'projects'     => 'projects.php',
                 'edit-product'     => 'actions/edit-product.php',
                 'edit-category'     => 'actions/edit-category.php',
                 'edit-product-test'     => 'actions/edit-product-test.php'

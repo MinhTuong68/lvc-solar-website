@@ -13,10 +13,15 @@
         'manage-contact'    => 'manage-contact.php',
         'manage-news'    => 'manage-news.php',
         'manage-add-news'    => 'manage-add-news.php',
+        'manage-order'    => 'manage-order.php',
+        'manage-projects'    => 'manage-projects.php',
         'edit-product'     => 'edit-product.php',
         'edit-category'     => 'edit-category.php',
         'service_type'     => 'service_type.php',
-        'add-news'     => 'actions/add-news.php'
+        'order-detail'     => 'order-detail.php',
+        'order-detail-test'     => 'order-detail-test.php',
+        'add-news'     => 'actions/add-news.php',
+        'delete-order'     => 'actions/delete-order.php'
     ];
     include("partials/header.php");
     include("partials/menu.php");

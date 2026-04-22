@@ -72,12 +72,17 @@
                 <h3 class="news-widget-title">Bài viết mới nhất</h3>
                 <div class="news-widget-content">
                     <?php
+                        if(!empty($recentNews)) {
+                            usort($recentNews, function($a, $b) {
+                                return $b['views'] <=> $a['views']; // Toán tử tàu con thoi
+                            });
+                        }
                         $limit = 0;
                         if(!empty($recentNews)){
                             foreach($recentNews as $rn){
                                 if($rn['slug'] == $item['slug']) continue; // Không hiện lại bài đang xem
                                 if($limit >= 6) break;
-
+                                $limit++;
                                 ?>
                                     <div class="side-post-item">
                                         <a href="?page=news_detail&slug=<?php echo $rn['slug']; ?>" class="side-post-thumb">
