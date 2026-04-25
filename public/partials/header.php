@@ -21,6 +21,7 @@
             $page_map = [
                 'home' => 'home.php',
                 'products'  => 'products.php',
+                'product-test'  => 'product-test.php',
                 'detail_product'      => 'detail_product.php',
                 'add-products'     => 'add-products.php',
                 'services'  => 'services.php',
@@ -32,6 +33,9 @@
                 'news_detail'     => 'news_detail.php',
                 'checkout'     => 'checkout.php',
                 'projects'     => 'projects.php',
+                'project-test'     => 'project-test.php',
+                'detail_project'     => 'detail_project.php',
+                'order_history'     => 'order_history.php',
                 'edit-product'     => 'actions/edit-product.php',
                 'edit-category'     => 'actions/edit-category.php',
                 'edit-product-test'     => 'actions/edit-product-test.php'

@@ -99,5 +99,31 @@ class News {
         
         return $news;
     }
+
+    // Viết thêm hàm này vào class News
+    public function deleteNews($id) {
+        $id = (int)$id;
+
+        // 1. Tìm tên ảnh đại diện để xóa khỏi thư mục (Giúp nhẹ Host)
+        $sql_img = "SELECT image FROM tbl_news WHERE id = $id";
+        $result_img = $this->conn->query($sql_img);
+        
+        if ($result_img && $result_img->num_rows > 0) {
+            $row = $result_img->fetch_assoc();
+            $img_name = $row['image'];
+            
+            // Không xóa ảnh mặc định
+            if ($img_name != "" && $img_name != "default_news.jpg" && $img_name != "default-news.png") {
+                $img_path = "../../uploads/news/images/" . $img_name;
+                if (file_exists($img_path)) {
+                    unlink($img_path); // Lệnh xóa file vật lý
+                }
+            }
+        }
+
+        // 2. Xóa dữ liệu trong Database
+        $sql = "DELETE FROM tbl_news WHERE id = $id";
+        return $this->conn->query($sql);
+    }
 }
 ?>

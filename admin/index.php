@@ -15,6 +15,7 @@
         'manage-add-news'    => 'manage-add-news.php',
         'manage-order'    => 'manage-order.php',
         'manage-projects'    => 'manage-projects.php',
+        'manage-add-projects'    => 'manage-add-projects.php',
         'edit-product'     => 'edit-product.php',
         'edit-category'     => 'edit-category.php',
         'service_type'     => 'service_type.php',

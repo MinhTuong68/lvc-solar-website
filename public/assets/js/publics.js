@@ -126,6 +126,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     // Bạn có thể đổi Alert này thành Toast (thông báo góc màn hình) cho xịn hơn
                     showToast('Đã thêm sản phẩm vào giỏ hàng!', 'success');
                 }
+                else if (data.status === 'error') {
+                    showToast(data.message, 'error');
+                }
             })
             .catch(error => console.error('Lỗi khi thêm giỏ hàng:', error));
         }

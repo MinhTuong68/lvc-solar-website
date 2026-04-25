@@ -46,6 +46,8 @@
                     if (!$this->conn->query($sql_detail)) {
                         throw new Exception("Lỗi thêm chi tiết sản phẩm: " . $this->conn->error);
                     }
+                    $sql_update_stats = "UPDATE tbl_products SET sold = sold + $qty, stock = stock - $qty WHERE id = $product_id";
+                    $this->conn->query($sql_update_stats);
                 }
                 $this->conn->commit();
                 return true;
@@ -107,9 +109,50 @@
             }
             return $orders;
         }
+        // public function updateOrderStatus($order_id, $status) {
+        //     $order_id = (int)$order_id;
+        //     $status = $this->conn->real_escape_string($status);
+        //     $sql_old = "SELECT status FROM tbl_orders WHERE id = $order_id";
+        //     $res_old = $this->conn->query($sql_old);
+        //     $sql = "UPDATE tbl_orders SET status = '$status' WHERE id = $order_id";
+        //     return $this->conn->query($sql);
+        // }
         public function updateOrderStatus($order_id, $status) {
             $order_id = (int)$order_id;
             $status = $this->conn->real_escape_string($status);
+
+            // 1. LẤY TRẠNG THÁI CŨ
+            $sql_old = "SELECT status FROM tbl_orders WHERE id = $order_id";
+            $res_old = $this->conn->query($sql_old);
+            
+            if ($res_old && $res_old->num_rows > 0) {
+                $old_status = $res_old->fetch_assoc()['status'];
+
+                // 2. CHỐT CHẶN LOGIC KHO HÀNG
+                if ($old_status != 'cancelled' && $status == 'cancelled') {
+                    // Bị Hủy -> Trả hàng về kho
+                    $this->handleOrderStock($order_id, 'restore');
+                }elseif ($old_status == 'cancelled' && $status != 'cancelled') {
+                    // --- BẮT ĐẦU CHỐT CHẶN KHÔI PHỤC ---
+                    $stock_check = $this->checkStockSufficient($order_id);
+                    if ($stock_check !== true) {
+                        // Kích hoạt Toast Message báo lỗi (Sử dụng hệ thống Toast có sẵn của Admin)
+                        $_SESSION['toast_message'] = "Lỗi khôi phục! Kho không đủ sản phẩm: [ $stock_check ]";
+                        $_SESSION['toast_type'] = 'error';
+                        
+                        // Lệnh Header này ép trình duyệt load mới 100% (Xóa bỏ bộ nhớ đệm Form Cache)
+                        $redirect_url = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : "index.php?page=manage-order";
+                        header("Location: " . $redirect_url);
+                        exit; // Ngắt ngang lệnh Update
+                    }
+                    // --- KẾT THÚC CHỐT CHẶN ---
+
+                    // Bị lỡ tay hủy, nay được khôi phục & KHO ĐỦ HÀNG -> Lấy hàng xuất đi
+                    $this->handleOrderStock($order_id, 'deduct');
+                }
+            }
+
+            // 3. Cập nhật trạng thái mới
             $sql = "UPDATE tbl_orders SET status = '$status' WHERE id = $order_id";
             return $this->conn->query($sql);
         }
@@ -122,12 +165,53 @@
             }
             return null;
         }
+        // public function updateOrder($id, $status, $payment_status, $note) {
+        //     $id = (int)$id;
+        //     $status = $this->conn->real_escape_string($status);
+        //     $payment_status = $this->conn->real_escape_string($payment_status);
+        //     $note = $this->conn->real_escape_string($note);
+            
+        //     $sql = "UPDATE tbl_orders SET 
+        //             status = '$status', 
+        //             payment_status = '$payment_status', 
+        //             note = '$note' 
+        //             WHERE id = $id";
+        //     return $this->conn->query($sql);
+        // }
         public function updateOrder($id, $status, $payment_status, $note) {
             $id = (int)$id;
             $status = $this->conn->real_escape_string($status);
             $payment_status = $this->conn->real_escape_string($payment_status);
             $note = $this->conn->real_escape_string($note);
             
+            // 1. LẤY TRẠNG THÁI CŨ
+            $sql_old = "SELECT status FROM tbl_orders WHERE id = $id";
+            $res_old = $this->conn->query($sql_old);
+            
+            if ($res_old && $res_old->num_rows > 0) {
+                $old_status = $res_old->fetch_assoc()['status'];
+
+                // 2. CHỐT CHẶN LOGIC KHO HÀNG
+                if ($old_status != 'cancelled' && $status == 'cancelled') {
+                    $this->handleOrderStock($id, 'restore');
+                } elseif ($old_status == 'cancelled' && $status != 'cancelled') {
+                    $stock_check = $this->checkStockSufficient($id); // Chú ý: Ở hàm này biến truyền vào là $id
+                    if ($stock_check !== true) {
+                        // Kích hoạt Toast Message báo lỗi
+                        $_SESSION['toast_message'] = "Lỗi khôi phục! Kho không đủ sản phẩm: [ $stock_check ]";
+                        $_SESSION['toast_type'] = 'error';
+                        
+                        // Ép tải mới
+                        $redirect_url = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : "index.php?page=order-detail&id=" . $id;
+                        header("Location: " . $redirect_url);
+                        exit;
+                    }
+                    // --- KẾT THÚC CHỐT CHẶN ---
+                    $this->handleOrderStock($id, 'deduct');
+                }
+            }
+
+            // 3. Cập nhật thông tin mới
             $sql = "UPDATE tbl_orders SET 
                     status = '$status', 
                     payment_status = '$payment_status', 
@@ -177,8 +261,8 @@
             $total_add = $p_price * $qty;
             $this->conn->query("UPDATE tbl_orders SET total_amount = total_amount + $total_add WHERE id = $order_id");
 
-            // 4. Trừ đi số lượng tồn kho
-            $this->conn->query("UPDATE tbl_products SET stock = stock - $qty WHERE id = $product_id");
+            // 4. Trừ đi số lượng tồn kho VÀ Tăng lượt bán
+            $this->conn->query("UPDATE tbl_products SET stock = stock - $qty, sold = sold + $qty WHERE id = $product_id");         
 
             return ['status' => true, 'msg' => "Đã thêm $qty '$p_name' vào đơn!"];
         }
@@ -201,8 +285,8 @@
                     while ($item = $res_items->fetch_assoc()) {
                         $pid = $item['product_id'];
                         $qty = $item['quantity'];
-                        // Cộng lại số lượng vào kho
-                        $this->conn->query("UPDATE tbl_products SET stock = stock + $qty WHERE id = $pid");
+                        // Cộng lại số lượng vào kho VÀ trừ đi lượt bán
+                        $this->conn->query("UPDATE tbl_products SET stock = stock + $qty, sold = sold - $qty WHERE id = $pid");
                     }
                 }
 
@@ -227,6 +311,50 @@
                 $this->conn->rollback();
                 return ['status' => false, 'msg' => 'Lỗi khi xóa: ' . $e->getMessage()];
             }
+        }
+
+        /**
+     * HÀM HỖ TRỢ XỬ LÝ CỘNG/TRỪ KHO KHI ĐỔI TRẠNG THÁI
+     */
+        private function handleOrderStock($order_id, $action) {
+            $sql_items = "SELECT product_id, quantity FROM tbl_order_details WHERE order_id = $order_id";
+            $res_items = $this->conn->query($sql_items);
+            
+            if ($res_items && $res_items->num_rows > 0) {
+                while ($item = $res_items->fetch_assoc()) {
+                    $pid = $item['product_id'];
+                    $qty = $item['quantity'];
+                    
+                    if ($action == 'restore') {
+                        // HOÀN KHO: Cộng số lượng lại vào kho, trừ số lượt bán đi
+                        $this->conn->query("UPDATE tbl_products SET stock = stock + $qty, sold = sold - $qty WHERE id = $pid");
+                    } elseif ($action == 'deduct') {
+                        // TRỪ KHO: Trừ số lượng kho, cộng thêm lượt bán
+                        $this->conn->query("UPDATE tbl_products SET stock = stock - $qty, sold = sold + $qty WHERE id = $pid");
+                    }
+                }
+            }
+        }
+
+        /**
+         * KIỂM TRA XEM KHO CÒN ĐỦ HÀNG ĐỂ KHÔI PHỤC ĐƠN KHÔNG
+         */
+        private function checkStockSufficient($order_id) {
+            $sql = "SELECT d.product_id, d.quantity, p.stock, p.name 
+                    FROM tbl_order_details d 
+                    JOIN tbl_products p ON d.product_id = p.id 
+                    WHERE d.order_id = $order_id";
+            $res = $this->conn->query($sql);
+            
+            if ($res && $res->num_rows > 0) {
+                while ($row = $res->fetch_assoc()) {
+                    // Nếu số lượng tồn kho NHỎ HƠN số lượng cần để khôi phục đơn
+                    if ($row['stock'] < $row['quantity']) {
+                        return $row['name']; // Báo động: Trả về tên cái sản phẩm đang bị thiếu
+                    }
+                }
+            }
+            return true; // An toàn: Kho dư sức đáp ứng
         }
     }
 ?>

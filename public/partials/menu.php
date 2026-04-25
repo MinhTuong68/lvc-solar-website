@@ -15,7 +15,7 @@
                     <a href="?page=home" class="<?= ($current_page == 'home')? 'active': ''?>">Trang chủ</a>
                     <a href="?page=about" class="<?= ($current_page == 'about')? 'active': ''?>">Giới thiệu</a>
                     <a href="?page=products" class="<?= ($current_page == 'products' || $current_page == 'detail_product' )? 'active': ''?>">Sản phẩm</a>
-                    <a href="?page=projects" class="<?= ($current_page == 'projects')? 'active': ''?>">Dự án</a>
+                    <a href="?page=projects" class="<?= ($current_page == 'projects' || $current_page == 'detail_project' )? 'active': ''?>">Dự án</a>
                     <a href="?page=services" class="<?= ($current_page == 'services')? 'active': ''?>">Dịch vụ</a>
                     <a href="?page=news" class="<?= ($current_page == 'news' || $current_page == 'news_detail')? 'active': ''?>">Tin tức</a>
                     <a href="?page=contact" class="<?= ($current_page == 'contact')? 'active': ''?>">Liên hệ</a>
@@ -38,8 +38,8 @@
                         <i class="fa-solid fa-cart-shopping"></i>
                         <span class="badge cart-badge" id="cart-badge-count"><?= $cart_count ?></span>
                     </a>
-                    <a href="?page=cart" class="action-btn cart-btn" title="Lịch sử đặt hàng">
-                        <i class="fa-solid fa-align-justify"></i>
+                    <a href="?page=order_history" class="action-btn cart-btn" title="Lịch sử đặt hàng">
+                        <i class="fa-solid fa-clipboard-list"></i>
                         <span class="badge cart-badge" id="cart-badge-count"><?= $cart_count ?></span>
                     </a>
 

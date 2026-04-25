@@ -19,7 +19,7 @@
                 <a href="?page=manage-add-news" class="cs-btn-addservices"><i class="fa-solid fa-plus"></i> Thêm Blog mới</a>
                 <input type="text" name="search" class="cs-select" placeholder="🔍 Tìm khách hàng, SĐT..." value="<?php echo htmlspecialchars($current_search); ?>">
                 <button type="submit" class="cs-btn-filter"><i class="fa-solid fa-filter"></i> Lọc</button>
-                <a href="index.php?page=manage-service" class="cs-btn-clear">Xóa</a>
+                <a href="index.php?page=manage-news" class="cs-btn-clear">Xóa</a>
             </form>
         </div>
 
@@ -59,7 +59,12 @@
                                         <td><?php echo $status ?></td>
                                         <td>
                                             <a href="#" class="cs-btn cs-btn-view" title="Xem & Cập nhật"><i class="fa-solid fa-eye"></i></a>
-                                            <a href="#" class="cs-btn cs-btn-delete" title="Xóa"><i class="fa-solid fa-trash-can"></i></a>
+                                            <a href="actions/delete-news.php?id=<?php echo $id; ?>" 
+                                                class="cs-btn cs-btn-delete" 
+                                                title="Xóa"
+                                                onclick="event.preventDefault(); let urlXoa = this.href; openModal('Xác nhận xóa bài viết?', 'Bạn có chắc chắn muốn xóa bài viết này không? Toàn bộ nội dung và hình ảnh của bài viết sẽ bị xóa vĩnh viễn khỏi hệ thống!', 'fa-solid fa-trash-can', 'Xóa bài viết', function() { window.location.href = urlXoa; })">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 <?php

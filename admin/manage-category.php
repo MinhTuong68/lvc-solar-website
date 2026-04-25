@@ -151,7 +151,7 @@
                                                                         <button class="btn-icon btn-lock-icon" disabled title="Không thể xóa vì đang có <?= $product_count ?> sản phẩm">
                                                                             <i class="fa-solid fa-lock"></i>
                                                                         </button>
-                                                                        <a href="javascript:void(0)" class="btn-icon btn-delete-icon" title="Xóa" onclick="openModal(<?= $cat['id'] ?>, 'category')">
+                                                                        <a href="actions/delete.php?type=category&id=<?= $cat['id'] ?>" class="btn-icon btn-delete-icon" title="Xóa" onclick="event.preventDefault(); let urlXoa = this.href; openModal('Xác nhận xóa danh mục?', 'Bạn có chắc chắn muốn xóa danh mục này không? Các sản phẩm đang thuộc danh mục này có thể bị mất liên kết!', 'fa-solid fa-trash', 'Xóa danh mục', function() { window.location.href = urlXoa; })">
                                                                             <i class="fa-solid fa-trash"></i>
                                                                         </a> 
                                                                     </div>           
@@ -161,7 +161,7 @@
                                                                 ?>           
                                                                     <div class="action-btns">
                                                                         <a href="index.php?page=edit-category&id=<?= $cat['id'] ?>" class="btn-icon btn-edit-icon" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></a>
-                                                                        <a href="javascript:void(0)" class="btn-icon btn-delete-icon" title="Xóa" onclick="openModal(<?= $cat['id'] ?>, 'category')">
+                                                                        <a href="actions/delete.php?type=category&id=<?= $cat['id'] ?>" class="btn-icon btn-delete-icon" title="Xóa" onclick="event.preventDefault(); let urlXoa = this.href; openModal('Xác nhận xóa danh mục?', 'Bạn có chắc chắn muốn xóa danh mục này không? Các sản phẩm đang thuộc danh mục này có thể bị mất liên kết!', 'fa-solid fa-trash', 'Xóa danh mục', function() { window.location.href = urlXoa; })">
                                                                             <i class="fa-solid fa-trash"></i>
                                                                         </a> 
                                                                     </div>    

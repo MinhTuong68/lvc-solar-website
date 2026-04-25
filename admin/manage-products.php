@@ -93,6 +93,7 @@
                     <th>Tên sản phẩm & Mã (Slug)</th>
                     <th>Thông số</th>
                     <th>Giá (VNĐ)</th>
+                    <th>Đã bán</th>
                     <th>Kho</th>
                     <th>Phân loại</th>
                     <th>Trạng thái</th>
@@ -163,6 +164,10 @@
                                         <?= $old_price_html ?>
                                     </td>
 
+                                    <td class="">
+                                        <?php echo $sp['sold'] ?>
+                                    </td>
+
                                     <td class="fw-bold align-middle text-spec">
                                         <?= $sp['stock'] ?>
                                     </td>
@@ -195,7 +200,7 @@
                                     <td class="align-middle">
                                         <div class="action-btns">
                                             <a href="index.php?page=edit-product&id=<?= $sp['id'] ?>" class="btn-icon btn-edit-icon" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></a>
-                                            <a href="javascript:void(0)" class="btn-icon btn-delete-icon" title="Xóa" onclick="openModal(<?= $sp['id'] ?>, 'product')">
+                                            <a href="actions/delete.php?type=product&id=<?= $sp['id'] ?>" class="btn-icon btn-delete-icon" title="Xóa" onclick="event.preventDefault(); let urlXoa = this.href; openModal('Xác nhận xóa sản phẩm?', 'Bạn có chắc chắn muốn xóa sản phẩm này không? Toàn bộ dữ liệu, hình ảnh và thông số của sản phẩm sẽ bị xóa vĩnh viễn khỏi hệ thống!', 'fa-solid fa-trash', 'Xóa sản phẩm', function() { window.location.href = urlXoa; })">
                                                 <i class="fa-solid fa-trash"></i>
                                             </a>
                                         </div>

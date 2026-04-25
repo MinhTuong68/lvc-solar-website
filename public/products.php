@@ -109,19 +109,33 @@
             $filteredProducts[] = $p;
         }
     }
-    // 6. XỬ LÝ SẮP XẾP SẢN PHẨM (Dùng hàm usort của PHP để sắp xếp mảng)
-    if ($sort === 'price_asc') {
-        usort($filteredProducts, function($a, $b) { return $a['price'] <=> $b['price']; });
-    } elseif ($sort === 'price_desc') {
-        usort($filteredProducts, function($a, $b) { return $b['price'] <=> $a['price']; });
-    } elseif ($sort === 'name') {
-        usort($filteredProducts, function($a, $b) { return strcmp($a['name'], $b['name']); });
-    }
-    // (Mặc định 'newest' không cần sort vì getAllProducts đã lấy theo ID DESC từ DB)
+    
+    usort($filteredProducts, function($a, $b) use ($sort) {
+        // --- BƯỚC 1: XÉT XEM CÒN HÀNG HAY HẾT HÀNG ---
+        $stockA = ($a['stock'] > 0) ? 1 : 0; // Nếu a còn hàng là 1, hết là 0
+        $stockB = ($b['stock'] > 0) ? 1 : 0; // Nếu b còn hàng là 1, hết là 0
+        
+        if ($stockA != $stockB) {
+            return $stockB <=> $stockA; // Lệnh này sẽ tự động ép những thằng '0' (hết hàng) xuống dưới đáy
+        }
+
+        // --- BƯỚC 2: NẾU CÙNG CÒN HOẶC CÙNG HẾT HÀNG -> SẮP XẾP THEO YÊU CẦU ---
+        if ($sort === 'price_asc') {
+            return $a['price'] <=> $b['price'];
+        } elseif ($sort === 'price_desc') {
+            return $b['price'] <=> $a['price'];
+        } elseif ($sort === 'name') {
+            return strcmp($a['name'], $b['name']);
+        } else {
+            // Mặc định 'newest' (ID giảm dần)
+            return $b['id'] <=> $a['id'];
+        }
+    });
 
     // 7. Tổng sản phẩm sau khi đã lọc xong
     $total = count($filteredProducts);
 ?>
+<link rel="stylesheet" href="assets/css/product.css">
 <!-- Breadcrumb -->
 <div class="breadcrumb-bar">
   <div class="container">
@@ -599,6 +613,7 @@
                         const newCatPanel = newCatItem.closest('.widget-panel');
                         if (oldCatPanel && newCatPanel) {
                             oldCatPanel.innerHTML = newCatPanel.innerHTML;
+                            if (typeof window.initMegaMenu === 'function') window.initMegaMenu();
                         }
                     }
 
@@ -682,4 +697,67 @@
         });
     });
     
+</script>
+
+<script>
+    // Đặt tên hàm toàn cục là window.initMegaMenu
+    window.initMegaMenu = function() {
+        // 1. Tìm nút "Tất cả" và khung bọc ngoài cùng (widget-panel)
+        let btnTatCa = document.querySelector('.cat-list-item--first');
+        let widgetPanel = btnTatCa ? btnTatCa.closest('.widget-panel') : null;
+        
+        if (!btnTatCa || !widgetPanel) return;
+
+        // THÊM 2 DÒNG NÀY: Xóa bảng cũ đi trước khi vẽ lại để không bị đẻ ra 2-3 bảng
+        let oldPanel = widgetPanel.querySelector('.cat-mega-panel');
+        if (oldPanel) oldPanel.remove();
+
+        // 2. Tìm tất cả danh mục còn lại để nhân bản
+        let otherCats = widgetPanel.querySelectorAll('.cat-list-item:not(.cat-list-item--first)');
+        if (otherCats.length === 0) return;
+
+        /* ========== ĐÂY LÀ KHÚC GIỮA BỊ XÓA MẤT, MÌNH ĐÃ ĐẮP LẠI ========== */
+        
+        // 3. Tạo bảng Mega Panel
+        let panel = document.createElement('div');
+        panel.className = 'cat-mega-panel';
+
+        // 4. COPY (nhân bản) danh mục vào bảng
+        otherCats.forEach(item => {
+            let clone = item.cloneNode(true);
+            clone.classList.remove('active'); 
+            panel.appendChild(clone);
+        });
+
+        // 5. Gắn bảng vào widget-panel
+        widgetPanel.style.position = 'relative';
+        widgetPanel.appendChild(panel);
+
+        // 6. Xử lý hiệu ứng Rê chuột
+        let hoverTimeout;
+
+        btnTatCa.addEventListener('mouseenter', () => {
+            clearTimeout(hoverTimeout);
+            panel.classList.add('show-mega');
+        });
+        btnTatCa.addEventListener('mouseleave', () => {
+            hoverTimeout = setTimeout(() => panel.classList.remove('show-mega'), 200);
+        });
+
+        panel.addEventListener('mouseenter', () => {
+            clearTimeout(hoverTimeout);
+            panel.classList.add('show-mega');
+        });
+
+        /* ================================================================= */
+        
+        panel.addEventListener('mouseleave', () => {
+            hoverTimeout = setTimeout(() => panel.classList.remove('show-mega'), 200);
+        });
+    };
+
+    // Chạy lần đầu tiên khi mới mở trang web
+    document.addEventListener("DOMContentLoaded", function() {
+        window.initMegaMenu();
+    });
 </script>

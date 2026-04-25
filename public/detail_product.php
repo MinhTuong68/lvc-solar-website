@@ -305,6 +305,46 @@
                 ?>
             </div>
         </div>
+
+        <div class="pd-content-card">
+            <div class="abt-contact-grid">
+                <div class="abt-contact-item">
+                    <div class="abt-contact-icon">
+                        <i class="fa-solid fa-car-side"></i>
+                    </div>
+                    <div class="abt-contact-val">
+                        Giao hàng miễn phí toàn quốc (Kiểm tra hàng trước khi thanh toán)
+                    </div>
+                </div>
+
+                <div class="abt-contact-item">
+                    <div class="abt-contact-icon" style="background:#fef3c7;color:#d97706">
+                        <i class="fa-solid fa-gears"></i>
+                    </div>
+                    <div class="abt-contact-val">
+                        Lỗi kỹ thuật được đổi mới trong thời gian 30 ngày kể từ ngày nhận
+                    </div>
+                </div>
+
+                <div class="abt-contact-item">
+                    <div class="abt-contact-icon" style="background:#ffb8b8;color:#eb3b5a">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="abt-contact-val">
+                        Bảo hành toàn quốc 3 năm về đèn & 5 năm tấm quang điện
+                    </div>
+                </div>
+
+                <div class="abt-contact-item">
+                    <div class="abt-contact-icon" style="background:#dbeafe;color:#2563eb">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <div class="abt-contact-val">
+                        Dịch vụ chăm sóc khách hàng miễn phí hỗ trợ 8h00 - 21h00 tất cả các ngày trong tuần
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 

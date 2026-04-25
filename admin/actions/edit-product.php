@@ -32,6 +32,7 @@ if (isset($_POST['btn_edit_product'])) {
     $status = $_POST['status'] ?? 1;
     
     $short_description = trim($_POST['short_description'] ?? '');
+    $content = trim($_POST['content'] ?? '');
     $power_capacity = trim($_POST['power_capacity'] ?? '');
     $warranty = trim($_POST['warranty'] ?? '');
 
@@ -59,7 +60,7 @@ if (isset($_POST['btn_edit_product'])) {
         move_uploaded_file($image_tmp, $upload_path);
     }
 
-    $update_result = $product_obj->updateProduct($id, $category_id, $brand_id, $name, $slug, $image_name, $power_capacity, $price, $old_price, $warranty, $stock, $short_description, $status);
+    $update_result = $product_obj->updateProduct($id, $category_id, $brand_id, $name, $slug, $image_name, $power_capacity, $price, $old_price, $warranty, $stock, $short_description,$content, $status);
 
     if ($update_result) {
         $_SESSION['toast_message'] = "Đã cập nhật thông tin sản phẩm thành công!";

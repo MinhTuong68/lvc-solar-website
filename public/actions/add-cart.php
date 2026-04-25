@@ -1,6 +1,6 @@
 <?php
     session_start();
-
+    include('../../config/publics/constants.php');
 // #region agent log
 file_put_contents(__DIR__ . '/../../debug-6a4c11.log', json_encode([
     'sessionId' => '6a4c11',
@@ -36,6 +36,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // #endregion
 
     if ($product_id > 0) {
+        $sql_check = "SELECT stock FROM tbl_products WHERE id = $product_id AND status = 1";
+        $result_check = $conn->query($sql_check);
+        // KIỂM TRA: Nếu tìm thấy sản phẩm trong Database
+        if ($result_check && $result_check->num_rows > 0) {
+            $product = $result_check->fetch_assoc();
+            $stock = (int)$product['stock'];
+            
+            // Tính số lượng dự kiến
+            $current_qty = isset($_SESSION['cart'][$product_id]) ? $_SESSION['cart'][$product_id] : 0;
+            
+            // CHỐT CHẶN: Nếu vượt quá kho -> Báo lỗi và Dừng luôn
+            if (($current_qty + $qty) > $stock) {
+                echo json_encode(['status' => 'error', 'message' => "Rất tiếc! Kho chỉ còn $stock sản phẩm."]);
+                exit; 
+            }
+            
+            // NẾU SỐ LƯỢNG HỢP LỆ -> KHÔNG LÀM GÌ CẢ (Để code trôi xuống dưới và thực hiện thêm vào giỏ)
+            
+        } else {
+            // NẾU KHÔNG TÌM THẤY SẢN PHẨM TRONG DATABASE
+            echo json_encode(['status' => 'error', 'message' => "Sản phẩm không tồn tại."]);
+            exit;
+        }
+        
+
         // 1. Nếu giỏ hàng chưa từng tồn tại, tạo một cái túi trống
         if (!isset($_SESSION['cart'])) {
             $_SESSION['cart'] = [];

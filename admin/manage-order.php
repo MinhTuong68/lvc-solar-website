@@ -95,7 +95,19 @@
                                         <div style="font-size: 12px;"><?= $payment_status_text ?></div>
                                     </td>
                                     <td>
-                                        <select class="select-status <?= $status ?>" onchange="if(confirm('Chuyển trạng thái đơn hàng này?')) window.location.href='index.php?page=manage-order&status=<?= $current_status ?>&action=update_status&id=<?= $order['id'] ?>&new_status=' + this.value;">
+                                        <select class="select-status <?= $status ?>" onchange="
+                                            let urlUpdate = 'index.php?page=manage-order&status=<?= $current_status ?>&action=update_status&id=<?= $order['id'] ?>&new_status=' + this.value;
+                                            
+                                            openModal(
+                                                'Xác nhận cập nhật?', 
+                                                'Bạn có chắc chắn muốn thay đổi trạng thái của đơn hàng ORD-<?= $order['id'] ?> không?', 
+                                                'fa-solid fa-clipboard-check', 
+                                                'Đồng ý', 
+                                                function() { 
+                                                    window.location.href = urlUpdate; 
+                                                }
+                                            );
+                                        ">
                                             <option value="new" <?= $status == 'new' ? 'selected' : '' ?>>Mới nhận</option>
                                             <option value="confirmed" <?= $status == 'confirmed' ? 'selected' : '' ?>>Đã xác nhận</option>
                                             <option value="shipping" <?= $status == 'shipping' ? 'selected' : '' ?>>Đang giao</option>

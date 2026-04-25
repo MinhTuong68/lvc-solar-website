@@ -60,6 +60,9 @@ button { cursor: pointer; font-family: inherit; border: none; }
     color: var(--gray-600);
     line-height: 1.6;
 }
+.text-center{
+    text-align: center;
+}
 .see-more{
     text-align: center;
     color: var(--navy);
@@ -109,6 +112,40 @@ button { cursor: pointer; font-family: inherit; border: none; }
     opacity: 1; 
     transform: none; 
 }
+
+.animate-on-scroll-bottomtotop { 
+    opacity: 0; 
+    transform: translateY(24px); 
+    transition: opacity 0.6s ease, transform 0.6s ease; 
+}
+
+.animate-on-scroll-bottomtotop.visible { 
+    opacity: 1; 
+    transform: none; 
+}
+
+.animate-on-scroll-lefttoright { 
+    opacity: 0; 
+    transform: translateX(24px); 
+    transition: opacity 0.6s ease, transform 0.6s ease; 
+}
+
+.animate-on-scroll-lefttoright.visible { 
+    opacity: 1; 
+    transform: none; 
+}
+
+.animate-on-scroll-righttoleft { 
+    opacity: 0; 
+    transform: translateX(-24px); 
+    transition: opacity 0.6s ease, transform 0.6s ease; 
+}
+
+.animate-on-scroll-righttoleft.visible { 
+    opacity: 1; 
+    transform: none; 
+}
+
 /* ── Typography ────────────────────────────────────── */
 h1,h2,h3,h4,h5,h6 { font-family: 'Montserrat', sans-serif; font-weight: 700; line-height: 1.25; }
 .section-label  { font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--green); margin-bottom: .5rem; display: block; }
@@ -1667,7 +1704,7 @@ textarea.srv-input {
 .container-slider {
     max-width: 1350px;
     margin: 0 auto;
-    padding: 0 24px;
+    /* padding: 0 24px; */
 }
 @media (max-width: 768px) {
     .slide img {
@@ -1763,6 +1800,153 @@ textarea.srv-input {
     background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);padding:80px 0;
 }
 
+.home-project-section {
+    padding: 80px 0;
+    background: #f8fafc; /* Nền xám cực nhạt để làm nổi bật thẻ trắng */
+}
+.home-project-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+ .home-project-subtitle {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    display: block;
+}
+.home-project-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.4rem;
+    color: var(--navy);
+    margin-bottom: 15px;
+}
+.home-project-desc {
+    color: var(--gray-500);
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+.home-project-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+.home-project-img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3; /* Tỷ lệ ảnh chuẩn đẹp */
+    overflow: hidden;
+}
+.home-project-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+.home-project-card:hover .home-project-img-wrap img {
+    transform: scale(1.08); /* Zoom ảnh mượt mà khi hover */
+}
+.home-project-info {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+ .home-project-badges {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+}
+.badge-hot {
+    background: var(--amber);
+    color: var(--white);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 30px;
+    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+}
+.badge-capacity {
+    background: rgba(11, 36, 71, 0.85); /* Xanh navy mờ */
+    backdrop-filter: blur(4px);
+    color: var(--white);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 30px;
+}
+.home-project-name {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.15rem;
+    color: var(--navy);
+    line-height: 1.4;
+    margin-bottom: 12px;
+    transition: color 0.3s;
+    /* Cắt chữ nếu dài quá 2 dòng */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.home-project-card:hover .home-project-name {
+    color: var(--green);
+}
+.home-project-readmore {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.3s;
+}
+.home-project-readmore i {
+    transition: transform 0.3s;
+}
+.home-project-card {
+    background: var(--white);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--gray-100);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+}
+.home-project-card:hover .home-project-readmore {
+    color: var(--green);
+}
+.home-project-card:hover .home-project-readmore i {
+    transform: translateX(6px); /* Mũi tên trượt sang phải */
+}
+.home-project-footer {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.home-project-date {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+}
+ /* RESPONSIVE */
+@media (max-width: 1024px) {
+    .home-project-grid { grid-template-columns: repeat(2, 1fr); } /* Tablet: 2 cột */
+}
+@media (max-width: 768px) {
+    .home-project-grid { grid-template-columns: 1fr; } /* Điện thoại: 1 cột */
+    .home-project-title { font-size: 2rem; }
+}
 /* =========================================
    GIAO DIỆN TRANG GIỎ HÀNG (VERSION MỚI - ĐẸP MẮT)
 ========================================= */
@@ -2002,6 +2186,135 @@ textarea.srv-input {
 .summary-contact-box a {
     color: var(--green);
     font-weight: 600;
+}
+
+/* 1. KHUNG CHỨA SLIDER CUỘN NGANG */
+.hot-sale-slider {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto; /* Kích hoạt cuộn ngang */
+    padding-bottom: 20px; /* Chừa không gian cho bóng đổ */
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory; /* Hỗ trợ khựng lại ở từng thẻ khi vuốt trên điện thoại */
+    
+    /* Ẩn thanh scrollbar mặc định cho đẹp */
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+}
+.hot-sale-slider::-webkit-scrollbar {
+    display: none;
+}
+
+/* 2. THIẾT KẾ THẺ SẢN PHẨM (CARD) */
+.hot-sale-card {
+    flex: 0 0 calc(100% / 4 - 15px); /* Máy tính hiển thị 4 thẻ */
+    scroll-snap-align: start;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hot-sale-card:hover {
+    transform: translateY(-5px); /* Nhảy nhẹ lên khi đưa chuột vào */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+}
+
+/* Khung hình ảnh */
+.hot-sale-card .card-img {
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+}
+.hot-sale-card .card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+.hot-sale-card:hover .card-img img {
+    transform: scale(1.05); /* Hiệu ứng zoom ảnh */
+}
+
+/* Khung thông tin chữ */
+.hot-sale-card .card-info {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Ép phần nút bấm luôn nằm dưới đáy */
+}
+
+.hot-sale-card .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 20px;
+    line-height: 1.4;
+    /* Hiệu ứng cắt chữ thành dấu ... nếu dài quá 2 dòng */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* 3. THIẾT KẾ 2 NÚT BẤM (ICON VÀ NHẬN TƯ VẤN) */
+.hot-sale-card .card-actions {
+    margin-top: auto;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Nút Giỏ hàng */
+.btn-cart {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fee2e2;
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.btn-cart:hover {
+    background-color: #dc2626;
+    color: #ffffff;
+}
+
+/* Nút Nhận tư vấn */
+.btn-consult {
+    background-color: #0284c7; /* Xanh dương đậm chuyên nghiệp */
+    color: white;
+    flex-grow: 1; /* Chiếm toàn bộ phần chiều ngang còn lại */
+    text-align: center;
+    padding: 10px 0;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+.btn-consult:hover {
+    background-color: #0369a1;
+    color: white;
+}
+
+/* 4. RESPONSIVE ĐIỆN THOẠI VÀ TABLET (Cực kỳ quan trọng) */
+@media (max-width: 1024px) {
+    .hot-sale-card { flex: 0 0 calc(100% / 3 - 15px); } /* Tablet: 3 thẻ */
+}
+@media (max-width: 768px) {
+    .hot-sale-card { flex: 0 0 calc(100% / 2 - 10px); } /* Điện thoại xoay ngang: 2 thẻ */
+}
+@media (max-width: 480px) {
+    .hot-sale-card { flex: 0 0 85%; } /* Điện thoại dọc: 1 thẻ bự + lòi ra 1 góc thẻ kế tiếp để khách biết mà vuốt ngang */
 }
 
 /* -------------------------------------
@@ -2695,3 +3008,107 @@ textarea.srv-input {
         height: 59px;
     }
 }
+
+
+/* PROJECTS */
+/* Thu nhỏ và canh giữa toàn bộ khu vực Gallery ảnh dự án */
+.project-gallery-wrap {
+    max-width: 900px; /* Giới hạn chiều ngang tối đa (bạn có thể tự đổi thành 800px hay 1000px tùy mắt nhìn) */
+    margin: 0 auto 30px auto; /* Tự động canh giữa màn hình và đẩy nội dung bên dưới ra 30px */
+}
+.project-h3:hover{
+    color: var(--green);
+}
+.projects-section{padding: 60px 0; background-color: var(--off-white);}
+.page-hero .eyebrow{font-size:.85rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.page-hero .eyebrow{font-size:.85rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.projects-stats{background:var(--green);padding:24px 0}
+.stats-row{display:flex;justify-content:space-around;text-align:center}
+.stat-item strong{display:block;font-size:2rem;font-weight:800;color:#fff}
+.stat-item span{color:rgba(255,255,255,.85);font-size:.9rem}
+.projects-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.project-card-full{position: relative; background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);transition:transform .2s,box-shadow .2s}
+.project-card-full:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,0,0,.14)}
+.project-card-img{height:220px;overflow:hidden}
+.project-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.project-card-full:hover .project-card-img img{transform:scale(1.06)}
+.project-card-body{padding:20px}
+.project-card-body h3{font-size:1rem;font-weight:700;color:var(--navy);margin:0 0 8px;line-height:1.4}
+.project-meta{display:flex;gap:16px;margin-bottom:10px;font-size:.82rem;color:var(--green);flex-wrap:wrap}
+.project-meta i{margin-right:4px}
+.project-card-body p{font-size:.875rem;color:#6b7280;margin:0;line-height:1.6}
+.project-badge-hot{
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: var(--amber);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+    z-index: 2;
+}
+.project-footer{
+    border-top: 1px solid var(--gray-200);
+    padding-top: 15px;
+}
+.btn-readmore{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+.project-header{
+    text-align: center; max-width: 800px; margin: auto;
+}
+.project-badge { display: inline-block; background: rgba(245, 158, 11, 0.15); color: var(--amber); padding: 6px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin-bottom: 15px; }
+/* TÓM TẮT & NỘI DUNG */
+.project-short-desc { background: rgba(0, 135, 90, 0.05); border-left: 4px solid var(--green); padding: 20px 25px; border-radius: 0 10px 10px 0; margin: 30px 0; position: relative; }
+.project-short-desc .quote-icon { position: absolute; top: -10px; left: 15px; font-size: 24px; color: var(--green); opacity: 0.2; }
+.project-short-desc p { color: var(--navy); font-size: 1.05rem; font-style: italic; font-weight: 500; }
+.project-main-img { width: 100%; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; margin-bottom: 15px; border: 1px solid var(--gray-200); }
+.project-main-img img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
+.project-thumbs { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; }
+.project-thumbs::-webkit-scrollbar { height: 6px; }
+.project-thumbs::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 10px; }
+.project-thumb-item { width: 100px; height: 75px; flex-shrink: 0; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2px solid transparent; opacity: 0.6; transition: 0.3s; }
+.project-thumb-item img { width: 100%; height: 100%; object-fit: cover; }
+.project-thumb-item:hover, .project-thumb-item.active { opacity: 1; border-color: var(--amber); }
+.prọeect-content-title { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; color: var(--navy); padding-bottom: 10px; border-bottom: 2px solid var(--gray-100); margin-bottom: 20px; }
+.project-icon{
+    width: 85px; 
+    height: 65px; 
+    border-radius: 6px; 
+    overflow: hidden; 
+    flex-shrink: 0; 
+    position: relative;
+}
+.project-badge-icon{
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    background: var(--amber); 
+    color: #fff; 
+    font-size: 0.6rem; 
+    padding: 2px 4px; 
+    font-weight: 700; 
+    border-radius: 4px;
+    z-index: 2;
+}
+.prọect-info-list { list-style: none; display: flex; flex-direction: column; gap: 20px; }
+.project-info-list li { display: flex; align-items: center; gap: 15px; }
+.project-info-list .icon { width: 45px; height: 45px; background: var(--gray-100); color: var(--navy); display: grid; place-items: center; border-radius: 10px; font-size: 1.2rem; }
+.project-info-list .text small { display: block; color: var(--gray-400); font-size: 0.8rem; margin-bottom: 3px; }
+.project-info-list .text strong { display: block; color: var(--navy); font-size: 0.95rem; }
+.hr-bottom{
+    border-bottom: 1px solid var(--gray-200);
+    padding-bottom: 20px;
+}
+@media(max-width:900px){.projects-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.projects-grid{grid-template-columns:1fr}.stats-row{flex-wrap:wrap;gap:16px}.stat-item{min-width:45%}}

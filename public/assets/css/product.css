@@ -1,0 +1,83 @@
+/* =========================================
+   BẢNG MEGA MENU TỪ NÚT "TẤT CẢ" (GIỮ NGUYÊN GỐC 100%)
+========================================= */
+.cat-mega-panel {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin-left: 15px; /* Cách sidebar ra 15px */
+    width: 650px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(11, 36, 71, 0.12);
+    padding: 20px;
+    z-index: 99999;
+    
+    /* Chia lưới 3 cột gọn gàng */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+
+    /* Mặc định ẩn */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+}
+
+/* Kích hoạt hiển thị từ JS */
+.cat-mega-panel.show-mega {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
+
+/* Cầu nối tàng hình để không bị lọt chuột khi kéo sang ngang */
+.cat-mega-panel::before {
+    content: '';
+    position: absolute;
+    left: -15px;
+    top: 0;
+    width: 15px;
+    height: 100%;
+}
+
+/* Thiết kế cho từng ô danh mục bên trong Bảng (Bản Copy) */
+.cat-mega-panel .cat-list-item {
+    background: #f8fafc !important; /* Xám siêu nhạt */
+    color: #1e293b !important;
+    padding: 10px 14px !important;
+    border-radius: 8px !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    border: 1px solid transparent !important;
+    margin: 0 !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+.cat-mega-panel .cat-list-item .cat-count-badge {
+    background: rgba(0, 0, 0, 0.05) !important;
+    color: #64748b !important;
+}
+
+/* Hiệu ứng rê chuột vào từng ô trong Bảng Mega */
+.cat-mega-panel .cat-list-item:hover {
+    background: #ffffff !important;
+    color: var(--green, #00875a) !important;
+    border-color: var(--green, #00875a) !important;
+    box-shadow: 0 4px 10px rgba(0, 135, 90, 0.1);
+    transform: translateY(-2px);
+}
+.cat-mega-panel .cat-list-item:hover .cat-count-badge {
+    background: var(--green, #00875a) !important;
+    color: #ffffff !important;
+}
+
+/* Tắt chức năng này trên màn hình điện thoại (để xài tính năng xem thêm mặc định) */
+@media (max-width: 992px) {
+    .cat-mega-panel { display: none !important; }
+}

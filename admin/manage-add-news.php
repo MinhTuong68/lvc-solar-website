@@ -63,5 +63,9 @@
 </script>
 <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 <script>
-    CKEDITOR.replace('content'); 
+    CKEDITOR.replace('content',{
+        filebrowserUploadUrl: '<?php echo ROOT_URL; ?>admin/actions/upload-ckeditor.php',
+        filebrowserUploadMethod: 'xhr',
+        uploadUrl: '/webctylvc/admin/actions/upload-ckeditor.php'
+    }); 
 </script>

@@ -3,6 +3,9 @@
     // (Đảm bảo đường dẫn này đúng với cấu trúc thư mục của bạn)
     include("../classes/services.php");
     include("../classes/news.php");
+    include("../classes/projects.php");
+    $project_obj = new Project($conn);
+    $home_projects = $project_obj->getPopularProjects(9);
     $news_obj = new News($conn);
     $popularNews = $news_obj->getPopularNews(6);
     // Khởi tạo đối tượng (biến $conn đã được nối từ file index.php)
@@ -13,20 +16,14 @@
     $sql_cat = "SELECT * FROM tbl_categories WHERE status = 1 LIMIT 5";
     $res_cat = mysqli_query($conn, $sql_cat);
 
-    // 2. Lấy 4 Sản phẩm mới nhất / Bán chạy nhất (Kết hợp bảng Category để lấy tên danh mục)
-    // $sql_prod = "SELECT p.*, c.category_name 
-    //              FROM tbl_products p 
-    //              LEFT JOIN tbl_categories c ON p.category_id = c.id 
-    //              WHERE p.status = 1 
-    //              ORDER BY p.sold DESC LIMIT 4";
-    // $res_prod = mysqli_query($conn, $sql_prod);
-
     $sql_prod = "SELECT p.*, c.name AS category_name
              FROM tbl_products p
              LEFT JOIN tbl_categories c ON p.category_id = c.id
-             WHERE p.status = 1 AND c.status = 1
-             ORDER BY p.id DESC LIMIT 8";
+             WHERE p.status = 1 
+             ORDER BY p.sold DESC 
+             LIMIT 8";
     $res_prod = mysqli_query($conn, $sql_prod);
+
     if (!$res_prod) {
         echo '<p style="color:red">SQL Error: ' . mysqli_error($conn) . '</p>';
     }
@@ -35,7 +32,7 @@
     <div class="container-slider">
         <div class="banner-slider">
             <div class="slider-track" id="bannerTrack">
-                <div class="slide"><img src="../webctylvc/uploads/web/banner/anh2.jpg" alt="Banner LVC 1"></div>
+                <div class="slide"><img src="../webctylvc/uploads/web/banner/banner6.jpg" alt="Banner LVC 1"></div>
                 <div class="slide"><img src="https://globalenergy.vn/wp-content/uploads/2024/02/dien-nang-luong-mat-troi-va-ung-dung.jpg" alt="Banner LVC 2"></div>
                 <div class="slide"><img src="../webctylvc/uploads/web/banner/lvc2.jpg" alt="Banner LVC 3"></div>
                 <div class="slide"><img src="https://unisolar.com.vn/wp-content/uploads/2024/06/nang-luong-mat-troi-202309171559573222.jpg" alt="Banner LVC 3"></div>
@@ -190,7 +187,74 @@
             </div>
         </div>
     </div>
-</div><br>
+</div>
+
+<?php
+    // 1. Lấy sản phẩm thuộc danh mục "Gói năng lượng mặt trời" (Thay số 2 bằng ID thực tế của bạn)
+    $id_danh_muc_goi = 24; 
+    $sql_hot_sale = "SELECT * FROM tbl_products WHERE category_id = $id_danh_muc_goi AND status = 1 ORDER BY sold DESC LIMIT 8";
+    $res_hot_sale = mysqli_query($conn, $sql_hot_sale);
+?>
+
+<section class="pd-section hot-sale-section" style="padding: 40px 0; background-color: #f8fafc;">
+    <div class="container">
+        <div class="section-header" style="text-align: center; margin-bottom: 30px;">
+            <span class="section-label" style="color: #0284c7; font-weight: bold; font-size: 1.2rem;">
+                <i class="fa-solid fa-solar-panel"></i> Giải Pháp Toàn Diện
+            </span>
+            <h2 class="section-title">Các gói năng lượng mặt trời được nhiều khách lựa chọn</h2>
+        </div>
+
+        <div class="hot-sale-slider">
+            <?php 
+                if ($res_hot_sale && mysqli_num_rows($res_hot_sale) > 0){
+                ?>
+                    <?php 
+                        while ($row = mysqli_fetch_assoc($res_hot_sale)): 
+                        ?>
+                    
+                            <div class="hot-sale-card">
+                                <div class="card-img">
+                                    <img src="uploads/products/images/<?= $row['image'] ?>" alt="<?= $row['name'] ?>">
+                                </div>
+                                
+                                <div class="card-info">
+                                    <h3 class="product-name"><a href="index.php?page=detail_product&id=<?= $row['id'] ?>"><?= htmlspecialchars($row['name']) ?></a></h3>
+                                    <span class="product-power"><i class="fa-solid fa-bolt product-power-icon"></i> <?php echo $row['power_capacity'] ?></span>
+                                    
+                                    <div class="card-actions">
+                                        <?php
+                                            if($row['price']>0){
+                                                ?>
+                                                     <button class="btn-cart" onclick="addToCart(<?= $row['id'] ?>)" title="Thêm vào giỏ">
+                                                        <i class="fa-solid fa-cart-plus"></i>
+                                                    </button>
+                                                <?php
+                                            }else{
+                                                ?>
+                                                    <a href="tel:0945671536" class="btn btn-primary btn-lg"><i class="fa-solid fa-phone-volume"></i> Gọi ngay</a>
+                                                <?php
+                                            }
+                                        ?>
+                                       
+                                        <a href="?page=contact" class="btn-consult">Nhận tư vấn</a>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php 
+                        endwhile; 
+                    ?>
+                <?php
+            }
+             else{
+                ?>
+                <p style="text-align: center; width: 100%;">Đang cập nhật các gói năng lượng...</p>
+                <?php
+            }
+            ?>
+        </div>
+    </div>
+</section>
 
 <section class="home-categories">
     <div class="container">
@@ -216,6 +280,7 @@
     </div>
 </section>
 
+
 <section class="pd-section" style="padding: 10px 0; background-color: white;">
     <div class="container">
         <div class="section-header">
@@ -236,54 +301,56 @@
                     if($old_price > 0 && $price > 0 && $price < $old_price) {
                         $percent = round((($old_price - $price) / $old_price) * 100);
                     }
-                    ?>
-                    <div class="product-card">
-                        <div class="product-img-wrap">
-                            <?php 
-                                if($percent > 0){
-                                ?>
-                                    <span class="product-badge badge-hot">-<?= $percent ?>%</span>
-                                <?php 
-                                }
-                                else{
-                                ?>
-                                    <span class="product-badge badge-new">Mới</span>
-                                <?php
-                                }
-                            ?>
-                            
-                            <img src="<?= ROOT_URL ?>/uploads/products/images/<?= $row['image'] ?? 'default.jpg' ?>" alt="<?= $row['name'] ?>">
-                            </div>
-                            
-                            <div class="product-body">
-                                <span class="product-cat"><?= $row['category_name'] ?? 'Chưa phân loại' ?></span>
-                                <h3 class="product-name"><a href="index.php?page=detail_product&id=<?= $row['id'] ?>"><?= htmlspecialchars($row['name']) ?></a></h3>
-                                <div class="product-power"><i class="fa-solid fa-bolt product-power-icon"></i> <?= $row['power_capacity'] ?? 'N/A' ?></div>
-                                
-                                <div class="product-price-row">
-                                    <div>
-                                        <?php 
-                                            if($percent > 0){
-                                                ?>
-                                                    <div class="product-old-price"><?= number_format($old_price, 0, ',', '.') ?>đ</div>
-                                                    <div class="product-price"><?= number_format($price, 0, ',', '.') ?>đ</div>
-                                                <?php 
-                                            }else{
-                                                ?>
-                                                    <h3>Liên hệ báo giá</h3>
-                                                <?php
-                                            }
+                    if($price>0 && $row['category_id'] != 24){
+                        ?>
+                            <div class="product-card">
+                                <div class="product-img-wrap">
+                                    <?php 
+                                        if($percent > 0){
                                         ?>
+                                            <span class="product-badge badge-hot">-<?= $percent ?>%</span>
+                                        <?php 
+                                        }
+                                        else{
+                                        ?>
+                                            <span class="product-badge badge-new">Mới</span>
+                                        <?php
+                                        }
+                                    ?>
+                                    
+                                    <img src="<?= ROOT_URL ?>/uploads/products/images/<?= $row['image'] ?? 'default.jpg' ?>" alt="<?= $row['name'] ?>">
+                                    </div>
+                                    
+                                    <div class="product-body">
+                                        <span class="product-cat"><?= $row['category_name'] ?? 'Chưa phân loại' ?></span>
+                                        <h3 class="product-name"><a href="index.php?page=detail_product&id=<?= $row['id'] ?>"><?= htmlspecialchars($row['name']) ?></a></h3>
+                                        <div class="product-power"><i class="fa-solid fa-bolt product-power-icon"></i> <?= $row['power_capacity'] ?? 'N/A' ?></div>
+                                        
+                                        <div class="product-price-row">
+                                            <div>
+                                                <?php 
+                                                    if($percent > 0){
+                                                        ?>
+                                                            <div class="product-old-price"><?= number_format($old_price, 0, ',', '.') ?>đ</div>
+                                                            <div class="product-price"><?= number_format($price, 0, ',', '.') ?>đ</div>
+                                                        <?php 
+                                                    }else{
+                                                        ?>
+                                                            <h3>Liên hệ báo giá</h3>
+                                                        <?php
+                                                    }
+                                                ?>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="product-actions">
+                                            <button class="btn btn-ghost" title="Thêm giỏ hàng" onclick="addToCartAjax(<?= $row['id'] ?>, 1, 'add_cart')"><i class="fa-solid fa-cart-plus"></i></button>
+                                            <button class="btn btn-amber" onclick="addToCartAjax(<?= $row['id'] ?>, 1, 'buy_now')">Mua ngay</button>
+                                        </div>
                                     </div>
                                 </div>
-                                
-                                <div class="product-actions">
-                                    <button class="btn btn-ghost" title="Thêm giỏ hàng" onclick="addToCartAjax(<?= $row['id'] ?>, 1, 'add_cart')"><i class="fa-solid fa-cart-plus"></i></button>
-                                    <button class="btn btn-amber" onclick="addToCartAjax(<?= $row['id'] ?>, 1, 'buy_now')">Mua ngay</button>
-                                </div>
-                            </div>
-                        </div>
-                    <?php 
+                            <?php 
+                    }
                 }
             }
             else{
@@ -411,6 +478,90 @@
       </div>
     </div>
   </div>
+</section>
+
+<section style="background: #f8fafc;">
+    <div class="container">
+        <div class="home-project-header">
+            <span class="home-project-subtitle">Công Trình Tiêu Biểu</span>
+            <h2 class="home-project-title">Dự án đã thi công</h2>
+            <p class="home-project-desc">Hàng trăm hệ thống điện mặt trời được LVC Solar thi công hoàn thiện, mang lại giải pháp tiết kiệm điện tối ưu cho gia đình và doanh nghiệp.</p>
+        </div>
+        <div class="home-project-grid">
+            <?php
+                if (!empty($home_projects)){
+                    foreach ($home_projects as $p){
+                        ?>  
+                            <div class="home-project-card"> 
+                                <div class="home-project-img-wrap">
+                                    <a href="?page=detail_project&slug=<?= !empty($p['slug']) ? e($p['slug']) : $p['id'] ?>">
+                                        <img src="<?= ROOT_URL ?>uploads/projects/images/<?= htmlspecialchars($p['image']) ?>" alt="<?= htmlspecialchars($p['name']) ?>">
+                                    </a> 
+                                    <div class="home-project-badges">
+                                        <?php
+                                            if ($p['is_featured'] == 1){
+                                                ?>
+                                                    <span class="badge-hot"><i class="fa-solid fa-star"></i> Tiêu biểu</span>
+                                                <?php
+                                            }
+                                            if(!empty($p['capacity'])){
+                                                ?>
+                                                    <span class="badge-capacity"><i class="fa-solid fa-bolt"></i> <?= htmlspecialchars($p['capacity']) ?></span>
+                                                <?php
+                                            }
+                                        ?>
+                                    </div>
+                                </div>         
+
+                                <div class="home-project-info">
+                                    <a href="?page=detail_project&slug=<?= !empty($p['slug']) ? e($p['slug']) : $p['id'] ?>">
+                                        <h3 class="home-project-name">
+                                            <?= htmlspecialchars($p['name']) ?>
+                                        </h3>
+                                    </a>
+                                    
+                                    <div class="project-meta">
+                                        <?php
+                                            if (!empty($p['location'])){
+                                                ?>
+                                                    <span><i class="fa-solid fa-location-dot"></i> <?php echo $p['location'] ?></span>
+                                                <?php
+                                            }
+                                            if (!empty($p['capacity'])){
+                                                ?>
+                                                    <span><i class="fa-solid fa-bolt"></i> <?php echo $p['capacity'] ?></span>
+                                                <?php
+                                            }
+                                            if (($p['views']) >= 0){
+                                                ?>
+                                                    <span><i class="fa-solid fa-eye"></i> <?php echo $p['views'] ?></span>
+                                                <?php
+                                            }
+                                        ?>
+                                    </div>
+                                    <div class="home-project-footer">
+                                        <span class="home-project-readmore">Xem chi tiết <i class="fa-solid fa-arrow-right-long"></i></span>
+                                        <span class="home-project-date">
+                                            <?php 
+                                                if (!empty($p['completion_date'])) {
+                                                    echo date('d/m/Y', strtotime($p['completion_date']));
+                                                } else {
+                                                    echo date('d/m/Y', strtotime($p['created_at']));
+                                                }
+                                            ?>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>    
+                        <?php
+                    }
+                }
+            ?>
+        </div><br><br>
+        <div class="text-center">
+            <a href="?page=projects" class="btn btn-ghost btn-lg-blog">Xem tất cả dự án <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </div>
 </section>
 
 <!-- ── CTA ────────────────────────────────────────────────── -->

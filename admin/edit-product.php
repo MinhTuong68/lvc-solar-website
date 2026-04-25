@@ -196,6 +196,17 @@
                     </div>
                 </section> 
 
+                <section class="form-card">
+                    <div class="form-field">
+                        <label for="form_desc">Nội dung chi tiết sản phẩm</label>
+                        <textarea id="form_content"
+                            name="content"
+                            class="form-textarea"
+                            rows="12"  
+                        ><?php echo htmlspecialchars($sp['content']) ?></textarea>
+                    </div>
+                </section>
+
                 <!-- GALLERY -->
                 <section class="form-card">
                     <div class="form-card-head">
@@ -491,3 +502,11 @@
 </div>
 <script src="assets/js/delete.js"></script>
 <script src="assets/js/products.js"></script>
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('content',{
+        filebrowserUploadUrl: '<?php echo ROOT_URL; ?>admin/actions/upload-ckeditor.php',
+        filebrowserUploadMethod: 'xhr',
+        uploadUrl: '/webctylvc/admin/actions/upload-ckeditor.php'
+    }); 
+</script>

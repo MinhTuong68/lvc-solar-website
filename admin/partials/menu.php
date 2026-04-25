@@ -78,7 +78,7 @@
             </div>
             <ul class="submenu">
                 <li>
-                    <a href="index.php?page=manage-projects" class="<?= ($current_page == 'manage-projects')? 'active': ''?>">
+                    <a href="index.php?page=manage-projects" class="<?= ($current_page == 'manage-projects' || $current_page == 'manage-add-projects')? 'active': ''?>">
                         <i class="icon fa-solid fa-bars-progress"></i>
                         <span class="text">Dự án</span>
                     </a>
