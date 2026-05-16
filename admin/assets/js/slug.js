@@ -30,7 +30,52 @@ function autoSlug(inputId, outputId) {
     
     if(inputEl && outputEl) {
         inputEl.addEventListener('keyup', function() {
+            // 1. Tự động điền slug
             outputEl.value = generateSlug(this.value);
+            
+            // 2. Tự động kích hoạt sự kiện để chạy đoạn AJAX check trùng bên dưới
+            outputEl.dispatchEvent(new Event('input'));
         });
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const slugInput = document.getElementById('products_slug');
+    const btnSubmit = document.getElementById('btn-submit');
+    
+    // Tạo 1 dòng chữ nhỏ dưới ô input để báo lỗi
+    let errorSpan = document.createElement('small');
+    errorSpan.style.display = 'block';
+    errorSpan.style.marginTop = '5px';
+    slugInput.parentNode.appendChild(errorSpan);
+
+    slugInput.addEventListener('input', function() {
+        const slugValue = this.value.trim();
+        
+        if(slugValue === '') {
+            errorSpan.textContent = '';
+            slugInput.style.borderColor = '';
+            btnSubmit.disabled = false;
+            return;
+        }
+
+        // Gửi AJAX ngầm lên file PHP vừa tạo
+        const formData = new FormData();
+        formData.append('slug', slugValue);
+
+        fetch('actions/check-slug.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.exists) {
+                // Bị trùng -> Báo đỏ, khóa nút Lưu
+                errorSpan.textContent = '❌ Tên đường dẫn (Slug) này đã tồn tại!';
+                errorSpan.style.color = 'red';
+                slugInput.style.borderColor = 'red';
+                btnSubmit.disabled = true; 
+            }
+        });
+    });
+});

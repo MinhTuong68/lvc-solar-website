@@ -6,8 +6,8 @@
     $productManager = new Product($conn);
 
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btn_save_product'])){
-        $name = $_POST['products-name-add'];
-        $slug = $_POST['slug-add'];
+        $name = trim($_POST['products-name-add']);
+        $slug = trim($_POST['slug-add']);
         $category_id = ($_POST['category_id'] != '') ? $_POST['category_id'] : "NULL";
         $brand_id = ($_POST['brand_id'] != '') ? $_POST['brand_id'] : "NULL";
         $price = $_POST['price'];
@@ -19,59 +19,134 @@
         $content = $_POST['content'];
         $status = $_POST['status'];
 
+        // if(isset($_FILES['image']['name']) && $_FILES['image']['name'] != ""){
+        //     $image_name = $_FILES['image']['name'];
+        //     $ext = pathinfo($image_name, PATHINFO_EXTENSION);
+        //     $image_name = "image_". time() . "_" . bin2hex(random_bytes(4)) .".".$ext;
+        //     $source_path = $_FILES['image']['tmp_name'];
+        //     $destination_path = "../uploads/products/images/".$image_name;
+        //     $upload = move_uploaded_file($source_path,$destination_path);
+        // }
+        // else{
+        //     $image_name = "default.jpg";
+        // }
+
+        // if(isset($_FILES['video']['name']) && $_FILES['video']['name'] != ""){
+        //     $video_name = $_FILES['video']['name'];
+        //     $ext = pathinfo($video_name, PATHINFO_EXTENSION);
+        //     $video_name = "video_". time() . "_" . bin2hex(random_bytes(4)) .".".$ext;
+        //     $source_path = $_FILES['video']['tmp_name'];
+        //     $destination_path = "../uploads/products/videos/".$video_name;
+        //     $video = move_uploaded_file($source_path,$destination_path);
+        // }
+        // else{
+        //     $video_name = "";
+        // }
+
+        // $new_product_id = $productManager->addProduct($category_id, $brand_id, $name, $slug, $image_name, $video_name, $power_capacity, $price, $old_price, $warranty, $stock, $short_description, $content, $status);
+        // // GỌI DATABASE LƯU SẢN PHẨM TRƯỚC
+        // if($new_product_id){
+        //     if(isset($_FILES['gallery']['name']) && $_FILES['gallery']['name'][0] != ""){
+        //         $count = count($_FILES['gallery']['name']);
+        //         for($i=0;$i<$count;$i++){
+        //             $gal_name = $_FILES['gallery']['name'][$i];
+        //             $ext = pathinfo($gal_name, PATHINFO_EXTENSION);
+        //             $gal_name = "gallery_". time() . "_" . bin2hex(random_bytes(4)) .".".$ext;
+        //             $source_path = $_FILES['gallery']['tmp_name'][$i];
+        //             $destination_path = "../uploads/products/image_gallery/".$gal_name;
+        //             if(move_uploaded_file($source_path, $destination_path)){
+        //                 $productManager->addGalleryImage($new_product_id, $gal_name);
+        //             }
+        //         }
+        //     }
+        // }
+
+        // Cấu hình đuôi file cho phép
+        $allowed_image_ext = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+        $allowed_video_ext = ['mp4', 'webm'];
+
+        // 1. XỬ LÝ ẢNH ĐẠI DIỆN
+        $image_name = "default.jpg";
         if(isset($_FILES['image']['name']) && $_FILES['image']['name'] != ""){
-            $image_name = $_FILES['image']['name'];
-            $ext = pathinfo($image_name, PATHINFO_EXTENSION);
+            $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+            
+            // Kiểm tra bảo mật: Có đúng là file ảnh không?
+            if(!in_array($ext, $allowed_image_ext)) {
+                $_SESSION['toast_message'] = "Lỗi: Chỉ cho phép upload file ảnh (jpg, png, webp, gif)!";
+                $_SESSION['toast_type'] = 'error';
+                header("Location: index.php?page=add-products"); 
+                exit();
+            }
+
             $image_name = "image_". time() . "_" . bin2hex(random_bytes(4)) .".".$ext;
             $source_path = $_FILES['image']['tmp_name'];
             $destination_path = "../uploads/products/images/".$image_name;
-            $upload = move_uploaded_file($source_path,$destination_path);
-        }
-        else{
-            $image_name = "default.jpg";
-        }
-
-        if(isset($_FILES['video']['name']) && $_FILES['video']['name'] != ""){
-            $video_name = $_FILES['video']['name'];
-            $ext = pathinfo($video_name, PATHINFO_EXTENSION);
-            $video_name = "video_". time() . "_" . bin2hex(random_bytes(4)) .".".$ext;
-            $source_path = $_FILES['video']['tmp_name'];
-            $destination_path = "../uploads/products/videos/".$video_name;
-            $video = move_uploaded_file($source_path,$destination_path);
-        }
-        else{
-            $video_name = "";
-        }
-
-        $new_product_id = $productManager->addProduct($category_id, $brand_id, $name, $slug, $image_name, $video_name, $power_capacity, $price, $old_price, $warranty, $stock, $short_description, $content, $status);
-        // GỌI DATABASE LƯU SẢN PHẨM TRƯỚC
-        if($new_product_id){
-            if(isset($_FILES['gallery']['name']) && $_FILES['gallery']['name'][0] != ""){
-                $count = count($_FILES['gallery']['name']);
-                for($i=0;$i<$count;$i++){
-                    $gal_name = $_FILES['gallery']['name'][$i];
-                    $ext = pathinfo($gal_name, PATHINFO_EXTENSION);
-                    $gal_name = "gallery_". time() . "_" . bin2hex(random_bytes(4)) .".".$ext;
-                    $source_path = $_FILES['gallery']['tmp_name'][$i];
-                    $destination_path = "../uploads/products/image_gallery/".$gal_name;
-                    if(move_uploaded_file($source_path, $destination_path)){
-                        $productManager->addGalleryImage($new_product_id, $gal_name);
-                    }
-                }
+            
+            // Kiểm tra xem upload có thành công vào thư mục chưa
+            if(!move_uploaded_file($source_path, $destination_path)) {
+                $_SESSION['toast_message'] = "Lỗi: Không thể lưu ảnh lên máy chủ. Kiểm tra lại dung lượng hoặc phân quyền thư mục.";
+                $_SESSION['toast_type'] = 'error';
+                header("Location: index.php?page=add-products"); 
+                exit();
             }
         }
 
-        if(!$new_product_id){
-            $_SESSION['toast_message'] = "Lỗi tải file lên, vui lòng thử lại";
-            $_SESSION['toast_type'] = 'error';
-            header("Location: index.php?page=add-products"); 
-            exit();
+        // 2. XỬ LÝ VIDEO (Tương tự)
+        $video_name = "";
+        if(isset($_FILES['video']['name']) && $_FILES['video']['name'] != ""){
+            $ext = strtolower(pathinfo($_FILES['video']['name'], PATHINFO_EXTENSION));
+            
+            if(!in_array($ext, $allowed_video_ext)) {
+                $_SESSION['toast_message'] = "Lỗi: Chỉ cho phép upload video (mp4, webm)!";
+                $_SESSION['toast_type'] = 'error';
+                header("Location: index.php?page=add-products"); 
+                exit();
+            }
+
+            $video_name = "video_". time() . "_" . bin2hex(random_bytes(4)) .".".$ext;
+            $source_path = $_FILES['video']['tmp_name'];
+            $destination_path = "../uploads/products/videos/".$video_name;
+            
+            if(!move_uploaded_file($source_path, $destination_path)) {
+                $_SESSION['toast_message'] = "Lỗi: Không thể lưu video lên máy chủ.";
+                $_SESSION['toast_type'] = 'error';
+                header("Location: index.php?page=add-products"); 
+                exit();
+            }
         }
-        else{
+
+        // 3. GỌI DATABASE LƯU SẢN PHẨM TRƯỚC
+        $new_product_id = $productManager->addProduct($category_id, $brand_id, $name, $slug, $image_name, $video_name, $power_capacity, $price, $old_price, $warranty, $stock, $short_description, $content, $status);
+
+        // 4. XỬ LÝ THƯ VIỆN ẢNH (GALLERY) KHI ĐÃ CÓ ID SẢN PHẨM
+        if($new_product_id){
+            if(isset($_FILES['gallery']['name']) && $_FILES['gallery']['name'][0] != ""){
+                $count = count($_FILES['gallery']['name']);
+                for($i=0; $i<$count; $i++){
+                    $gal_ext = strtolower(pathinfo($_FILES['gallery']['name'][$i], PATHINFO_EXTENSION));
+                    
+                    // Lọc bỏ các file không phải ảnh bị lẫn vào
+                    if(in_array($gal_ext, $allowed_image_ext)) {
+                        $gal_name = "gallery_". time() . "_" . bin2hex(random_bytes(4)) .".".$gal_ext;
+                        $source_path = $_FILES['gallery']['tmp_name'][$i];
+                        $destination_path = "../uploads/products/image_gallery/".$gal_name;
+                        
+                        if(move_uploaded_file($source_path, $destination_path)){
+                            $productManager->addGalleryImage($new_product_id, $gal_name);
+                        }
+                    }
+                }
+            }
+            
             $_SESSION['toast_message'] = "Thêm sản phẩm thành công";
             $_SESSION['toast_type'] = 'success';   
             header("Location: index.php?page=add-products"); 
             exit(); 
+        } else {
+            $_SESSION['toast_message'] = "Lỗi: Không thể thêm sản phẩm vào Database";
+            $_SESSION['toast_type'] = 'error';
+            header("Location: index.php?page=add-products"); 
+            exit();
         }
         
     }
@@ -252,6 +327,9 @@
 <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 <script>
     CKEDITOR.replace('content',{
+        filebrowserUploadUrl: '<?php echo ROOT_URL; ?>actions/upload-ckeditor.php',
+        filebrowserUploadMethod: 'xhr',
+        uploadUrl: 'actions/upload-ckeditor.php',
         height: 600
     }); 
 </script>

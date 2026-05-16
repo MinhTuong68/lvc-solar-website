@@ -8,8 +8,60 @@
     $current_search = isset($_GET['search']) ? $_GET['search'] : '';
 
     // 3. LẤY DỮ LIỆU TỪ DATABASE
-    $allServices = $service_obj->getAllServices($current_status, $current_type, $current_search);
+    // SỬA ĐỔI: Tự viết câu lệnh SQL để lọc chính xác theo yêu cầu
+    $sql = "SELECT s.*, t.service_type 
+            FROM tbl_services s
+            LEFT JOIN tbl_service_type t ON s.service_type_id = t.id 
+            WHERE 1=1";
+
+    // 1. Lọc theo trạng thái (Tabs)
+    if ($current_status !== 'all' && $current_status !== '') {
+        $st_filter = mysqli_real_escape_string($conn, $current_status);
+        $sql .= " AND s.status = '$st_filter'";
+    }
+
+    // 2. Lọc theo loại dịch vụ (Dropdown)
+    if ($current_type !== '') {
+        $sql .= " AND s.service_type_id = " . (int)$current_type;
+    }
+
+    // 3. CHỈ TÌM KIẾM THEO TÊN (customer_name)
+    if ($current_search !== '') {
+        $search_filter = mysqli_real_escape_string($conn, $current_search);
+        $sql .= " AND s.customer_name LIKE '%$search_filter%'";
+    }
+
+    // Sắp xếp: Mới nhất lên đầu
+    $sql .= " ORDER BY FIELD(s.status, 'new') DESC, s.updated_at DESC";
+
+    // Thực thi và đẩy dữ liệu vào mảng $allServices để code bên dưới chạy bình thường
+    $res_query = mysqli_query($conn, $sql);
+    $allServices = [];
+    if($res_query && mysqli_num_rows($res_query) > 0) {
+        while($row = mysqli_fetch_assoc($res_query)) {
+            $allServices[] = $row;
+        }
+    }
     $allTypes = $service_obj->getAllServiceTypes(); // Để đổ vào Dropdown
+
+    // THÊM ĐOẠN NÀY VÀO ĐỂ XỬ LÝ LỆNH UPDATE TỪ DROPDOWN
+    if (isset($_GET['action']) && $_GET['action'] == 'update_status' && isset($_GET['id']) && isset($_GET['new_status'])) {
+        $update_id = (int)$_GET['id'];
+        $new_status = trim($_GET['new_status']);
+        
+        if ($service_obj->updateServiceStatus($update_id, $new_status)) {
+            $_SESSION['toast_message'] = "Cập nhật trạng thái thành công!";
+            $_SESSION['toast_type'] = "success";
+        } else {
+            $_SESSION['toast_message'] = "Lỗi: Không thể cập nhật trạng thái!";
+            $_SESSION['toast_type'] = "error";
+        }
+        
+        // Load lại trang cho sạch URL
+        $redirect_status = isset($_GET['status']) ? $_GET['status'] : 'all';
+        header("Location: index.php?page=manage-service&status=" . $redirect_status);
+        exit;
+    }
 ?>
 <div class="wrapper">
     <div class="cs-page-wrapper">
@@ -56,6 +108,7 @@
             <table class="cs-table">
                     <thead>
                         <tr>
+                            <th>STT</th>
                             <th>ID</th>
                             <th>Khách hàng</th>
                             <th>Loại Dịch vụ</th>
@@ -94,6 +147,7 @@
                                     ?>
                                     <tr>
                                         <td>#<?php echo $stt++; ?></td>
+                                        <td><?php echo $id; ?></td>
                                         <td>
                                             <span class="cs-customer-name"><?php echo htmlspecialchars($customer_name); ?></span>
                                             <span class="cs-customer-sub"><i class="fa-solid fa-phone"></i> <?php echo htmlspecialchars($phone); ?></span>
@@ -101,16 +155,37 @@
                                         <td style="font-weight: 500; color: #3b82f6;"><?php echo htmlspecialchars($service_label); ?></td>
                                         <td style="color: #ef4444; font-weight: 500;"><?php echo htmlspecialchars($electricity_bill); ?></td>
                                         <td><?php echo $formatted_date; ?></td>
-                                        <td><?php echo $status_badge; ?></td>
+                                        <td>
+                                            <select class="select-status <?= $status ?>" onchange="
+                                                let urlUpdate = 'index.php?page=manage-service&status=<?= $current_status ?>&action=update_status&id=<?= $id ?>&new_status=' + this.value;
+                                                
+                                                openModal(
+                                                    'Xác nhận cập nhật?', 
+                                                    'Bạn có chắc chắn muốn thay đổi trạng thái của yêu cầu dịch vụ #<?= $id ?> không?', 
+                                                    'fa-solid fa-clipboard-check', 
+                                                    'Đồng ý', 
+                                                    function() { 
+                                                        window.location.href = urlUpdate; 
+                                                    }
+                                                );
+                                            ">
+                                                <option value="new" <?= $status == 'new' ? 'selected' : '' ?>>Mới nhận</option>
+                                                <option value="called" <?= $status == 'called' ? 'selected' : '' ?>>Đã liên hệ</option>
+                                                <option value="surveying" <?= $status == 'surveying' ? 'selected' : '' ?>>Đang khảo sát</option>
+                                                <option value="quoted" <?= $status == 'quoted' ? 'selected' : '' ?>>Đã báo giá</option>
+                                                <option value="done" <?= $status == 'done' ? 'selected' : '' ?>>Hoàn thành</option>
+                                                <option value="cancelled" <?= $status == 'cancelled' ? 'selected' : '' ?>>Đã hủy</option>
+                                            </select>
+                                        </td>
                                         <td style="text-align: right;">
-                                            <a href="#" class="cs-btn cs-btn-view" title="Xem & Cập nhật"><i class="fa-solid fa-eye"></i></a>
+                                            <a href="index.php?page=detail_service&id=<?= $row['id'] ?>" class="cs-btn cs-btn-view" title="Xem & Cập nhật"><i class="fa-solid fa-eye"></i></a>
                                             <a href="#" class="cs-btn cs-btn-delete" title="Xóa"><i class="fa-solid fa-trash-can"></i></a>
                                         </td>
                                     </tr>
                                     <?php
                                 }
                             } else {
-                                echo "<tr><td colspan='7' style='text-align:center; padding: 30px; color: #64748b;'>Chưa có yêu cầu dịch vụ nào hoặc không tìm thấy dữ liệu lọc.</td></tr>";
+                                echo "<tr><td colspan='8' style='text-align:center; padding: 30px; color: #64748b;'>Chưa có yêu cầu dịch vụ nào hoặc không tìm thấy dữ liệu lọc.</td></tr>";
                             }
                         ?>
                     </tbody>

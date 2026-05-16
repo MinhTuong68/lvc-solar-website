@@ -1,43 +1,35 @@
 <?php
-    session_start();
-    include('../../config/publics/constants.php');
-// #region agent log
-file_put_contents(__DIR__ . '/../../debug-6a4c11.log', json_encode([
-    'sessionId' => '6a4c11',
-    'runId' => 'initial',
-    'hypothesisId' => 'H1',
-    'location' => 'public/actions/add-cart.php:4',
-    'message' => 'add-cart endpoint hit',
-    'data' => [
-        'method' => $_SERVER['REQUEST_METHOD'] ?? '',
-        'phpSessionId' => session_id()
-    ],
-    'timestamp' => round(microtime(true) * 1000)
-], JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
-// #endregion
+    include('../../config/constants.php');
+    require_once '../../classes/rate_limit.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (!isset($_POST['csrf_token']) || 
+        !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        echo json_encode(['status' => 'error', 'message' => 'Yêu cầu không hợp lệ']);
+        exit;
+    }
+
+    $spam_guard = new RateLimit('add_cart', 10, 100); 
+    $check = $spam_guard->check();
+
+    if (!$check['allowed']) {
+        echo json_encode([
+            'status' => 'error', 
+            'message' => $check['message']
+        ]);
+        exit;
+    }
+
     // Nhận ID sản phẩm từ Javascript gửi qua
     $product_id = isset($_POST['product_id']) ? (int)$_POST['product_id'] : 0;
     $qty = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 1;
-    // #region agent log
-    file_put_contents(__DIR__ . '/../../debug-6a4c11.log', json_encode([
-        'sessionId' => '6a4c11',
-        'runId' => 'initial',
-        'hypothesisId' => 'H2',
-        'location' => 'public/actions/add-cart.php:24',
-        'message' => 'add-cart payload parsed',
-        'data' => [
-            'productId' => $product_id,
-            'quantity' => $qty
-        ],
-        'timestamp' => round(microtime(true) * 1000)
-    ], JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
-    // #endregion
 
     if ($product_id > 0) {
-        $sql_check = "SELECT stock FROM tbl_products WHERE id = $product_id AND status = 1";
-        $result_check = $conn->query($sql_check);
+        $stmt = $conn->prepare("SELECT stock FROM tbl_products WHERE id = ? AND status = 1");
+        $stmt->bind_param("i", $product_id);
+        $stmt->execute();
+        $result_check = $stmt->get_result();
+
         // KIỂM TRA: Nếu tìm thấy sản phẩm trong Database
         if ($result_check && $result_check->num_rows > 0) {
             $product = $result_check->fetch_assoc();
@@ -75,28 +67,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['cart'][$product_id] = $qty;
         }
 
+        $stmt_detail = $conn->prepare("SELECT id, name, price, image FROM tbl_products WHERE id = ? LIMIT 1");
+        $stmt_detail->bind_param("i", $product_id);
+        $stmt_detail->execute();
+        $p_detail = $stmt_detail->get_result()->fetch_assoc();
+        $stmt_detail->close();
+
+        if ($p_detail) {
+            if (!isset($_SESSION['cart_details'])) $_SESSION['cart_details'] = [];
+            $_SESSION['cart_details'][$product_id] = [
+                'id'       => $p_detail['id'],
+                'name'     => $p_detail['name'],
+                'price'    => $p_detail['price'],
+                'image'    => $p_detail['image'],
+                'quantity' => $_SESSION['cart'][$product_id], // Số lượng mới nhất
+            ];
+        }
+
         // Đếm xem trong giỏ đang có tổng cộng bao nhiêu món
         $total_items = array_sum($_SESSION['cart']);
-        // #region agent log
-        file_put_contents(__DIR__ . '/../../debug-6a4c11.log', json_encode([
-            'sessionId' => '6a4c11',
-            'runId' => 'initial',
-            'hypothesisId' => 'H3',
-            'location' => 'public/actions/add-cart.php:45',
-            'message' => 'cart updated in session',
-            'data' => [
-                'phpSessionId' => session_id(),
-                'sessionCart' => $_SESSION['cart'],
-                'totalItems' => $total_items
-            ],
-            'timestamp' => round(microtime(true) * 1000)
-        ], JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
-        // #endregion
-        
+
+        if (!isset($_SESSION['new_added_count'])) {
+            $_SESSION['new_added_count'] = $qty;
+        } else {
+            $_SESSION['new_added_count'] += $qty;
+        }
+
         // Báo cáo về lại cho Javascript biết là đã xong
         echo json_encode([
             'status' => 'success', 
-            'total_items' => $total_items
+            'new_items' => $_SESSION['new_added_count'],
+            'total_items' => $total_items,
+            'cart_items' => array_values($_SESSION['cart_details'] ?? []),
+            'root_url'     => ROOT_URL,  
         ]);
         
     } else {

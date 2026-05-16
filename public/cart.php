@@ -1,25 +1,14 @@
 <?php
+    if (isset($_SESSION['new_added_count'])) {
+        unset($_SESSION['new_added_count']);
+    }
     // Đọc từ Session cho khớp với add-cart.php
     $cartItems = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
-    // #region agent log
-    file_put_contents(__DIR__ . '/../debug-6a4c11.log', json_encode([
-        'sessionId' => '6a4c11',
-        'runId' => 'initial',
-        'hypothesisId' => 'H4',
-        'location' => 'public/cart.php:4',
-        'message' => 'cart page session read',
-        'data' => [
-            'phpSessionId' => session_id(),
-            'sessionCart' => $cartItems,
-            'sessionCartCount' => is_array($cartItems) ? count($cartItems) : -1
-        ],
-        'timestamp' => round(microtime(true) * 1000)
-    ], JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
-    // #endregion
     
     $cartIds = array_keys($cartItems);
     $cartProducts = [];
     $totalAmount = 0;
+    
 
     // --- 2. TRUY VẤN DATABASE BẰNG MYSQLI ---
     if (!empty($cartIds) && isset($conn)) {
@@ -33,20 +22,6 @@
             while ($row = $result->fetch_assoc()) {
                 $cartProducts[] = $row;
             }
-            // #region agent log
-            file_put_contents(__DIR__ . '/../debug-6a4c11.log', json_encode([
-                'sessionId' => '6a4c11',
-                'runId' => 'initial',
-                'hypothesisId' => 'H5',
-                'location' => 'public/cart.php:34',
-                'message' => 'cart product query completed',
-                'data' => [
-                    'cartIds' => $safeIds,
-                    'productRows' => count($cartProducts)
-                ],
-                'timestamp' => round(microtime(true) * 1000)
-            ], JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
-            // #endregion
         }
     }
 ?>
@@ -61,9 +36,19 @@
 
 <section class="cart-section">
     <div class="container">
-        <h1 class="cart-page-title">
+        <!-- <h1 class="cart-page-title">
             <i class="fa-solid fa-cart-shopping"></i> Giỏ Hàng Của Bạn
-        </h1>
+        </h1> -->
+
+        <div class="cart-page-header-flex">
+            <h1 class="cart-page-title">
+                <i class="fa-solid fa-cart-shopping"></i> Giỏ Hàng Của Bạn
+            </h1>
+            
+            <a href="?page=order_history" class="btn-order-history">
+                <i class="fa-solid fa-clock-rotate-left"></i> Lịch sử đặt hàng
+            </a>
+        </div>
 
         <div class="cart-layout-grid" id="cart-layout">
             <div>
@@ -144,7 +129,7 @@
                 
                 <div class="summary-contact-box">
                     <strong>Hoặc liên hệ trực tiếp:</strong><br>
-                    <a href="tel:0912345678">📞 0912.345.678</a> để được tư vấn và đặt hàng nhanh hơn.
+                    <a href="tel:0912345678">📞 0945.671.536</a> để được tư vấn và đặt hàng nhanh hơn.
                 </div>
             </div>
         </div>

@@ -65,7 +65,7 @@
                         </div>
                     </label>
 
-                    <label class="payment-option">
+                    <label class="payment-option" style="display: none;">
                         <input type="radio" name="payment_method" value="bank_transfer">
                         <div class="payment-option-body">
                             <i class="fa-solid fa-building-columns"></i>

@@ -1,1 +1,13 @@
-Deny from all
+# Chặn hoàn toàn mọi truy cập từ bên ngoài vào thư mục này
+# Order deny,allow
+# Deny from all
+
+# Chặn hoàn toàn mọi truy cập từ bên ngoài vào thư mục này
+# Hỗ trợ cả máy chủ cũ (Apache 2.2) và máy chủ mới (Apache 2.4+)
+<IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+</IfModule>
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>

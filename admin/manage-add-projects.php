@@ -106,7 +106,10 @@
 </script>
 <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 <script>
-    CKEDITOR.replace('content', {
-        height: 600 // Kéo dài khung soạn thảo ra 600px để dễ viết bài
+    CKEDITOR.replace('content',{
+        filebrowserUploadUrl: '<?php echo ROOT_URL; ?>actions/upload-ckeditor.php',
+        filebrowserUploadMethod: 'xhr',
+        uploadUrl: 'actions/upload-ckeditor.php',
+        height: 600
     }); 
 </script>

@@ -15,7 +15,8 @@ function addToCartAjax(productId, qty, actionType) {
     const formData = new FormData();
     formData.append('product_id', productId);
     formData.append('quantity', quantity);
-
+    formData.append('csrf_token', document.querySelector('meta[name="csrf-token"]')?.content || '');
+    
     // 2. Gọi file PHP xử lý ngầm
     fetch('actions/add-cart.php', {
         method: 'POST',
@@ -23,13 +24,17 @@ function addToCartAjax(productId, qty, actionType) {
     })
     .then(response => response.json())
     .then(data => {
+        console.log("DỮ LIỆU TỪ PHP TRẢ VỀ LÀ:", data);
         if (data.status === 'success') {
             
             // --- YÊU CẦU 1: TỰ ĐỘNG TĂNG SỐ VÀ CÓ HIỆU ỨNG TRÊN ICON GIỎ HÀNG ---
             // Tìm tất cả các thẻ chứa số lượng giỏ hàng trên Header
-            const cartBadges = document.querySelectorAll('.cart-count, #cart-count, .cart-badge');
+            // Bắt TẤT CẢ các thẻ có khả năng là cục số giỏ hàng
+            const cartBadges = document.querySelectorAll('.badge');
             cartBadges.forEach(badge => {
-                badge.innerText = data.total_items;
+                badge.innerText = data.new_items;
+
+                badge.style.display = '';
                 
                 // Thêm hiệu ứng nảy (scale) giống trang products
                 badge.style.transition = 'transform 0.2s ease-in-out';
@@ -47,7 +52,11 @@ function addToCartAjax(productId, qty, actionType) {
                 // Nếu bấm THÊM VÀO GIỎ -> Ở lại trang và hiện thông báo
                 if (typeof showToast === 'function') {
                     showToast('Đã thêm ' + quantity + ' sản phẩm vào giỏ hàng!', 'success');
-                } else if (typeof toast === 'function') {
+                }
+                if (typeof updateCartDropdown === 'function') {
+                    updateCartDropdown(data.cart_items, data.root_url);
+                }
+                 else if (typeof toast === 'function') {
                     toast({title: "Thành công", message: "Đã thêm vào giỏ hàng", type: "success"});
                 } else {
                     alert('Đã thêm sản phẩm vào giỏ hàng!'); // Backup

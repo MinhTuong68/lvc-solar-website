@@ -1,11 +1,47 @@
 <?php
-    $category = [
-        'id' => 7,
-        'name' => 'Tấm pin mặt trời',
-        'slug' => 'tam-pin-mat-troi',
-        'status' => 1,
-        'created_at' => '2026-04-05 10:30:00'
-    ];
+    // 1. Nhúng class xử lý danh mục (giống bên manage-category.php)
+    include('../classes/categories.php');
+    $categoryManager = new Category($conn);
+
+    // 2. Lấy ID từ URL
+    if (!isset($_GET['id'])) {
+        header("Location: index.php?page=manage-category");
+        exit();
+    }
+
+    $id = (int)$_GET['id'];
+
+    // 3. Truy vấn lấy dữ liệu thật từ Database theo ID
+    // Lưu ý: Tên hàm getCategoryByID bạn check lại trong class Category của bạn nhé
+    $category = $categoryManager->getCategoryByID($id); 
+
+    // 4. Nếu không tìm thấy danh mục này trong DB thì đuổi về trang quản lý
+    if (!$category) {
+        $_SESSION['toast_message'] = "Danh mục không tồn tại!";
+        $_SESSION['toast_type'] = 'error';
+        header("Location: index.php?page=manage-category");
+        exit();
+    }
+
+    // 5. Xử lý khi nhấn nút Cập nhật (POST)
+   if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['category_id'])){
+        $name = trim($_POST['category_name']);
+        $slug = trim($_POST['category_slug']);
+        $status = (int)$_POST['status'];
+
+        // Gọi hàm update (Tên hàm này bạn cũng check lại trong class Category)
+        $updateResult = $categoryManager->updateCategory($id, $name, $slug, $status);
+
+        if ($updateResult == "success") {
+            $_SESSION['toast_message'] = "Cập nhật danh mục thành công!";
+            $_SESSION['toast_type'] = 'success';
+            header("Location: index.php?page=manage-category");
+            exit();
+        } else {
+            $_SESSION['toast_message'] = "Cập nhật thất bại, vui lòng thử lại!";
+            $_SESSION['toast_type'] = 'error';
+        }
+    }
 ?>
 
 <link rel="stylesheet" href="assets/css/edit.css">

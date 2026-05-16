@@ -1,5 +1,5 @@
 <?php
-    if (!defined('IS_SECURE')) { die('Bạn không có quyền truy cập file này!'); }
+    // if (!defined('IS_SECURE')) { die('Bạn không có quyền truy cập file này!'); }
     class Service{
         private $conn;
 
@@ -83,6 +83,26 @@
     public function deleteService($id) {
         $id = (int)$id;
         $sql = "DELETE FROM tbl_services WHERE id = $id";
+        return mysqli_query($this->conn, $sql);
+    }
+    // Hàm lấy chi tiết 1 yêu cầu dịch vụ theo ID
+    public function getServiceById($id) {
+        $id = (int)$id;
+        $sql = "SELECT s.*, t.service_type 
+                FROM tbl_services s
+                LEFT JOIN tbl_service_type t ON s.service_type_id = t.id 
+                WHERE s.id = $id";
+        $result = mysqli_query($this->conn, $sql);
+        if ($result && mysqli_num_rows($result) > 0) {
+            return mysqli_fetch_assoc($result);
+        }
+        return null;
+    }
+    // Hàm cập nhật trạng thái yêu cầu dịch vụ
+    public function updateServiceStatus($id, $status) {
+        $id = (int)$id;
+        $status = mysqli_real_escape_string($this->conn, $status);
+        $sql = "UPDATE tbl_services SET status = '$status' WHERE id = $id";
         return mysqli_query($this->conn, $sql);
     }
     }

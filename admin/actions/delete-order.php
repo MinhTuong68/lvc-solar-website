@@ -1,5 +1,6 @@
 <?php
     include("../classes/order.php");
+    include_once('../admin/auth.php');
     $order_obj = new Order($conn);
 
     // Kiểm tra xem có ID truyền trên thanh URL không

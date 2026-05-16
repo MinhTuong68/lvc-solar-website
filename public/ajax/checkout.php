@@ -1,26 +1,12 @@
 <?php
-session_start();
 define('IS_SECURE', true);
-require_once("../../config/publics/constants.php");
+require_once("../../config/constants.php");
 include_once("../../classes/order.php");
+include("../../classes/telegram_helper.php");
+require_once '../../classes/rate_limit.php'; 
+$timeNow = date('d/m/Y - H:i:s');
 
 header('Content-Type: application/json');
-// #region agent log
-file_put_contents(__DIR__ . '/../../debug-404109.log', json_encode([
-    'sessionId' => '404109',
-    'runId' => 'pre-fix',
-    'hypothesisId' => 'H9',
-    'location' => 'public/ajax/checkout.php:entry',
-    'message' => 'checkout endpoint entry',
-    'data' => [
-        'method' => $_SERVER['REQUEST_METHOD'] ?? '',
-        'action' => $_GET['action'] ?? null,
-        'phpSessionId' => session_id(),
-        'sessionCartCount' => isset($_SESSION['cart']) && is_array($_SESSION['cart']) ? count($_SESSION['cart']) : 0
-    ],
-    'timestamp' => round(microtime(true) * 1000)
-], JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
-// #endregion
 
 function getSessionCartItemsWithPrice($conn): array {
     $sessionCart = $_SESSION['cart'] ?? [];
@@ -39,22 +25,6 @@ function getSessionCartItemsWithPrice($conn): array {
             $dbProducts[(int)$row['id']] = $row;
         }
     }
-    // #region agent log
-    file_put_contents(__DIR__ . '/../../debug-404109.log', json_encode([
-        'sessionId' => '404109',
-        'runId' => 'pre-fix',
-        'hypothesisId' => 'H11',
-        'location' => 'public/ajax/checkout.php:getSessionCartItemsWithPrice',
-        'message' => 'session ids vs db ids after status filter',
-        'data' => [
-            'sessionIds' => $ids,
-            'dbIds' => array_map('intval', array_keys($dbProducts)),
-            'sessionCount' => count($ids),
-            'dbCount' => count($dbProducts)
-        ],
-        'timestamp' => round(microtime(true) * 1000)
-    ], JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
-    // #endregion
 
     $items = [];
     $total = 0;
@@ -81,21 +51,6 @@ function getSessionCartItemsWithPrice($conn): array {
 // GET: trả cart cho trang checkout
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['action'] ?? '') === 'cart') {
     $cartData = getSessionCartItemsWithPrice($conn);
-    // #region agent log
-    file_put_contents(__DIR__ . '/../../debug-404109.log', json_encode([
-        'sessionId' => '404109',
-        'runId' => 'pre-fix',
-        'hypothesisId' => 'H10',
-        'location' => 'public/ajax/checkout.php:cartResponse',
-        'message' => 'checkout cart response built',
-        'data' => [
-            'sessionCartRaw' => $_SESSION['cart'] ?? [],
-            'responseItemsCount' => count($cartData['items']),
-            'responseTotal' => $cartData['total']
-        ],
-        'timestamp' => round(microtime(true) * 1000)
-    ], JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
-    // #endregion
     echo json_encode([
         'success' => true,
         'items' => $cartData['items'],
@@ -106,6 +61,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['action'] ?? '') === 'cart') 
 
 // POST: tạo đơn
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) ||
+        !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        echo json_encode(['success' => false, 'showToast' => 'Yêu cầu không hợp lệ!']);
+        exit;
+    }
+
+    $spam_guard = new RateLimit('checkout_order', 5, 300);
+    $check = $spam_guard->check();
+    if (!$check['allowed']) {
+        echo json_encode(['success' => false, 'showToast' => $check['message']]);
+        exit;
+    }
+
     $order_obj = new Order($conn);
 
     // Lấy items + total từ SESSION + DB (không dùng $_POST['items'])
@@ -118,36 +86,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    $name_raw    = trim($_POST['customer_name'] ?? '');
+    $phone_raw   = trim($_POST['customer_phone'] ?? '');
+    $email_raw   = trim($_POST['customer_email'] ?? '');
+    $address_raw = trim($_POST['customer_address'] ?? '');
+    $note_raw    = strip_tags(trim($_POST['note'] ?? ''));
+
+    $name  = e($name_raw);
+    $phone = $phone_raw;
+    $allowed_payments = ['cod', 'bank_transfer', 'momo'];
+    $payment = trim($_POST['payment_method'] ?? 'cod');
+    $payment = in_array($payment, $allowed_payments) ? $payment : 'cod';
+    if (empty($name) || empty($phone)) {
+        echo json_encode(['success' => false, 'showToast' => 'Vui lòng nhập đầy đủ họ tên và số điện thoại!']);
+        exit;
+    }
+
+    // Validate SĐT Việt Nam
+    if (!preg_match('/^(0|\+84)[0-9]{9}$/', $phone)) {
+        echo json_encode(['success' => false, 'showToast' => 'Số điện thoại không hợp lệ!']);
+        exit;
+    }
+
     $customerInfo = [
         'order_code'     => 'LVC-' . strtoupper(substr(md5(time()), 0, 6)),
-        'name'           => trim($_POST['customer_name'] ?? ''),
-        'phone'          => trim($_POST['customer_phone'] ?? ''),
-        'email'          => trim($_POST['customer_email'] ?? ''),
-        'address'        => trim($_POST['customer_address'] ?? ''),
-        'note'           => trim($_POST['note'] ?? ''),
-        'payment_method' => trim($_POST['payment_method'] ?? 'cod'),
+        'name'           => $name,
+        'phone'          => $phone,
+        'email'   => e(trim($_POST['customer_email'] ?? '')),
+        'address' => e(trim($_POST['customer_address'] ?? '')),
+        'note'    => e(trim($_POST['note'] ?? '')),
+        'payment_method' => $payment,
         'total_amount'   => $total_amount
     ];
 
     $orderOk = $order_obj->createOrder($customerInfo, $cartItems);
-    // #region agent log
-    file_put_contents(__DIR__ . '/../../debug-404109.log', json_encode([
-        'sessionId' => '404109',
-        'runId' => 'pre-fix',
-        'hypothesisId' => 'H2',
-        'location' => 'public/ajax/checkout.php:postCreateOrder',
-        'message' => 'createOrder result',
-        'data' => [
-            'orderOk' => (bool) $orderOk,
-            'cartItemsCount' => count($cartItems),
-            'total_amount' => $total_amount
-        ],
-        'timestamp' => round(microtime(true) * 1000)
-    ], JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
-    // #endregion
     if ($orderOk) {
-        // Có thể clear cart sau khi đặt thành công:
+        $msgTelegram = "<b>🛒 TING TING! CÓ ĐƠN ĐẶT HÀNG MỚI</b>\n";
+        $msgTelegram .= "📦 Mã đơn hàng: <b>" . $customerInfo['order_code'] . "</b>\n";
+        $msgTelegram .= "⏰ Thời gian: " . $timeNow . "\n";
+        $msgTelegram .= "👤 Khách hàng: " . $name_raw . "\n";
+        $msgTelegram .= "📞 SĐT: " . $phone_raw . "\n";
+        $msgTelegram .= "📍 Địa chỉ: " . $address_raw . "\n";
+        
+        $phuong_thuc = ($payment == 'bank_transfer') ? 'Chuyển khoản' : (($payment == 'momo') ? 'Ví Momo' : 'COD (Tiền mặt)');
+        $msgTelegram .= "💳 Thanh toán: " . $phuong_thuc . "\n";
+        $msgTelegram .= "💰 Tổng tiền: <b>" . number_format($total_amount, 0, ',', '.') . " VNĐ</b>\n";
+        
+        if (!empty($note_raw)) {
+            $msgTelegram .= "📝 Ghi chú: <i>" . $note_raw . "</i>\n";
+        }
+        
+        $telegram = new TelegramHelper();
+        $telegram->sendMessage($msgTelegram);
+
+        
+        $cus_phone = $phone;
+        // ✅ CHỈ DÙNG SESSION
+        $auth_phones = $_SESSION['authorized_phones'] ?? [];
+        if ($cus_phone !== '' && !in_array($cus_phone, $auth_phones)) {
+            $auth_phones[] = $cus_phone;
+        }
+        $_SESSION['authorized_phones'] = $auth_phones;
+
+        if (!isset($_SESSION['new_orders'])) {
+            $_SESSION['new_orders'] = 1;
+        } else {
+            $_SESSION['new_orders'] += 1;
+        }
+
         $_SESSION['cart'] = [];
+        $_SESSION['cart_details'] = [];
         echo json_encode(['success' => true, 'showToast' => 'Đặt hàng thành công!']);
     } else {
         echo json_encode(['success' => false, 'showToast' => 'Lỗi hệ thống khi lưu đơn hàng!']);

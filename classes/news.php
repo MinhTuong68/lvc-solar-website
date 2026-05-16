@@ -125,5 +125,36 @@ class News {
         $sql = "DELETE FROM tbl_news WHERE id = $id";
         return $this->conn->query($sql);
     }
+
+    // 1. Lấy chi tiết 1 bài viết theo ID để đổ ra form
+    public function getNewsByID($id) {
+        $id = (int)$id;
+        $sql = "SELECT * FROM tbl_news WHERE id = $id";
+        $result = $this->conn->query($sql);
+        if ($result && $result->num_rows > 0) {
+            return $result->fetch_assoc();
+        }
+        return null;
+    }
+
+    // 2. Cập nhật bài viết
+    public function updateNews($id, $title, $slug, $summary, $image, $status, $content) {
+        $id = (int)$id;
+        $title = mysqli_real_escape_string($this->conn, $title);
+        $slug = mysqli_real_escape_string($this->conn, $slug);
+        $summary = mysqli_real_escape_string($this->conn, $summary);
+        $content = mysqli_real_escape_string($this->conn, $content);
+        $status = (int)$status;
+
+        // Nếu có up ảnh mới thì cập nhật luôn cột image, không thì giữ nguyên
+        if ($image != "") {
+            $image = mysqli_real_escape_string($this->conn, $image);
+            $sql = "UPDATE tbl_news SET title='$title', slug='$slug', summary='$summary', image='$image', status=$status, content='$content' WHERE id=$id";
+        } else {
+            $sql = "UPDATE tbl_news SET title='$title', slug='$slug', summary='$summary', status=$status, content='$content' WHERE id=$id";
+        }
+        
+        return $this->conn->query($sql);
+    }
 }
 ?>

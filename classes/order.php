@@ -69,14 +69,31 @@
             return null;
         }
 
-        public function getOrderDetails($order_id) {
+        // public function getOrderDetails($order_id) {
+        //     $order_id = (int)$order_id;
+        //     $sql = "SELECT * FROM tbl_order_details WHERE order_id = $order_id";
+        //     $result = $this->conn->query($sql);
+            
+        //     $items = [];
+        //     if ($result && $result->num_rows > 0) {
+        //         while($row = $result->fetch_assoc()) {
+        //             $items[] = $row;
+        //         }
+        //     }
+        //     return $items;
+        // }
+         public function getOrderDetails($order_id) {
             $order_id = (int)$order_id;
-            $sql = "SELECT * FROM tbl_order_details WHERE order_id = $order_id";
+            // Nối bảng tbl_order_details với tbl_products để lấy tên và ảnh sản phẩm
+            $sql = "SELECT d.*, p.name as product_name, p.image as product_image 
+                    FROM tbl_order_details d 
+                    JOIN tbl_products p ON d.product_id = p.id 
+                    WHERE d.order_id = $order_id";
             $result = $this->conn->query($sql);
             
             $items = [];
             if ($result && $result->num_rows > 0) {
-                while($row = $result->fetch_assoc()) {
+                while ($row = $result->fetch_assoc()) {
                     $items[] = $row;
                 }
             }
@@ -153,7 +170,11 @@
             }
 
             // 3. Cập nhật trạng thái mới
-            $sql = "UPDATE tbl_orders SET status = '$status' WHERE id = $order_id";
+            if ($status == 'done') {
+                $sql = "UPDATE tbl_orders SET status = '$status', payment_status = 'paid' WHERE id = $order_id";
+            } else {
+                $sql = "UPDATE tbl_orders SET status = '$status' WHERE id = $order_id";
+            }
             return $this->conn->query($sql);
         }
         public function getOrderByID($id) {
@@ -180,9 +201,14 @@
         // }
         public function updateOrder($id, $status, $payment_status, $note) {
             $id = (int)$id;
-            $status = $this->conn->real_escape_string($status);
-            $payment_status = $this->conn->real_escape_string($payment_status);
+            $status = $this->conn->real_escape_string($status);  
             $note = $this->conn->real_escape_string($note);
+
+            if ($status == 'done') {
+                $payment_status = 'paid';
+            } else {
+                $payment_status = $this->conn->real_escape_string($payment_status);
+            }
             
             // 1. LẤY TRẠNG THÁI CŨ
             $sql_old = "SELECT status FROM tbl_orders WHERE id = $id";
@@ -355,6 +381,71 @@
                 }
             }
             return true; // An toàn: Kho dư sức đáp ứng
+        }
+
+        public function getOrdersByPhone($phone) {
+            $phone = $this->conn->real_escape_string($phone);
+            $sql = "SELECT * FROM tbl_orders WHERE customer_phone = '$phone' ORDER BY created_at DESC";
+            $result = $this->conn->query($sql);
+            
+            $orders = [];
+            if ($result && $result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $orders[] = $row;
+                }
+            }
+            return $orders;
+        }       
+        public function clientUpdateOrder($id, $name, $address, $note) {
+            $id = (int)$id;
+            $name = $this->conn->real_escape_string($name);
+            $address = $this->conn->real_escape_string($address);
+            $note = $this->conn->real_escape_string($note);
+
+            // Chỉ cho phép update khi đơn hàng ở trạng thái 'new' (chống hack qua URL)
+            $sql = "UPDATE tbl_orders SET 
+                    customer_name = '$name', 
+                    customer_address = '$address', 
+                    note = '$note' 
+                    WHERE id = $id AND status = 'new'";
+            return $this->conn->query($sql);
+        }
+
+        /**
+         * KHÁCH HÀNG TỰ HỦY ĐƠN
+         * Chỉ cho phép hủy khi đơn ở trạng thái 'new' (Mới đặt)
+         */
+        public function clientCancelOrder($order_id) {
+            $order_id = (int)$order_id;
+
+            // 1. Kiểm tra trạng thái hiện tại của đơn hàng
+            $sql_check = "SELECT status FROM tbl_orders WHERE id = $order_id LIMIT 1";
+            $res = $this->conn->query($sql_check);
+
+            if ($res && $res->num_rows > 0) {
+                $row = $res->fetch_assoc();
+                
+                // Chỉ cho hủy nếu đơn hàng vẫn đang ở trạng thái 'new'
+                if ($row['status'] == 'new') {
+                    
+                    // 2. Cập nhật trạng thái thành 'cancelled'
+                    $sql_update = "UPDATE tbl_orders SET status = 'cancelled' WHERE id = $order_id";
+                    
+                    if ($this->conn->query($sql_update)) {
+                        // 3. Gọi hàm trả lại số lượng sản phẩm về kho (Hàm private đã có sẵn trong class)
+                        $this->handleOrderStock($order_id, 'restore');
+                        
+                        return ['status' => true, 'msg' => 'Đã hủy đơn hàng thành công!'];
+                    } else {
+                        return ['status' => false, 'msg' => 'Lỗi hệ thống, không thể hủy đơn!'];
+                    }
+                    
+                } else {
+                    return ['status' => false, 'msg' => 'Không thể hủy! Đơn hàng này đã được shop xác nhận hoặc đang giao.'];
+                }
+            }
+            
+            return ['status' => false, 'msg' => 'Lỗi: Đơn hàng không tồn tại!'];
         }
     }
 ?>

@@ -1,0 +1,30 @@
+# 1. BẢO MẬT: CHỐNG NHÌN TRỘM THƯ MỤC
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # 2. ÉP BUỘC CHẠY HTTPS (Bảo mật SSL & tốt cho SEO)
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # 3. ÉP BỎ CHỮ WWW (Chỉ chạy diennangluongmattroimientay.com cho gọn)
+    RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+    RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+    # 4. CHUYỂN HƯỚNG VÀO THƯ MỤC PUBLIC
+    # Nếu đang truy cập admin, uploads, hoặc đã ở public rồi thì BỎ QUA
+    RewriteCond %{REQUEST_URI} !^/admin/
+    RewriteCond %{REQUEST_URI} !^/uploads/
+    RewriteCond %{REQUEST_URI} !^/public/
+    
+    # Các trường hợp còn lại: Đẩy ngầm vào thư mục public
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# 5. BẢO MẬT: CHẶN TRUY CẬP CÁC FILE NHẠY CẢM (File log, env...)
+<FilesMatch "\.(env|log|ini|json)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

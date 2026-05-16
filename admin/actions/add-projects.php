@@ -1,7 +1,11 @@
 <?php
-session_start();
-include('../../config/admin/constants.php');
+include('../../config/constants.php');
 include('../../classes/projects.php');
+include('../admin/auth.php'); 
+if (!isset($_SESSION['admin_id'])) {
+    http_response_code(403);
+    die(json_encode(['uploaded' => 0, 'error' => ['message' => 'Unauthorized']]));
+}
 
 $projectObj = new Project($conn);
 
@@ -22,6 +26,13 @@ if (isset($_POST['btn_add_project'])) {
     $image_name = '';
     if (isset($_FILES['image']['name']) && $_FILES['image']['name'] != "") {
         $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+        $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+        if (!in_array(strtolower($ext), $allowed)) {
+            $_SESSION['toast_message'] = "Chỉ cho phép ảnh jpg, png, webp!";
+            $_SESSION['toast_type'] = "error";
+            header("Location: ../index.php?page=manage-add-projects");
+            exit();
+        }
         // Đổi tên ảnh ngẫu nhiên để không bị trùng (VD: project_169999_abc.jpg)
         $image_name = "project_" . time() . "_" . substr(md5(rand()), 0, 8) . "." . $ext; 
         

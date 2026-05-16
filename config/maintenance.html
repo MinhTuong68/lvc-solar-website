@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="Referrer-Policy" content="no-referrer" />
+  <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), payment=(), usb=()" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'unsafe-inline' 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests;" />
+  <title>Website đang bảo trì</title>
+  <style>
+    :root {
+      --sun: #ffd166;
+      --orange: #ff9f1c;
+      --blue: #0b2545;
+      --cyan: #2ec4b6;
+      --white: #ffffff;
+      --glass: rgba(255, 255, 255, 0.14);
+      --border: rgba(255, 255, 255, 0.24);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100%;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--white);
+      background: #07172f;
+      overflow-x: hidden;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      background:
+        radial-gradient(circle at 15% 18%, rgba(255, 209, 102, 0.38), transparent 28%),
+        radial-gradient(circle at 82% 10%, rgba(46, 196, 182, 0.28), transparent 26%),
+        linear-gradient(135deg, #07172f 0%, #0b2545 42%, #123c69 100%);
+    }
+
+    .aurora {
+      position: fixed;
+      inset: -20%;
+      pointer-events: none;
+      background:
+        conic-gradient(from 180deg at 50% 50%, transparent, rgba(255, 209, 102, 0.22), transparent, rgba(46, 196, 182, 0.2), transparent);
+      filter: blur(70px);
+      animation: spin 16s linear infinite;
+      opacity: 0.9;
+      z-index: 0;
+    }
+
+    .grid {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.16;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.14) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.14) 1px, transparent 1px);
+      background-size: 52px 52px;
+      mask-image: linear-gradient(to bottom, transparent, black 15%, black 75%, transparent);
+      z-index: 0;
+    }
+
+    .shell {
+      width: min(1120px, 100%);
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .card, .visual {
+      border: 1px solid var(--border);
+      background: linear-gradient(145deg, rgba(255,255,255,0.16), rgba(255,255,255,0.07));
+      box-shadow: 0 30px 100px rgba(0, 0, 0, 0.36);
+      backdrop-filter: blur(24px);
+      border-radius: 34px;
+      overflow: hidden;
+    }
+
+    .card {
+      padding: clamp(30px, 5vw, 58px);
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    .badge {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(255, 209, 102, 0.15);
+      border: 1px solid rgba(255, 209, 102, 0.34);
+      color: #ffe8a3;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      margin-bottom: 28px;
+    }
+
+    .pulse {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sun);
+      box-shadow: 0 0 0 0 rgba(255, 209, 102, 0.72);
+      animation: pulse 1.8s infinite;
+    }
+
+    h1 {
+      font-size: clamp(42px, 6vw, 78px);
+      line-height: 0.94;
+      letter-spacing: -3px;
+      margin-bottom: 24px;
+    }
+
+    h1 span {
+      color: transparent;
+      background: linear-gradient(90deg, #fff5c7, var(--sun), var(--cyan));
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .lead {
+      font-size: clamp(18px, 2.2vw, 24px);
+      line-height: 1.55;
+      color: rgba(255,255,255,0.86);
+      max-width: 640px;
+      margin-bottom: 34px;
+    }
+
+    .info {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .info div {
+      padding: 18px 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.09);
+      border: 1px solid rgba(255,255,255,0.13);
+    }
+
+    .info strong {
+      display: block;
+      font-size: 22px;
+      color: #fff2b8;
+      margin-bottom: 4px;
+    }
+
+    .info small {
+      color: rgba(255,255,255,0.72);
+      line-height: 1.35;
+    }
+
+    .visual {
+      min-height: 600px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      isolation: isolate;
+    }
+
+    .sun {
+      position: absolute;
+      top: 64px;
+      right: 58px;
+      width: 154px;
+      height: 154px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff7b3 0%, #ffd166 48%, #ff9f1c 72%, transparent 73%);
+      box-shadow: 0 0 90px rgba(255, 209, 102, 0.9);
+      animation: float 5s ease-in-out infinite;
+    }
+
+    .ray {
+      position: absolute;
+      top: 141px;
+      right: 135px;
+      width: 430px;
+      height: 430px;
+      background: repeating-conic-gradient(from 0deg, rgba(255, 209, 102, 0.24) 0deg 5deg, transparent 5deg 18deg);
+      border-radius: 50%;
+      animation: spin 24s linear infinite;
+      z-index: -1;
+      opacity: 0.9;
+    }
+
+    .panel {
+      width: min(390px, 78%);
+      aspect-ratio: 1.25;
+      transform: perspective(800px) rotateX(58deg) rotateZ(-35deg);
+      border-radius: 24px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.24) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.24) 1px, transparent 1px),
+        linear-gradient(135deg, #112c57, #145a87 48%, #1db4aa);
+      background-size: 70px 70px, 70px 70px, 100% 100%;
+      box-shadow:
+        0 44px 80px rgba(0,0,0,0.42),
+        inset 0 0 0 2px rgba(255,255,255,0.2),
+        inset 0 0 70px rgba(46,196,182,0.3);
+      position: relative;
+      animation: panelFloat 4.8s ease-in-out infinite;
+    }
+
+    .panel::after {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-radius: 16px;
+      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.35) 42%, transparent 56%);
+      transform: translateX(-90%);
+      animation: shine 3.6s ease-in-out infinite;
+    }
+
+    .stand {
+      position: absolute;
+      bottom: 82px;
+      width: 180px;
+      height: 16px;
+      border-radius: 99px;
+      background: rgba(255,255,255,0.4);
+      box-shadow: 0 12px 34px rgba(0,0,0,0.4);
+    }
+
+    .stand::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 6px;
+      width: 16px;
+      height: 90px;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.34);
+    }
+
+    .secure {
+      position: absolute;
+      left: 28px;
+      bottom: 28px;
+      right: 28px;
+      padding: 18px;
+      border-radius: 24px;
+      background: rgba(7, 23, 47, 0.56);
+      border: 1px solid rgba(255,255,255,0.18);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: rgba(255,255,255,0.82);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .shield {
+      flex: 0 0 auto;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: rgba(46,196,182,0.18);
+      border: 1px solid rgba(46,196,182,0.4);
+    }
+
+    .footer {
+      position: absolute;
+      left: 40px;
+      right: 40px;
+      bottom: 24px;
+      color: rgba(255,255,255,0.52);
+      font-size: 13px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      70% { box-shadow: 0 0 0 14px rgba(255, 209, 102, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 209, 102, 0); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-18px) scale(1.04); }
+    }
+
+    @keyframes panelFloat {
+      0%, 100% { transform: perspective(800px) rotateX(58deg) rotateZ(-35deg) translateY(0); }
+      50% { transform: perspective(800px) rotateX(58deg) rotateZ(-35deg) translateY(-18px); }
+    }
+
+    @keyframes shine {
+      0%, 38% { transform: translateX(-100%); opacity: 0; }
+      48% { opacity: 1; }
+      78%, 100% { transform: translateX(100%); opacity: 0; }
+    }
+
+    @media (max-width: 900px) {
+      body { padding: 18px; }
+      .shell { grid-template-columns: 1fr; }
+      .card, .visual { min-height: auto; }
+      .visual { min-height: 480px; }
+      .info { grid-template-columns: 1fr; }
+      h1 { letter-spacing: -2px; }
+      .footer { position: static; margin-top: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="grid"></div>
+
+  <main class="shell" aria-label="Thông báo bảo trì website">
+    <section class="card">
+      <div class="badge"><span class="pulse"></span> Hệ thống đang được nâng cấp</div>
+      <h1>Website đang <span>bảo trì</span></h1>
+      <p class="lead">
+        Hiện tại công ty chúng tôi đang bảo trì website để nâng cấp tốc độ, bảo mật
+        và trải nghiệm mua sắm các thiết bị năng lượng mặt trời. Vui lòng truy cập lại sau.
+      </p>
+
+      <div class="info" aria-label="Thông tin nổi bật">
+        <div>
+          <strong>Solar</strong>
+          <small>Giải pháp điện mặt trời hiện đại</small>
+        </div>
+        <div>
+          <strong>Secure</strong>
+          <small>Trang tĩnh, hạn chế form và script ngoài</small>
+        </div>
+        <div>
+          <strong>Upgrade</strong>
+          <small>Tối ưu giao diện và hiệu năng</small>
+        </div>
+      </div>
+
+      <p class="footer">© Công ty thiết bị năng lượng mặt trời. Cảm ơn quý khách đã thông cảm.</p>
+    </section>
+
+    <section class="visual" aria-hidden="true">
+      <div class="ray"></div>
+      <div class="sun"></div>
+      <div class="panel"></div>
+      <div class="stand"></div>
+      <div class="secure">
+        <div class="shield">🛡️</div>
+        <div>
+          <strong>Bảo mật cơ bản đã bật</strong><br>
+          CSP, chặn nhúng iframe, chặn form gửi dữ liệu và hạn chế quyền trình duyệt.
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

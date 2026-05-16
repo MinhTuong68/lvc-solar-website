@@ -629,6 +629,8 @@ body {
     box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
 }
 
+.btn-print { background: var(--gray-200); border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+
 /* Chữ thông báo lỗi */
 .error-msg {
     color: #ef4444; /* Màu đỏ */
@@ -1849,3 +1851,395 @@ body {
     border-radius: 20px;
     font-size: 12px;
 }
+
+/* DETAIL SERVICE */
+    .lvc-srv-detail-wrapper { font-family: "Segoe UI", sans-serif; color: #1e293b; padding-bottom: 50px; }
+    .lvc-srv-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #e2e8f0; }
+    .lvc-srv-title { font-size: 1.6rem; font-weight: 800; color: #0b2447; margin: 0; }
+    
+    .lvc-srv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .lvc-srv-card { background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }
+    .lvc-srv-card-title { font-size: 1.1rem; font-weight: 700; color: #00875a; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 10px; }
+    
+    .lvc-srv-info-row { display: flex; margin-bottom: 16px; align-items: flex-start; }
+    .lvc-srv-info-label { width: 150px; font-weight: 600; color: #64748b; font-size: 0.95rem; }
+    .lvc-srv-info-value { flex: 1; font-weight: 500; color: #1e293b; font-size: 1rem; }
+    .lvc-srv-info-value.highlight { color: #ef4444; font-weight: 700; font-size: 1.1rem; }
+    
+    .lvc-srv-issue-box { background: #f8fafc; border-radius: 8px; padding: 20px; border: 1px solid #cbd5e1; margin-top: 25px; }
+    .lvc-srv-issue-box h4 { margin-top: 0; color: #0b2447; font-size: 1rem; margin-bottom: 10px; font-weight: 700; }
+    .lvc-srv-issue-box p { margin: 0; color: #475569; line-height: 1.6; white-space: pre-line; }
+
+    /* Badges */
+    .lvc-badge { padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+    .lvc-badge-new { background: #dbeafe; color: #1d4ed8; }
+    .lvc-badge-processing { background: #fef3c7; color: #b45309; }
+    .lvc-badge-completed { background: #d1fae5; color: #047857; }
+    .lvc-badge-cancelled { background: #fee2e2; color: #b91c1c; }
+
+    /* Action Buttons */
+    .lvc-srv-actions { display: flex; gap: 12px; margin-top: 30px; }
+    .lvc-btn { padding: 12px 24px; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; cursor: pointer; border: none; font-size: 0.95rem; }
+    .lvc-btn-back { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+    .lvc-btn-back:hover { background: #e2e8f0; }
+    .lvc-btn-call { background: #0b2447; color: #fff; }
+    .lvc-btn-call:hover { background: #19376d; color: #fff; }
+
+    /* DETAIL CONTACT */
+
+.lvc-dc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+
+.lvc-dc-title {
+    color: var(--navy);
+    margin-bottom: 5px;
+    font-size: 22px;
+}
+
+.lvc-dc-meta {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.lvc-dc-btn-back {
+    background: #f1f5f9;
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: #475569;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid #cbd5e1;
+    transition: 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.lvc-dc-btn-back:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.lvc-dc-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr; /* Chia 1 cột trái, 2 cột phải */
+    gap: 25px;
+}
+
+/* Đẩy 2 cột thành 1 hàng dọc khi lướt trên iPad/Điện thoại */
+@media (max-width: 1024px) {
+    .lvc-dc-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.lvc-dc-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.lvc-dc-card-left {
+    align-self: start;
+}
+
+.lvc-dc-card-right {
+    display: flex;
+    flex-direction: column;
+}
+
+.lvc-dc-card-head {
+    background: #f8fafc;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    font-weight: 700;
+    color: var(--navy);
+    font-size: 16px;
+}
+
+.lvc-dc-card-body {
+    padding: 20px;
+}
+
+.lvc-dc-info-item {
+    margin-bottom: 15px;
+}
+
+.lvc-dc-info-label {
+    display: block;
+    font-size: 12px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.lvc-dc-info-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.lvc-dc-info-value a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.lvc-dc-info-value a:hover {
+    text-decoration: underline;
+}
+
+.lvc-dc-highlight {
+    color: #0284c7;
+}
+
+.lvc-dc-normal {
+    font-size: 15px;
+    color: #475569;
+    font-weight: 500;
+}
+
+.lvc-dc-status-box {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px dashed #cbd5e1;
+}
+
+.lvc-dc-msg-head {
+    background: #fffbeb;
+    padding: 15px 20px;
+    border-bottom: 1px solid #fde68a;
+    font-weight: 700;
+    color: #d97706;
+    font-size: 16px;
+}
+
+.lvc-dc-msg-body {
+    padding: 25px;
+    flex: 1;
+}
+
+.lvc-dc-msg-content {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #334155;
+    min-height: 150px;
+    white-space: pre-wrap;
+}
+
+.lvc-dc-actions {
+    padding: 20px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.lvc-dc-btn {
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.lvc-dc-btn-call {
+    background: #0b2447;
+    color: white;
+}
+
+.lvc-dc-btn-call:hover {
+    background: #19376d;
+}
+
+.lvc-dc-btn-delete {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.lvc-dc-btn-delete:hover {
+    background: #fca5a5;
+    color: #b91c1c;
+}
+
+/* ================= QUẢN LÝ ĐÁNH GIÁ ================= */
+.star-filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.star-filter-btn {
+    padding: 8px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #fff;
+    color: #475569;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+.star-filter-btn:hover { background: #f8fafc; border-color: #94a3b8; }
+.star-filter-btn.active {
+    background: #fffbeb;
+    border-color: #f59e0b;
+    color: #d97706;
+}
+.star-filter-btn i.fa-star { color: #f59e0b; }
+.star-filter-btn.all-stars i.fa-star { color: #64748b; }
+
+.review-product-link {
+    color: #0b2447;
+    font-weight: 600;
+    text-decoration: none;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.review-product-link:hover { color: #0284c7; text-decoration: underline; }
+
+.report-badge {
+    display: inline-block;
+    background: #ef4444;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: help;
+}
+.review-content-box {
+    font-size: 14px;
+    max-width: 250px;
+}
+.bulk-delete-box {
+    background: #fee2e2;
+    border: 1px dashed #ef4444;
+    padding: 15px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.rv-table-wrapper {
+    background-color: var(--white, #ffffff);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    overflow-x: auto;
+}
+
+.rv-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.rv-table th, .rv-table td {
+    padding: 15px 10px;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.rv-table thead th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+}
+
+.rv-table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.rv-product-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.rv-product-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+}
+
+.rv-product-id { font-size: 12px; color: #64748b; margin-top: 4px; }
+.rv-customer-name { color: #1e293b; font-weight: 600; }
+.rv-customer-email { font-size: 13px; color: #475569; }
+.rv-review-date { font-size: 11px; color: #94a3b8; display: inline-block; margin-top: 4px; }
+
+.rv-star-rating { font-size: 14px; margin-bottom: 6px; }
+.rv-star-filled { color: #f59e0b; }
+.rv-star-empty { color: #cbd5e1; }
+
+.rv-has-img {
+    font-size: 12px;
+    color: #0369a1;
+    background: #e0f2fe;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 6px;
+}
+
+/* Các Badge (Nhãn) */
+.rv-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.rv-badge-success { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+.rv-badge-hidden { background-color: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+
+/* Nút bấm (Buttons) */
+.rv-action-group {
+    display: flex;
+    gap: 8px;
+}
+.rv-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.rv-btn-hide { background: #ffffff; color: #64748b; border: 1px solid #cbd5e1; }
+.rv-btn-hide:hover { background: #f1f5f9; color: #0f172a; }
+.rv-btn-show { background: #ffffff; color: #16a34a; border: 1px solid #bbf7d0; }
+.rv-btn-show:hover { background: #dcfce7; color: #15803d; }
+
+.rv-empty-state {
+    text-align: center;
+    padding: 50px 20px !important;
+    color: #64748b;
+}
+.rv-empty-state i { font-size: 40px; color: #cbd5e1; margin-bottom: 10px; }

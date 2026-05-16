@@ -17,7 +17,7 @@
                         <div class="footer-brand">
                             <a href="" class="logo" style="margin-bottom:16px">
                                 <div class="logo-icon">
-                                    <img class="logo-img-footer" src="../webctylvc/uploads/web/logo/lvc.jpg" alt="">
+                                    <img class="logo-img-footer" src="<?php echo ROOT_URL ?>uploads/web/logo/<?php echo $logo_file; ?>" alt="">
                                 </div>
                                 <div class="logo-text">
                                 <div class="brand">LVC <span>SOLAR</span></div>
@@ -26,10 +26,10 @@
                             </a>
                             <p class="footer-desc">Chuyên thiết kế, thi công và cung cấp vật tư năng lượng mặt trời chất lượng cao. Kiến tạo giá trị bền vững cho tương lai xanh của Việt Nam.</p>
                             <div class="footer-socials">
-                                <a href="#" class="social-btn"><i class="fa-brands fa-facebook-f"></i></a>
-                                <a href="#" class="social-btn"><i class="fa-brands fa-youtube"></i></a>
+                                <a href="<?php echo $settings['facebook_link'] ?>" class="social-btn"><i class="fa-brands fa-facebook-f"></i></a>
+                                <a href="<?php echo $settings['youtube_link'] ?>" class="social-btn"><i class="fa-brands fa-youtube"></i></a>
                                 <a href="#" class="social-btn"><i class="fa-brands fa-tiktok"></i></a>
-                                <a href="#" class="social-btn"><i class="fa-brands fa-zalo" style="font-style:normal;font-size:.7rem;font-weight:800">Z</i></a>
+                                <a href="<?php echo $settings['zalo_link'] ?>" class="social-btn"><i class="fa-brands fa-zalo" style="font-style:normal;font-size:.7rem;font-weight:800">Z</i></a>
                             </div>
                         </div>
 
@@ -48,10 +48,10 @@
                         <div class="footer-col">
                             <h4>Thông tin</h4>
                             <div class="footer-links">
-                                <a href="blog.php"><i class="fa-solid fa-chevron-right" style="font-size:.65rem;color:var(--amber)"></i> Blog & Kiến thức</a>
-                                <a href="projects.php"><i class="fa-solid fa-chevron-right" style="font-size:.65rem;color:var(--amber)"></i> Dự án tiêu biểu</a>
-                                <a href="products.php"><i class="fa-solid fa-chevron-right" style="font-size:.65rem;color:var(--amber)"></i> Vật tư & Sản phẩm</a>
-                                <a href="contact.php"><i class="fa-solid fa-chevron-right" style="font-size:.65rem;color:var(--amber)"></i> Liên hệ tư vấn</a>
+                                <a href="?page=news"><i class="fa-solid fa-chevron-right" style="font-size:.65rem;color:var(--amber)"></i> Blog & Kiến thức</a>
+                                <a href="?page=projects"><i class="fa-solid fa-chevron-right" style="font-size:.65rem;color:var(--amber)"></i> Dự án tiêu biểu</a>
+                                <a href="?page=products"><i class="fa-solid fa-chevron-right" style="font-size:.65rem;color:var(--amber)"></i> Vật tư & Sản phẩm</a>
+                                <a href="?page=contact"><i class="fa-solid fa-chevron-right" style="font-size:.65rem;color:var(--amber)"></i> Liên hệ tư vấn</a>
                                 <a href="#"><i class="fa-solid fa-chevron-right" style="font-size:.65rem;color:var(--amber)"></i> Chính sách bảo hành</a>
                             </div>
                         </div>
@@ -61,19 +61,19 @@
                             <h4>Liên hệ</h4>
                             <div class="footer-contact-item">
                                 <i class="fa-solid fa-location-dot ic"></i>
-                                <span><?= e($setting['address'] ?? '123 Đường Công Nghệ, TP. Bạc Liêu, Tỉnh Bạc Liêu') ?></span>
+                                <span><?= e($settings['address'] ?? 'Số 01, Đường Tôn Đức Thắng, Khóm 8, Phường 5, TP. Bạc Liêu, Tỉnh Bạc Liêu') ?></span>
                             </div>
                             <div class="footer-contact-item">
                                 <i class="fa-solid fa-phone ic"></i>
-                                <span><?= e($setting['hotline'] ?? '0912.345.678') ?></span>
+                                <span><?= e($settings['hotline'] ?? '0945 671 536') ?></span>
                             </div>
                             <div class="footer-contact-item">
                                 <i class="fa-solid fa-envelope ic"></i>
-                                <span><?= e($setting['email'] ?? 'tuongpm@ctylvc.com.vn') ?></span>
+                                <span><?= e($settings['email'] ?? 'vanchocomputer@gmail.com') ?></span>
                             </div>
                             <div class="footer-contact-item">
                                 <i class="fa-solid fa-clock ic"></i>
-                                <span>Thứ 2 – Thứ 7 · 8:00 – 17:30</span>
+                                <span>Thứ 2 – Thứ 7 · 7:30 – 17:30</span>
                             </div>
                         </div>
                     </div>
@@ -89,8 +89,9 @@
                 </div>
             </div>
         </footer>
+        <?php include('chatbot.php'); ?>
         <div class="floating-contact">
-            <a href="https://zalo.me/0912345678" target="_blank" class="contact-btn zalo-btn">
+            <a href="<?= e($settings['zalo_link']) ?>" target="_blank" class="contact-btn zalo-btn">
                 <div class="ring-circle"></div>
                 <div class="ring-circle-fill"></div>
                 <div class="icon-wrap">
@@ -98,13 +99,30 @@
                 </div>
             </a>
 
-            <a href="tel:0912345678" class="contact-btn phone-btn">
-                <div class="ring-circle"></div>
-                <div class="ring-circle-fill"></div>
-                <div class="icon-wrap">
-                    <i class="fa-solid fa-phone"></i>
-                </div>
-            </a>
+            <div class="contact-btn-phone">
+                <a href="tel:0945671536" class="contact-btn phone-btn">
+                    <div class="ring-circle"></div>
+                    <div class="ring-circle-fill"></div>
+                    <div class="icon-wrap">
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+                </a>
+            </div>
+            <div class="contact-btn-pc">    
+                <a href="tel:0945671536" class="pc-call-btn">
+                    <!-- Khối chứa Icon và Hiệu ứng vòng tròn tỏa ra -->
+                    <div class="pc-icon-container">
+                        <div class="pc-ring-circle"></div>
+                        <div class="pc-ring-fill"></div>
+                        <div class="pc-icon-wrap">
+                            <i class="fa-solid fa-phone"></i>
+                        </div>
+                    </div>
+                    <!-- Chữ số điện thoại -->
+                    <span class="pc-phone-text"><?= e($settings['hotline']) ?></span>
+                    <!-- <span class="pc-phone-text" data-phone="0945671536"></span> -->
+                </a>
+            </div>
         </div>
         
         <div id="globalLoading" class="global-loading-overlay">
@@ -132,5 +150,27 @@
         });
         </script>
         <script src="assets/js/add-product.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const menuBtn = document.querySelector('.mobile-menu-btn');
+                const navMenu = document.querySelector('.nav-menu');
+                const overlay = document.querySelector('.mobile-menu-overlay');
+
+                if (menuBtn && navMenu && overlay) {
+                    // Mở menu khi bấm nút 3 gạch
+                    menuBtn.addEventListener('click', function() {
+                        navMenu.classList.add('active');
+                        overlay.classList.add('active');
+                    });
+
+                    // Đóng menu khi chạm tay vào vùng nền đen mờ ở ngoài
+                    overlay.addEventListener('click', function() {
+                        navMenu.classList.remove('active');
+                        overlay.classList.remove('active');
+                    });
+                }
+            });
+        </script>
+        <script src="assets/js/home.js"></script>
     </body>
 </html>

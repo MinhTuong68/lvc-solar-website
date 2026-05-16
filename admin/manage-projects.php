@@ -5,8 +5,29 @@
     $status = isset($_GET['status']) ? $_GET['status'] : 'all';
     $current_search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-    // Lấy danh sách dự án (Class của bạn cần hỗ trợ lấy dữ liệu)
-    $allProjects = $project_obj->getAllProjects($status); 
+    $sql = "SELECT * FROM tbl_projects WHERE 1=1";
+
+    if ($status !== 'all' && $status !== '') {
+        $status_filter = (int)$status;
+        $sql .= " AND status = $status_filter";
+    }
+
+    if ($current_search !== '') {
+        $search_filter = mysqli_real_escape_string($conn, $current_search);
+        $sql .= " AND (name LIKE '%$search_filter%' OR client LIKE '%$search_filter%' OR location LIKE '%$search_filter%')";
+    }
+
+    // Sắp xếp: Nổi bật lên trước, mới nhất lên trước
+    $sql .= " ORDER BY is_featured DESC, id DESC";
+    
+    // Đẩy dữ liệu đã lọc vào biến $allProjects để vòng lặp bên dưới chạy bình thường
+    $res = mysqli_query($conn, $sql);
+    $allProjects = [];
+    if($res && mysqli_num_rows($res) > 0){
+        while($row = mysqli_fetch_assoc($res)) {
+            $allProjects[] = $row;
+        }
+    }
 
     if (isset($_GET['action']) && $_GET['action'] == 'toggle_status' && isset($_GET['id'])) {
         $project = (int)$_GET['id'];
@@ -88,16 +109,16 @@
                                 $check_prod->execute();
                                 $product_count = $check_prod->get_result()->fetch_row()[0];
 
-                                    $eye_icon = ($p['status'] == 1) ? 'fa-eye' : 'fa-eye-slash';
-                                    $badge_class = ($p['status'] == 1) ? 'status-active' : 'status-hidden';
-                                    $badge_text = ($p['status'] == 1) ? 'Hoạt động' : 'Tạm ẩn';
-                                    $status_html = '
-                                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-                                        <a href="index.php?page=manage-projects&action=toggle_status&id='.$p['id'].'&current='.$p['status'].'" style="color: #64748b; font-size: 1.1rem;" title="Đổi trạng thái">
-                                            <i class="fa-solid '.$eye_icon.'"></i>
-                                        </a>
-                                        <span class="status-badge '.$badge_class.'">'.$badge_text.'</span>
-                                    </div>';
+                                $eye_icon = ($p['status'] == 1) ? 'fa-eye' : 'fa-eye-slash';
+                                $badge_class = ($p['status'] == 1) ? 'status-active' : 'status-hidden';
+                                $badge_text = ($p['status'] == 1) ? 'Hoạt động' : 'Tạm ẩn';
+                                $status_html = '
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                                    <a href="index.php?page=manage-projects&action=toggle_status&id='.$p['id'].'&current='.$p['status'].'" style="color: #64748b; font-size: 1.1rem;" title="Đổi trạng thái">
+                                        <i class="fa-solid '.$eye_icon.'"></i>
+                                    </a>
+                                    <span class="status-badge '.$badge_class.'">'.$badge_text.'</span>
+                                </div>';
                                 ?>  
                                     <tr>
                                         <td>#<?php echo $stt++ ?></td>
@@ -137,8 +158,8 @@
                                        <td class="text-center"><?= $status_html ?></td>
                                         <td class="text-center">
                                             <div class="action-btns">
-                                                <a href="#" class="btn-icon btn-edit-icon" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></a>
-                                                <a href="actions/delete.php?type=brand&id=<?= $brand['id'] ?>" class="btn-icon btn-delete-icon" title="Xóa" onclick="event.preventDefault(); let urlXoa = this.href; openModal('Xác nhận xóa thương hiệu?', 'Bạn có chắc chắn muốn xóa thương hiệu này không? Toàn bộ dữ liệu và hình ảnh logo của thương hiệu sẽ bị xóa vĩnh viễn khỏi hệ thống!', 'fa-solid fa-trash', 'Xóa thương hiệu', function() { window.location.href = urlXoa; })">
+                                                <a href="index.php?page=edit-project&id=<?= $p['id']  ?>" class="btn-icon btn-edit-icon" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></a>
+                                                <a href="actions/delete-project.php?type=project&id=<?= $p['id'] ?>" class="btn-icon btn-delete-icon" title="Xóa" onclick="event.preventDefault(); let urlXoa = this.href; openModal('Xác nhận xóa dự án?', 'Bạn có chắc chắn muốn xóa dự án này không? Toàn bộ dữ liệu và hình ảnh logo của dự án sẽ bị xóa vĩnh viễn khỏi hệ thống!', 'fa-solid fa-trash', 'Xóa dự án', function() { window.location.href = urlXoa; })">
                                                     <i class="fa-solid fa-trash"></i>
                                                 </a>
                                             </div>        
@@ -147,7 +168,7 @@
                                 <?php
                             }
                         }else {
-                        echo "<tr><td colspan='6' style='text-align:center; padding: 40px; color: #64748b;'><i class='fa-solid fa-folder-open' style='font-size: 40px; color: #cbd5e1; margin-bottom: 10px; display: block;'></i>Chưa có dự án nào.</td></tr>";
+                        echo "<tr><td colspan='8' style='text-align:center; padding: 40px; color: #64748b;'><i class='fa-solid fa-folder-open' style='font-size: 40px; color: #cbd5e1; margin-bottom: 10px; display: block;'></i>Chưa có dự án nào.</td></tr>";
                     }
                     ?>
                 </tbody>

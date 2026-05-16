@@ -18,35 +18,40 @@
                 <p style="margin-bottom:2rem">Đội ngũ kỹ thuật viên và tư vấn viên của LVC Solar luôn sẵn sàng hỗ trợ bạn. Liên hệ ngay để được tư vấn giải pháp điện mặt trời phù hợp nhất.</p>
                 <div class="contact-item">
                     <div class="icon"><i class="fa-solid fa-location-dot"></i></div>
-                    <div><h4>Trụ sở chính</h4><p>123 Đường Công Nghệ, TP. Bạc Liêu, Tỉnh Bạc Liêu</p></div>
+                    <div><h4>Trụ sở chính</h4><p><?php echo nl2br($settings['address']); ?></p></div>
                 </div>
                 <div class="contact-item">
                     <div class="icon"><i class="fa-solid fa-phone"></i></div>
-                    <div><h4>Hotline kinh doanh</h4><p>0912.345.678 (Mr. Tường — 8h–17h30)</p></div>
+                    <div><h4>Hotline kinh doanh</h4><p>0941 111 152</p></div>
                 </div>
                 <div class="contact-item">
                     <div class="icon"><i class="fa-solid fa-wrench"></i></div>
-                    <div><h4>Hotline kỹ thuật</h4><p>0987.654.321 (Hỗ trợ 24/7)</p></div>
+                    <div><h4>Hotline kỹ thuật</h4><p><?php echo $settings['hotline'] ?> (Hỗ trợ 24/7)</p></div>
                 </div>
                  <div class="contact-item">
                     <div class="icon"><i class="fa-solid fa-envelope"></i></div>
-                    <div><h4>Email</h4><p>tuongpm@ctylvc.com.vn</p></div>
+                    <div><h4>Email</h4><p><?php echo $settings['email'] ?></p></div>
                 </div>
                 <div class="contact-item">
                     <div class="icon"><i class="fa-solid fa-clock"></i></div>
-                    <div><h4>Giờ làm việc</h4><p>Thứ 2 – Thứ 7: 8:00 – 17:30<br><span style="font-size:.85rem;color:var(--gray-400)">Chủ nhật: Chỉ hỗ trợ khẩn cấp</span></p></div>
+                    <div><h4>Giờ làm việc</h4><p>Thứ 2 – Thứ 7: 7:00 – 17:30<br><span style="font-size:.85rem;color:var(--gray-400)">Chủ nhật: Chỉ hỗ trợ khẩn cấp</span></p></div>
+                </div>
+                <div class="contact-item">
+                    <div class="icon"><i class="fa-solid fa-qrcode"></i></div>
+                    <div><h4>Mã số thuế doanh nghiệp</h4><p>1900692997</p></div>
                 </div>
 
                  <!-- Google Map embed placeholder -->
                 <div style="margin-top:24px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--gray-200)">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31443.02753649831!2d105.71833!3d9.29416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31a0a7a55b6ea7c5%3A0x4a5c3d3e0d3e0f0!2sBac%20Lieu!5e0!3m2!1svi!2svn!4v1700000000000" width="100%" height="220" style="border:0" allowfullscreen="" loading="lazy"></iframe>
+                    <iframe src="https://maps.google.com/maps?q=9.293128,105.7411339&z=18&output=embed" width="100%" height="220" style="border:0" allowfullscreen="" loading="lazy"></iframe>
                 </div>
             </div>
 
-            <div class="contact-form">
+            <div class="contact-form" id="contact-form">
                 <h3>Gửi Tin Nhắn Cho Chúng Tôi</h3>
                 <div id="flash-msg"></div>
-                <form id="contact-form">
+                <form action="actions/add-contact.php" method="POST" onsubmit="showLoading('Đang gửi yêu cầu, vui lòng đợi...');">
+                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                     <div class="form-row">
                         <div class="form-group">
                             <label>Họ và tên <span>*</span></label>
@@ -76,7 +81,7 @@
                         <label>Nội dung <span>*</span></label>
                         <textarea name="message" class="form-control" rows="5" placeholder="Mô tả chi tiết nhu cầu của bạn để chúng tôi có thể tư vấn tốt nhất..." required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block btn-lg">
+                    <button type="submit" name="btn_send_contact" class="btn btn-primary btn-block btn-lg">
                         <i class="fa-solid fa-paper-plane"></i> Gửi tin nhắn
                     </button>
                 </form>

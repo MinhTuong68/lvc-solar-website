@@ -50,7 +50,7 @@
             <table class="cs-table">
                 <thead>
                     <tr>
-                        <th>Mã ĐH / Ngày đặt</th>
+                        <th>Mã KH / Ngày đặt</th>
                         <th>Khách hàng</th>
                         <th>Tổng tiền</th>
                         <th>Thanh toán</th>
@@ -78,7 +78,7 @@
                                 ?>
                                 <tr>
                                     <td>
-                                        <div style="font-weight: 700; color: var(--navy);">ORD-<?= htmlspecialchars($order['id']) ?></div>
+                                        <div style="font-weight: 700; color: var(--navy);"><?= htmlspecialchars($order['order_code']) ?></div>
                                         <div style="font-size: 13px; color: #64748b; margin-top: 4px;"><?= $formatted_date ?></div>
                                     </td>
                                     <td>

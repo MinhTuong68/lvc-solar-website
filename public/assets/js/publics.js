@@ -12,9 +12,10 @@ function showToast(message, type = 'success') {
     // 3. Bỏ icon, nội dung chữ và thanh chạy progress vào trong
     toast.innerHTML = `
         <i class="${iconClass} toast-icon"></i>
-        <span class="toast-text">${message}</span>
+        <span class="toast-text"></span>
         <div class="toast-progress"></div>
     `;
+    toast.querySelector('.toast-text').textContent = message;
 
     // 4. Đưa thông báo lên màn hình
     container.appendChild(toast);
@@ -105,6 +106,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const formData = new FormData();
             formData.append('product_id', productId);
             formData.append('quantity', 1);
+            formData.append('csrf_token', document.querySelector('meta[name="csrf-token"]')?.content || '');
 
             // Gửi AJAX ngầm đến file add_cart.php
             fetch('actions/add-cart.php', {
@@ -117,14 +119,16 @@ document.addEventListener("DOMContentLoaded", function() {
                     // Cập nhật con số đỏ trên icon giỏ hàng Header
                     const badge = document.getElementById('cart-badge-count');
                     if(badge) {
-                        badge.innerText = data.total_items;
+                        badge.innerText = data.new_items;
                         // Thêm hiệu ứng nảy nhẹ cho đẹp
+                        badge.style.display = '';
                         badge.style.transform = 'scale(1.5)';
                         setTimeout(() => badge.style.transform = 'scale(1)', 200);
                     }
                     
                     // Bạn có thể đổi Alert này thành Toast (thông báo góc màn hình) cho xịn hơn
                     showToast('Đã thêm sản phẩm vào giỏ hàng!', 'success');
+                    updateCartDropdown(data.cart_items, data.root_url);
                 }
                 else if (data.status === 'error') {
                     showToast(data.message, 'error');
@@ -183,6 +187,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         const formData = new FormData();
                         formData.append('product_id', productId);
                         formData.append('action', 'remove');
+                        formData.append('csrf_token', document.querySelector('meta[name="csrf-token"]')?.content || '');
                         
                         fetch('actions/update-cart.php', { method: 'POST', body: formData })
                         .then(res => res.json())
@@ -244,6 +249,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 formData.append('product_id', productId);
                 formData.append('action', 'update');
                 formData.append('quantity', currentQty);
+                formData.append('csrf_token', document.querySelector('meta[name="csrf-token"]')?.content || '');
+                
 
                 fetch('actions/update-cart.php', { method: 'POST', body: formData })
                 .then(res => res.json())
@@ -265,5 +272,115 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }, { threshold: 0.1 });
     document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+    document.querySelectorAll('.animate-on-scroll-bottomtotop').forEach(el => observer.observe(el));
+
+
+    const hotSaleSlider = document.querySelector('.hot-sale-slider');
+    if (!hotSaleSlider) return; // Không có slider thì bỏ qua, không báo lỗi
+
+    const cards = hotSaleSlider.querySelectorAll('.hot-sale-card');
+    if (cards.length === 0) return;
+
+    let isHovered = false;
+    let direction = 1; // 1: Tiến sang phải, -1: Lùi sang trái
+    
+    // 1. Tạm dừng khi khách rê chuột hoặc chạm tay
+    hotSaleSlider.addEventListener('mouseenter', () => isHovered = true);
+    hotSaleSlider.addEventListener('mouseleave', () => isHovered = false);
+    hotSaleSlider.addEventListener('touchstart', () => isHovered = true);
+    hotSaleSlider.addEventListener('touchend', () => {
+        // Khách buông tay ra, đợi 2 giây sau mới cho trượt tiếp
+        setTimeout(() => { isHovered = false; }, 2000);
+    });
+
+    // 2. Logic động cơ: Cuộn đúng 1 ô
+    function stepScroll() {
+        if (isHovered) return; // Khách đang xem thì đứng im
+
+        // Chiều rộng 1 ô + khoảng trống gap (20px)
+        const cardWidth = cards[0].offsetWidth + 20; 
+        const maxScroll = hotSaleSlider.scrollWidth - hotSaleSlider.clientWidth;
+
+        // Xử lý đụng tường: Đụng phải thì lùi, đụng trái thì tiến
+        if (direction === 1 && hotSaleSlider.scrollLeft >= maxScroll - 5) {
+            direction = -1; // Quay xe sang trái
+        } else if (direction === -1 && hotSaleSlider.scrollLeft <= 5) {
+            direction = 1;  // Quay xe sang phải
+        }
+
+        // Lệnh trượt đi 1 đoạn đúng bằng 1 ô (behavior: 'smooth' giúp trượt mượt)
+        hotSaleSlider.scrollBy({
+            left: direction * cardWidth,
+            behavior: 'smooth'
+        });
+    }
+
+    // 3. Hẹn giờ: Cứ đúng 2.5 giây (2500ms) thì tự động trượt 1 lần
+    setInterval(stepScroll, 2500);
+
 });
 
+//home sale
+function start24hCountdown() {
+    function updateClock() {
+        const now = new Date();
+        // Thiết lập thời điểm kết thúc là 24:00:00 tối nay (tức 00:00:00 sáng mai)
+        const midnight = new Date();
+        midnight.setHours(24, 0, 0, 0);
+
+        const diff = midnight - now;
+
+        if (diff <= 0) {
+            // Nếu hết thời gian, reset lại (logic sẽ tự chạy lại vì midnight mới sẽ là 24h tiếp theo)
+            location.reload(); 
+        }
+
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((diff / 1000 / 60) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+
+        document.getElementById("hours").innerText = h < 10 ? "0" + h : h;
+        document.getElementById("minutes").innerText = m < 10 ? "0" + m : m;
+        document.getElementById("seconds").innerText = s < 10 ? "0" + s : s;
+    }
+
+    updateClock(); // Chạy ngay lập tức
+    setInterval(updateClock, 1000); // Cập nhật mỗi giây
+}
+
+// Kích hoạt khi trang web load xong
+document.addEventListener("DOMContentLoaded", start24hCountdown);
+
+
+function updateCartDropdown(items, rootUrl) {
+    const itemsBox = document.querySelector('.cdp-items');
+    if (!itemsBox) return;
+
+    if (!items || items.length === 0) {
+        itemsBox.innerHTML = `<div class="cdp-empty"><i class="fa-solid fa-box-open"></i><p>Giỏ hàng trống</p></div>`;
+        return;
+    }
+
+    let html = '';
+    let total = 0;
+    items.forEach(item => {
+        const sub = item.price * item.quantity;
+        total += sub;
+        html += `
+        <div class="cdp-item">
+            <img src="${rootUrl}uploads/products/images/${item.image}" 
+                 onerror="this.src='${rootUrl}uploads/web/default.jpg'" 
+                 alt="${item.name}">
+            <div class="cdp-item-info">
+                <div class="cdp-item-name">${item.name}</div>
+                <div class="cdp-item-qty-price">
+                    x${item.quantity} &nbsp;·&nbsp;
+                    <span class="cdp-item-price">${sub.toLocaleString('vi-VN')}đ</span>
+                </div>
+            </div>
+        </div>`;
+    });
+
+    html += `<div class="cdp-total"><span>Tổng cộng:</span><strong>${total.toLocaleString('vi-VN')}đ</strong></div>`;
+    itemsBox.innerHTML = html;
+}

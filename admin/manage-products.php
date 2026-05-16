@@ -12,6 +12,7 @@
     $listProducts = $productManager->getAllProducts();
 
     if (isset($_GET['action']) && $_GET['action'] == 'toggle_status' && isset($_GET['id'])) {
+        
         $product_id = (int)$_GET['id'];
         $current_status = (int)$_GET['current'];
     
@@ -31,6 +32,51 @@
         header("Location: index.php?page=manage-products");
         exit();
     }
+
+    $search         = isset($_GET['q']) ? trim($_GET['q']) : '';
+    $filter_cat     = isset($_GET['category_id']) ? $_GET['category_id'] : '';
+    $filter_brand   = isset($_GET['brand_id']) ? $_GET['brand_id'] : '';
+    $filter_status  = isset($_GET['status']) ? $_GET['status'] : '';
+
+    if ($search !== '' || $filter_cat !== '' || $filter_brand !== '' || $filter_status !== '') {
+        
+        $filteredProducts = [];
+        
+        foreach ($listProducts as $p) {
+            $is_match = true;
+
+            if ($search !== '') {
+                if (stripos($p['name'], $search) === false && stripos($p['slug'], $search) === false) {
+                    $is_match = false; 
+                }
+            }
+
+            if ($filter_cat !== '' && $p['category_id'] != $filter_cat) {
+                $is_match = false;
+            }
+
+            if ($filter_brand !== '' && $p['brand_id'] != $filter_brand) {
+                $is_match = false;
+            }
+
+            if ($filter_status !== '' && $p['status'] != $filter_status) {
+                $is_match = false;
+            }
+
+            if ($is_match == true) {
+                $filteredProducts[] = $p;
+            }
+        }
+        
+        $listProducts = $filteredProducts; 
+    }
+    $limit = 20;
+    $current_p = isset($_GET['p']) ? (int)$_GET['p'] : 1;
+    if ($current_p < 1) $current_p = 1;
+    $total = count($listProducts);
+    $total_pages = ceil($total / $limit);
+    $offset = ($current_p - 1) * $limit;
+    $listProducts = array_slice($listProducts, $offset, $limit);
 ?>
 <div class="wrapper">
     <div class="page-header">
@@ -42,47 +88,60 @@
             <i class="fa-solid fa-plus"></i> Thêm sản phẩm mới
         </a>
 
-        <div class="toolbar-right">
+        <form method="GET" action="" class="toolbar-right">
+            <input type="hidden" name="page" value="manage-products">
             <div class="filter-group">
                 <label>Lọc danh mục</label>
-                <select class="form-control">
-                    <option>tất cả</option>
-                    <option>Tấm pin</option>
-                    <option>Biến tần</option>
-                    <option>Pin lưu trữ</option>
-                    <option>Phụ kiện & Khung giá đỡ</option>
+                <select name="category_id" class="form-control" onchange="this.form.submit()">
+                    <option value="">Tất cả danh mục</option>
+                    <?php 
+                    // Kiểm tra xem trên URL người dùng có đang chọn danh mục nào không
+                    $selected_cat = isset($_GET['category_id']) ? $_GET['category_id'] : '';
+                    
+                    if (!empty($listCategories)) {
+                        foreach ($listCategories as $cat) {
+                            // Nếu đang chọn đúng danh mục này thì in thêm thuộc tính 'selected' để giữ nguyên
+                            $selected = ($cat['id'] == $selected_cat) ? 'selected' : '';
+                            echo "<option value='{$cat['id']}' {$selected}>{$cat['name']}</option>";
+                        }
+                    }
+                    ?>
                 </select>
             </div>
 
             <div class="filter-group">
                 <label>Lọc thương hiệu</label>
-                <select class="form-control">
-                    <option>Tất cả</option>
-                    <option>Canadian Solar</option>
-                    <option>Jinko Solar</option>
-                    <option>AE Solar</option>
-                    <option>Longi Solar</option>
-                    <option>Trina Solar</option>
-                    <option>Growatt</option>
-                    <option>Huawei</option>
-                    <option>Deye</option>
-                    <option>SMA</option>
+                <select name="brand_id" class="form-control" onchange="this.form.submit()">
+                    <option value="">Tất cả thương hiệu</option>
+                    <?php 
+                    // Kiểm tra xem trên URL người dùng có đang chọn thương hiệu nào không
+                    $selected_brand = isset($_GET['brand_id']) ? $_GET['brand_id'] : '';
+                    
+                    if (!empty($listBrands)) {
+                        foreach ($listBrands as $brand) {
+                            $selected = ($brand['id'] == $selected_brand) ? 'selected' : '';
+                            echo "<option value='{$brand['id']}' {$selected}>{$brand['name']}</option>";
+                        }
+                    }
+                    ?>
                 </select>
             </div>
 
             <div class="filter-group">
                 <label>Trạng thái</label>
-                <select class="form-control">
-                    <option>Đang bán</option>
-                    <option>Ẩn</option>
+                <select name="status" class="form-control" onchange="this.form.submit()">
+                    <?php $selected_status = isset($_GET['status']) ? $_GET['status'] : ''; ?>
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="1" <?= ($selected_status === '1') ? 'selected' : '' ?>>Đang bán (Hoạt động)</option>
+                    <option value="0" <?= ($selected_status === '0') ? 'selected' : '' ?>>Đã ẩn</option>
                 </select>
             </div>
 
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                <input type="text" class="form-control" placeholder="Nhập tên sản phẩm hoặc mã SP...">
+                <input type="text" class="form-control" name="q" value="<?= htmlspecialchars($search) ?>" placeholder="Nhập tên sản phẩm hoặc mã SP...">
             </div>
-        </div>
+        </form>
     </div><br><br>
     <div class="form-panel-add" style="background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; padding: 0;">
         <table class="data-table-products">
@@ -221,12 +280,23 @@
                 ?>
             </tbody>
         </table>  
+        <?php
+            $query_string = $_GET;
+            unset($query_string['p']);
+            $base_url = '?' . http_build_query($query_string) . '&p=';
+        ?>
         <div class="pagination-container">
-            <span class="page-info">(1/1 trang)</span>
+            <span class="page-info">(<?= $current_p ?>/<?= $total_pages ?> trang)</span>
             <div class="pagination">
-                <a href="#" class="page-link disabled"><i class="fa-solid fa-angles-left"></i></a>
-                <a href="#" class="page-link active">1</a>
-                <a href="#" class="page-link disabled"><i class="fa-solid fa-angles-right"></i></a>
+                <a href="<?= $base_url.(($current_p>1)?$current_p-1:1) ?>" class="page-link <?= $current_p<=1?'disabled':'' ?>">
+                    <i class="fa-solid fa-angles-left"></i>
+                </a>
+                <?php for($i=1;$i<=$total_pages;$i++): ?>
+                    <a href="<?= $base_url.$i ?>" class="page-link <?= $current_p==$i?'active':'' ?>"><?= $i ?></a>
+                <?php endfor; ?>
+                <a href="<?= $base_url.(($current_p<$total_pages)?$current_p+1:$total_pages) ?>" class="page-link <?= $current_p>=$total_pages?'disabled':'' ?>">
+                    <i class="fa-solid fa-angles-right"></i>
+                </a>
             </div>
         </div><br>
     </div>

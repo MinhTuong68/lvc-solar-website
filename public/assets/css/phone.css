@@ -1,0 +1,954 @@
+/* =========================================
+   1. MÀN HÌNH TABLET NGANG (MAX 1024PX)
+========================================= */
+@media (max-width: 1024px) {
+    .hot-sale-card { flex: 0 0 calc(100% / 3 - 15px); } 
+    .home-project-grid { grid-template-columns: repeat(2, 1fr); } /* Tablet: 2 cột */
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .why-grid { grid-template-columns: 1fr; }
+}
+
+/* =========================================
+   2. MÀN HÌNH TABLET DỌC / ĐIỆN THOẠI (MAX 992PX)
+========================================= */
+@media (max-width: 992px) {
+    /* --- GIAO DIỆN CHUNG (HEADER & MENU TRƯỢT) --- */
+    .header {
+        z-index: 1000 !important; /* Đảm bảo cao hơn overlay để bấm được link */
+    }
+    /* 1. Nút 3 gạch (Mobile Menu Button) */
+    .mobile-menu-btn {
+        display: block !important; 
+        font-size: 24px;
+        color: var(--navy); /* Đổi thành màu Navy đậm để nổi bật trên nền trắng */
+        cursor: pointer;
+        margin-right: 10px;
+        z-index: 1001;
+    }
+
+    /* 2. Fix Header để hiện lại icon Giỏ hàng & Lịch sử */
+    .header-inner {
+        display: flex !important;
+        justify-content: space-between !important; /* Đẩy Logo giữa, Icon 2 bên */
+        align-items: center !important;
+        padding: 10px 0;
+    }
+    /* HIỆN LẠI CỤM ICON */
+    .header-actions { 
+        display: flex !important; 
+        gap: 10px;
+        align-items: center;
+    }
+
+    /* Ẩn nút "Đặt lịch" chữ để nhường chỗ cho icon */
+    .header-actions .btn-primary {
+        display: none !important;
+    }
+
+    /* Tinh chỉnh kích thước icon trên mobile cho đẹp */
+    .header-actions .action-btn {
+        font-size: 20px !important;
+        padding: 5px !important;
+    }
+
+    .header-actions .cart-badge {
+        top: -5px !important;
+        right: -5px !important;
+        font-size: 10px !important;
+    }
+
+    .order-btn{
+        display: none;
+    }
+
+    /* 3. Biến thanh Menu ngang thành Bảng trượt từ trái sang */
+    .nav-menu {
+        position: fixed !important;
+        top: 0;
+        left: -320px; 
+        width: 280px; 
+        height: 100vh;
+        background: #ffffff;
+        display: flex !important;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 60px 20px 30px 20px; /* Chừa khoảng trống trên đầu */
+        z-index: 999999;
+        box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+        transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .nav-menu.active { left: 0; }
+
+    .nav-menu a {
+        display: block;
+        width: 100%;
+        padding: 15px 0;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--navy);
+        text-decoration: none;
+    }
+    .nav-menu a.active { color: var(--green); }
+    /* 4. Lớp nền đen mờ (Overlay) */
+    .mobile-menu-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+
+        z-index: 999; 
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    .mobile-menu-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    .topbar { display: none !important; }
+
+    .tagline{
+        display: none;
+    }
+    /* 5. TỐI ƯU TRANG CHỦ (HOME.PHP) CHO MOBILE */
+    .home-project-grid, 
+    .products-data-grid, 
+    .news-grid,
+    .services-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important; /* Ép về 1 cột */
+        gap: 20px !important;
+    }
+    .grid-8 { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(1,1fr); gap: 24px; }
+    .section_slider { padding: 10px; background: var(--white); }
+    .header-actions{
+        margin-left: 20px;
+    }
+
+    /* --- TRANG CHỦ (HOME) --- */
+    .cat-grid {
+    padding: 10px;
+    }
+    .cat-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 140px;
+        height: 70px; /* Bề ngang và dọc bằng nhau để tạo ô vuông */
+        background: var(--white);
+        border-radius: 16px; /* Bo góc mềm mại cho hiện đại */
+        box-shadow: 0 4px 15px rgba(11,36,71,0.06); /* Bóng đổ xám mờ */
+        border: 1px solid var(--gray-200);
+        text-decoration: none;
+        transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+        padding: 10px;
+        text-align: center;
+    }
+
+    /* =========================================
+    GIAO DIỆN TRANG SẢN PHẨM (PRODUCTS.PHP) TRÊN ĐIỆN THOẠI
+    ========================================= */
+
+    /* 1. Xếp dọc thanh Lọc (Aside) và Khung chứa sản phẩm */
+    .products-grid-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 20px !important;
+    }
+
+    /* Đảm bảo cột bộ lọc và cột sản phẩm bung full 100% chiều ngang màn hình */
+    .products-grid-layout > aside,
+    .products-grid-layout > div {
+        width: 100% !important;
+    }
+
+    /* 2. Căn chỉnh lại thanh Toolbar (Số lượng tìm thấy & Nút sắp xếp) */
+    .products-toolbar {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 15px !important;
+        padding: 15px !important;
+    }
+    .toolbar-sort-group {
+        width: 100% !important;
+        justify-content: space-between !important;
+    }
+
+    /* 3. Lưới sản phẩm: Chia làm 2 cột (Giống Shopee trên điện thoại) */
+    .products-data-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important; /* Nếu muốn hiển thị 1 cột to, đổi 'repeat(2, 1fr)' thành '1fr' */
+        gap: 10px !important;
+    }
+
+    /* 4. Tinh chỉnh lại Card sản phẩm cho nhỏ gọn, vừa với màn hình 2 cột */
+    .products-data-grid .product-img-wrap {
+        height: 160px !important; /* Ép chiều cao ảnh để các thẻ không bị thò thụt */
+    }
+    .products-data-grid .product-body {
+        padding: 10px !important;
+    }
+    .products-data-grid .product-name {
+        font-size: 0.85rem !important; /* Chữ nhỏ lại một chút cho đỡ rớt dòng */
+        margin-bottom: 5px !important;
+    }
+    .products-data-grid .product-price {
+        font-size: 0.95rem !important;
+    }
+    .products-data-grid .btn-sm {
+        padding: 5px 10px !important;
+        font-size: 0.8rem !important;
+    }
+}
+
+@media (max-width: 1024px) {
+    .abt-hero-stats { grid-template-columns:repeat(2,1fr); }
+    .abt-mvv-grid { grid-template-columns:1fr; max-width:600px;margin:0 auto; }
+    .abt-story-grid { grid-template-columns:1fr; }
+    .abt-story-img-wrap { max-width:500px; }
+    .abt-story-badge { right:20px; }
+    .abt-why-grid { grid-template-columns:repeat(2,1fr); }
+    .abt-brands-grid { grid-template-columns:repeat(2,1fr); }
+    .abt-commit-inner { grid-template-columns:1fr; }
+    .abt-contact-grid { grid-template-columns:repeat(2,1fr); }
+    /* =========================================
+       HIỆN LẠI & CHỈNH FORM YÊU CẦU BÁO GIÁ (HERO CARD)
+    ========================================= */
+    .hero-grid {
+        grid-template-columns: 1fr !important; /* Ép phần chữ và form xếp thành 1 cột dọc thẳng xuống */
+        gap: 30px !important;
+    }
+    
+    .hero-card { 
+        display: block !important; /* ÉP HIỂN THỊ LẠI FORM, XÓA BỎ LỆNH ẨN */
+        padding: 20px !important; /* Thu nhỏ viền cho gọn trên điện thoại */
+        border-radius: 12px !important; 
+    }
+    
+    .hero-card h3 { 
+        font-size: 1.1rem !important; 
+        margin-bottom: 15px !important; 
+    }
+    
+    .hero-form-group { 
+        margin-bottom: 12px !important; 
+    }
+    
+    .hero-form-group input,
+    .hero-form-group select,
+    .hero-form-group textarea { 
+        padding: 10px 14px !important; 
+        font-size: 0.95rem !important; 
+    }
+    
+    .hero-form-group textarea { 
+        height: 65px !important; /* Lùn bớt ô nhập nội dung để không chiếm hết màn hình */
+    }
+    .contact-btn-pc {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .abt-hero-title { font-size:2.1rem; }
+    .abt-hero-stats { grid-template-columns:repeat(2,1fr); }
+    .abt-timeline::before { left:20px; }
+    .abt-timeline-item { grid-template-columns:auto 1fr;grid-template-rows:auto auto; }
+    .abt-timeline-year { grid-column:2;grid-row:1;font-size:1.1rem;text-align:left !important;order:unset !important; }
+    .abt-timeline-dot { grid-column:1;grid-row:1; }
+    .abt-timeline-card { grid-column:2;grid-row:2;border-left:3px solid #0A7C59 !important;border-right:none !important;text-align:left !important; }
+    .abt-why-grid { grid-template-columns:1fr; }
+    .abt-brands-grid { grid-template-columns:repeat(2,1fr); }
+    .abt-contact-grid { grid-template-columns:1fr; }
+    .abt-cta-trust { gap:14px; }
+
+    .product-actions {
+        flex-direction: column !important; /* Giữ nguyên xếp dọc */
+        gap: 6px !important; 
+    }
+    
+    .product-actions .btn {
+        width: 100% !important; /* Kéo full ngang thẻ để có nhiều chỗ chứa chữ nhất */
+        margin: 0 !important;
+        padding: 8px 2px !important; /* Ép viền trái/phải mỏng lại để nhường chỗ cho chữ */
+        font-size: 0.8rem !important; /* Giảm cỡ chữ xuống (khoảng 12px) để vừa đt Xiaomi */
+        justify-content: center !important;
+        white-space: nowrap !important; /* BẮT BUỘC: Ép chữ nằm trên 1 dòng, KHÔNG rớt dòng */
+    }
+
+    /* Thu nhỏ nút giỏ hàng nếu nó đi chung với nút khác */
+    .product-actions .btn-add-cart {
+        padding: 6px !important; 
+    }
+
+    /* --- KHỐI CARD ACTIONS PRODUCT (Nơi chứa nút Gọi ngay / Liên hệ) --- */
+    .card-actions-product {
+        flex-direction: column !important; /* Giữ nguyên xếp dọc */
+        gap: 6px !important;
+    }
+    
+    .product-actions .btn-consult,
+    .card-actions-product .btn,
+    .card-actions-product .btn-consult {
+        width: 100% !important; 
+        margin: 0 !important;
+        padding: 8px 2px !important;
+        font-size: 0.8rem !important; /* Cỡ chữ bằng nhau */
+        justify-content: center !important;
+        text-align: center !important;
+        white-space: nowrap !important; /* BẮT BUỘC: ÉP KHÔNG RỚT DÒNG */
+        display: flex !important; 
+        align-items: center !important;
+        white-space: nowrap !important; 
+        padding: 8px 2px !important;
+        font-size: 0.8rem !important;
+    }
+    
+    /* Thu nhỏ lại icon cái điện thoại / xe đẩy để tiết kiệm chỗ */
+    .card-actions-product .btn i,
+    .product-actions .btn i {
+        font-size: 0.85rem !important; 
+        margin-right: 4px !important; /* Khoảng cách icon và chữ xích lại gần nhau */
+    }
+    
+}
+/* Reponsive: Thu nhỏ một chút trên điện thoại */
+@media (max-width: 768px) {
+    .contact-btn-pc {
+        display: none !important;
+    }
+    .contact-btn-phone {
+        display: flex !important; /* Gốc của nó là flex */
+        justify-content: center;
+    }
+    .floating-contact {
+        bottom: 50px;
+        right: 15px;
+    }
+    .contact-btn {
+        width: 45px;
+        height: 45px;
+    }
+    .contact-btn .icon-wrap {
+        font-size: 20px;
+    }
+    .zalo-btn .icon-wrap {
+        font-size: 14px;
+    }
+    .ring-circle {
+        top: -7px;
+        left: -7px;
+        width: 59px;
+        height: 59px;
+    }
+}
+@media (max-width: 480px) {
+    .abt-hero-stats { grid-template-columns:1fr 1fr; }
+    .abt-cert-grid { grid-template-columns:1fr; }
+    .abt-hero-btns { flex-direction:column; }
+}
+
+@media (max-width: 768px) {
+    .hot-sale-card { flex: 0 0 calc(100% / 2 - 10px); } 
+}
+
+
+@media (max-width: 768px) {
+    .cat-grid {
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 15px;
+        scroll-snap-type: x mandatory;
+    }
+    .cat-grid::-webkit-scrollbar { height: 4px; }
+    .cat-grid::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 4px; }
+}
+/* Responsive: Kéo ngang trên màn hình điện thoại */
+@media (max-width: 768px) {
+    .cat-grid {
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 20px;
+        gap: 15px;
+        scroll-snap-type: x mandatory;
+    }
+    .cat-box {
+        flex: 0 0 auto;
+        width: 120px; /* Thu nhỏ ô lại trên điện thoại */
+        height: 70px;
+        scroll-snap-align: start;
+    }
+    .cat-grid::-webkit-scrollbar { height: 4px; }
+    .cat-grid::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 4px; }
+}
+
+
+@media (max-width: 768px) {
+    .home-project-grid { grid-template-columns: 1fr; } /* Điện thoại: 1 cột */
+    .home-project-title { font-size: 2rem; }
+}
+
+@media (max-width: 768px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-title { font-size: 2.2rem; }
+  .hero-card { display: none; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .section-title { font-size: 1.7rem; }
+  .nav, .header-actions .btn { display: none; }
+  .mobile-toggle { display: grid; }
+  .trust-inner { flex-direction: column; align-items: flex-start; }
+  .trust-divider { display: none; }
+  .topbar { display: none; }
+  .form-row { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .footer-bottom-inner { flex-direction: column; gap: 8px; }
+}
+
+
+/* =========================================
+   4. MÀN HÌNH CỰC NHỎ (MAX 480PX)
+========================================= */
+@media (max-width: 480px) {
+    .hot-sale-card { flex: 0 0 85%; } 
+    section { padding: 52px 0; }
+    .hero { min-height: auto; }
+}
+
+/* =====================================================================
+   GIAO DIỆN RESPONSIVE: TRANG CHI TIẾT SẢN PHẨM (detail_product.php)
+===================================================================== */
+
+@media (max-width: 992px) {
+    /* 1. NGĂN LỖI TRÀN NGANG CỦA CSS GRID (CỰC KỲ QUAN TRỌNG) */
+    .pd-grid { 
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) !important; /* Ép cột co lại chứ không phình ra theo ảnh */
+        gap: 20px !important; 
+        width: 100% !important;
+    }
+    
+    .pd-gallery, .pd-info {
+        min-width: 0 !important; /* Khóa chết chiều ngang, cấm tràn */
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* 2. CHỮA BỆNH ẢNH TO TRÀN MÀN HÌNH */
+    .pd-main-img {
+        width: 100% !important;
+        max-width: 100% !important;
+        aspect-ratio: 1/1 !important; /* Giữ khung ảnh luôn vuông vức */
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        margin: 0 auto 15px auto !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important; /* Cắt bỏ mọi phần dư thừa */
+    }
+    
+    .pd-main-img img, .pd-main-img video {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important; /* Ép ảnh tự thu nhỏ vừa khung */
+        max-width: 100% !important;
+    }
+
+    /* Thu hẹp viền trắng dư thừa trên điện thoại */
+    .pd-overview-card, .pd-content-card { 
+        padding: 15px !important; 
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .pd-title { 
+        font-size: 1.4rem !important; 
+        margin-bottom: 10px !important; 
+        word-wrap: break-word !important; /* Ép chữ rớt dòng nếu tên SP quá dài */
+    }
+    .pd-section .container {
+        padding: 0 10px !important; /* Giảm khoảng cách 2 bên lề từ 24px xuống còn 10px */
+    }
+}
+
+@media (max-width: 768px) {
+    /* 3. CHỮA BỆNH NÚT "MUA NGAY" BỊ LỆCH / TRÀN */
+    .pd-action-buttons { 
+        display: flex !important;
+        flex-direction: column !important; /* Xếp dọc 2 nút */
+        flex-wrap: nowrap !important; /* Chống rớt layout */
+        gap: 12px !important; 
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .pd-action-buttons .btn { 
+        width: 100% !important; 
+        max-width: 100% !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+        justify-content: center !important;
+    }
+
+    /* 4. Sắp xếp lại khối Giá tiền và Tình trạng */
+    .pd-price-box { 
+        display: flex !important;
+        flex-direction: column !important; 
+        align-items: flex-start !important; 
+        gap: 8px !important; 
+        padding: 12px !important; 
+    }
+    .pd-meta-row { 
+        flex-direction: column !important; 
+        gap: 10px !important; 
+    }
+
+    /* Khối dưới cùng chứa nút (Sản phẩm đề xuất) */
+    .pd-content-card .card-flex { 
+        flex-direction: column !important; 
+        align-items: flex-start !important; 
+        gap: 12px !important; 
+        width: 100% !important; 
+    }
+    .pd-content-card .btn-add-card { 
+        width: 100% !important; 
+        justify-content: center !important; 
+        margin-top: 10px; 
+        box-sizing: border-box !important;
+    }
+    .card-quantity-wrap { 
+        width: 100% !important; 
+        justify-content: space-between !important; 
+    }
+}
+
+/* =====================================================================
+   GIAO DIỆN RESPONSIVE: TRANG DỊCH VỤ (services.php)
+===================================================================== */
+
+/* MÀN HÌNH TABLET DỌC (Dưới 992px) */
+@media (max-width: 992px) {
+    /* Ép lưới 2 cột thành 1 hàng dọc */
+    .srv-grid {
+        grid-template-columns: 1fr !important;
+        gap: 30px !important;
+        margin-bottom: 50px !important;
+    }
+    
+    
+    /* Ép tất cả hình ảnh lên trên đoạn văn (Giúp dễ nhìn trên đt) */
+    .srv-grid > div:first-child:not(.srv-img-wrap) {
+        order: 2; /* Đẩy khối chữ xuống dưới */
+    }
+    .srv-img-wrap, .srv-img-box {
+        order: 1; /* Đẩy khối ảnh lên trên */
+    }
+
+    .srv-divider { 
+        margin-bottom: 50px !important; 
+    }
+}
+
+/* MÀN HÌNH ĐIỆN THOẠI (Dưới 768px) */
+@media (max-width: 768px) {
+    .srv-title, .lvc-srv-heading, .lvc-srv4-title { 
+        font-size: 1.6rem !important; 
+    }
+
+    /* Khối Vệ Sinh: Ép tính năng từ 2 cột về 1 cột */
+    .lvc-srv-grid, .srv-feature-grid { 
+        grid-template-columns: 1fr !important; 
+    }
+
+    /* --- FORM ĐẶT LỊCH --- */
+    .srv-booking2 {
+        padding: 50px 0 !important;
+    }
+    .lvc-book-form-card, .srv-booking-card { 
+        padding: 20px !important; /* Thu hẹp viền form trên đt */
+    }
+    
+    /* Bẻ tất cả các ô nhập liệu 2 cột thành 1 cột */
+    .lvc-book-grid-row, .lvc-book-grid-mt { 
+        display: flex !important; 
+        flex-direction: column !important; 
+        gap: 16px !important; 
+    }
+    
+    .lvc-book-input, .lvc-book-select, .lvc-book-textarea {
+        font-size: 1rem !important; /* Tăng size chữ để dễ chạm trên đt */
+    }
+
+    /* Đảm bảo nút Xác nhận Full ngang */
+    .lvc-book-mt.btn-block {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+    /* Sửa lỗi nút Đặt lịch khảo sát bị rớt chữ xộc xệch trên Mobile */
+    button.lvc-book-mt.btn-block {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important; /* Ép chữ nằm giữa */
+        white-space: normal !important; /* Bắt buộc cho phép chữ rớt dòng một cách tự nhiên */
+        font-size: 0.85rem !important; /* Giảm cỡ chữ xuống một chút xíu để vừa vặn hơn */
+        padding: 12px 10px !important; /* Cân bằng lại lề trên dưới */
+        height: auto !important; /* Hủy chiều cao bị khóa cứng, cho phép nút tự giãn ra nếu chữ 2 dòng */
+        line-height: 1.4 !important; /* Khoảng cách giữa 2 dòng chữ cho dễ thở */
+    }
+}
+
+/* =====================================================================
+   GIAO DIỆN RESPONSIVE: TRANG TIN TỨC (news.php)
+===================================================================== */
+
+@media (max-width: 992px) {
+    /* Ép khung 75% - 25% rớt thành 1 cột */
+    .blog-flex {
+        flex-direction: column !important;
+        gap: 40px !important; /* Tạo khoảng trống giữa bài chính và sidebar */
+    }
+
+    /* Ép cột trái (bài viết chính) và cột phải (sidebar) bung full 100% */
+    .blog-grid-left,
+    .blog-grid-right {
+        width: 100% !important;
+    }
+
+    /* Ở tablet vẫn để lưới 2 cột hoặc 3 cột cho bài viết chính thì tùy bạn, 
+       nhưng tạm thời mình cứ giữ lưới gốc, nó sẽ tự dàn theo container. 
+       Hoặc nếu muốn ép về 2 cột: */
+    .blog-grid-left {
+        grid-template-columns: repeat(2, 1fr) !important; 
+    }
+    .blog-container{
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+}
+
+/* MÀN HÌNH ĐIỆN THOẠI (Dưới 768px) */
+@media (max-width: 768px) {
+    /* Thu hẹp viền 2 bên của trang tin tức */
+    .blog-flex {
+        padding: 0 !important;
+    }
+
+    /* Ép danh sách bài viết rớt về 1 cột duy nhất */
+    .blog-grid-left {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+
+    /* Chỉnh chữ tiêu đề lớn của trang */
+    .news-h1 {
+        font-size: 1.8rem !important;
+    }
+
+    /* Làm cho ảnh của bài viết không bị cắt quá mức trên màn hình nhỏ */
+    .blog-card-img {
+        height: 220px !important;
+    }
+
+    /* Tinh chỉnh ảnh ở phần Sidebar "Bài viết nổi bật" */
+    .popular-item-img {
+        width: 100px !important; 
+        height: 80px !important;
+    }
+}
+
+
+/* DETAIL NEWS */
+/* =========================================
+   GIAO DIỆN ĐIỆN THOẠI: CHI TIẾT TIN TỨC & DỰ ÁN
+========================================= */
+@media (max-width: 992px) {
+    /* 1. Thu hẹp khoảng cách lề trên dưới của trang */
+    .detail-container {
+        padding: 20px 20px !important;
+    }
+
+    /* 2. Đổi bố cục cột ngang thành cột dọc (Bài viết ở trên, Sidebar ở dưới) */
+    .detail-flex {
+        flex-direction: column !important;
+        gap: 30px !important; 
+    }
+
+    /* 3. Cho bài viết và sidebar bung full 100% chiều ngang màn hình */
+    .detail-main,
+    .detail-sidebar {
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+    .detail-sidebar {
+        position: static !important; /* Hủy bám dính khi cuộn trên điện thoại */
+    }
+
+    /* 4. Tinh chỉnh Typography (Chữ) cho Mobile */
+    .article-title {
+        font-size: 1.6rem !important; /* Thu nhỏ tiêu đề bài viết cho đỡ chiếm diện tích */
+        margin-bottom: 12px !important;
+    }
+
+    .article-meta {
+        gap: 12px !important;
+        font-size: 0.85rem !important;
+        padding-bottom: 15px !important;
+    }
+
+    .article-summary {
+        font-size: 0.95rem !important;
+        padding: 15px !important;
+    }
+
+    /* 5. CHỐNG TRÀN NỘI DUNG: Ép tất cả ảnh/iframe trong bài viết thu lại vừa màn hình */
+    .editor-content img, 
+    .editor-content iframe, 
+    .editor-content video {
+        max-width: 100% !important;
+        height: auto !important;
+        object-fit: contain !important;
+    }
+
+    /* 6. Tinh chỉnh phần Sidebar (Tin tức / Dự án mới nhất) */
+    .sidebar-widget {
+        padding: 16px !important; /* Thu hẹp lề của khung sidebar */
+    }
+
+    .news-widget-title {
+        font-size: 1.15rem !important;
+        margin-bottom: 15px !important;
+    }
+
+    /* Tinh chỉnh thẻ bài viết/dự án nhỏ gọn lại */
+    .side-post-thumb {
+        width: 80px !important;
+        height: 60px !important;
+    }
+
+    .side-post-title {
+        font-size: 0.9rem !important;
+    }
+
+    /* 7. Dành riêng cho Chi tiết Dự án (Project Detail) */
+    .project-header {
+        text-align: left !important; /* Canh trái tiêu đề thay vì canh giữa trên mobile */
+    }
+
+    /* Gallery ảnh dự án: thu nhỏ lại cho vừa mobile */
+    .project-main-img {
+        aspect-ratio: 4/3 !important; /* Đổi tỷ lệ ảnh chính thành 4:3 cho phù hợp màn dọc */
+    }
+
+    .project-thumb-item {
+        width: 70px !important; /* Thu nhỏ các ảnh thu nhỏ (thumbnail) bên dưới */
+        height: 50px !important;
+    }
+
+    .project-short-desc {
+        padding: 15px !important;
+        margin: 20px 0 !important;
+    }
+
+    .project-short-desc p {
+        font-size: 0.95rem !important;
+    }
+}
+
+/* DETAIL CART */
+@media (max-width: 992px) {
+    .cart-layout-grid {
+        grid-template-columns: 1fr; /* Gập xuống thành 1 cột */
+    }
+}
+@media (max-width: 576px) {
+    .cart-item-row-v2 {
+        flex-wrap: wrap !important;
+    }
+    .cart-item-info-v2 {
+        width: calc(100% - 90px); /* Chừa chỗ cho cái ảnh */
+    }
+    .cart-qty-wrapper {
+        margin-top: 15px;
+        order: 3;
+    }
+    .cart-item-subtotal-v2 {
+      margin-top: 15px !important;
+        order: 4 !important;
+        flex: 1 !important; /* Chiếm khoảng trống ở giữa */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        padding-right: 0px !important; /* Chừa 1 khoảng nhỏ với nút xóa */
+        text-align: right !important;
+    }
+    .cart-del-btn {
+        order: 5 !important;
+        margin-top: 15px !important;
+        width: 35px !important; /* Nút nhỏ gọn lại chút cho đẹp */
+        height: 35px !important;
+    }
+}
+
+/* Lịch sử đơn hàng order history */
+@media (max-width: 768px) {
+    .order-card-header, .order-card-footer { flex-direction: column; align-items: flex-start; }
+    .order-actions { width: 100%; flex-direction: column; }
+    .btn-order { width: 100%; justify-content: center; }
+
+    .order-history-wrapper .container{
+    }
+
+    .order-lookup-card {
+        padding: 16px 13px !important; /* Giảm khoảng trống viền ngoài cho đỡ tốn chỗ */
+        gap: 8px !important; /* Giảm khoảng cách giữa icon, ô nhập và nút */
+    }
+
+    .order-lookup-card .fa-receipt {
+        font-size: 20px !important; /* Thu nhỏ icon đi một xíu */
+    }
+
+    .order-lookup-card input {
+        padding: 10px 8px !important;
+        font-size: 0.85rem !important; /* Chữ ô nhập nhỏ lại chút xíu */
+    }
+
+    .order-lookup-card button {
+        padding: 10px 16px !important;
+        white-space: nowrap !important; /* Bắt buộc chữ "Tra cứu" nằm trên 1 dòng */
+        flex-shrink: 0 !important; /* Cấm bóp méo nút dù màn hình có nhỏ cỡ nào */
+    }
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .order-info-grid { grid-template-columns: 1fr; }
+    .timeline-steps { flex-direction: column; gap: 20px !important;}
+    .timeline-steps::before { display: none !important; }
+    .step { text-align: left; display: flex; align-items: center; gap: 15px; }
+    .step-icon { margin: 0; }
+    .order-items-card{
+        padding: 10px;
+    }
+    
+    .order-detail-wrapper { padding: 20px 0 !important; }
+    .order-header-card { flex-direction: column !important; align-items: flex-start !important; gap: 15px !important; }
+    
+    /* 3. BẺ GÃY BẢNG SẢN PHẨM THÀNH DẠNG DANH SÁCH (CARD) */
+    .items-table, 
+    .items-table tbody, 
+    .items-table tr, 
+    .items-table td {
+        display: block !important;
+        width: 100% !important;
+    }
+    
+    /* Ẩn thanh tiêu đề cột ngang của máy tính */
+    .items-table thead {
+        display: none !important;
+    }
+
+    /* Tách mỗi sản phẩm thành 1 khung riêng biệt */
+    .items-table tr {
+        padding: 15px 0 !important;
+        border-bottom: 2px solid var(--gray-200) !important;
+    }
+    .items-table tr:last-child {
+        border-bottom: none !important;
+    }
+
+    /* Cột 1: Ảnh và Tên SP */
+    .items-table td:nth-child(1) {
+        padding: 0 0 15px 0 !important;
+        border: none !important;
+    }
+    .item-product {
+        align-items: flex-start !important;
+    }
+
+    /* Cột 2, 3, 4: Giá, Số Lượng, Thành tiền (Ép dàn đều 2 bên) */
+    .items-table td:nth-child(2),
+    .items-table td:nth-child(3),
+    .items-table td:nth-child(4) {
+        display: flex !important;
+        justify-content: space-between !important; /* Chữ nằm 1 bên, số nằm 1 bên */
+        padding: 6px 0 !important;
+        border: none !important;
+        font-size: 0.95rem !important;
+    }
+    
+    /* Tự động chèn chữ giả làm tiêu đề cho khách dễ hiểu */
+    .items-table td:nth-child(2)::before { content: "Đơn giá:"; color: var(--gray-500); font-weight: normal; }
+    .items-table td:nth-child(3)::before { content: "Số lượng:"; color: var(--gray-500); font-weight: normal; }
+    .items-table td:nth-child(4)::before { content: "Thành tiền:"; color: var(--gray-800); font-weight: 600; }
+    
+    /* Tô đậm phần "Thành tiền" cho nổi bật */
+    .items-table td:nth-child(4) {
+        border-top: 1px dashed var(--gray-200) !important;
+        margin-top: 8px !important;
+        padding-top: 12px !important;
+        color: #dc2626 !important; /* Đỏ đậm */
+        font-weight: 700 !important;
+    }
+
+    /* 4. Sửa khung Tổng tiền (Tạm tính, phí ship...) */
+    .order-summary {
+        align-items: flex-start !important; /* Canh trái cho dễ đọc trên đt */
+        padding: 20px 15px !important;
+    }
+    .order-summary-row {
+        width: 100% !important; /* Cho dài full màn hình */
+    }
+
+    /* 5. Cụm nút bấm phía dưới (In hóa đơn, Hỗ trợ, Trở về) */
+    .order-footer-actions {
+        flex-direction: column !important;
+        gap: 12px !important;
+        align-items: stretch !important;
+    }
+    .order-footer-actions .btn-print,
+    .order-footer-actions .btn-support,
+    .order-footer-actions .btn-back {
+        width: 100% !important;
+        text-align: center !important;
+        padding: 14px !important;
+        margin: 0 !important;
+        background: #fff !important;
+        border: 1px solid var(--gray-200) !important;
+        border-radius: 8px !important;
+        display: block !important;
+    }
+    
+    .order-footer-actions .btn-support {
+        background: var(--navy) !important;
+        color: white !important;
+        text-decoration: none !important;
+        border: none !important;
+    }
+  
+}
+
+/* Fix 2 nút Quay lại & Lưu thay đổi trên mobile */
+@media (max-width: 576px) {
+    .form-actions {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+    .form-actions .btn-edit-outline,
+    .form-actions .btn-update {
+        width: 100% !important;
+        text-align: center !important;
+        justify-content: center !important;
+        padding: 14px !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+}

@@ -18,11 +18,24 @@
         'manage-add-projects'    => 'manage-add-projects.php',
         'edit-product'     => 'edit-product.php',
         'edit-category'     => 'edit-category.php',
+        'edit-news'     => 'edit-news.php',
+        'edit-project'     => 'edit-project.php',
         'service_type'     => 'service_type.php',
         'order-detail'     => 'order-detail.php',
-        'order-detail-test'     => 'order-detail-test.php',
+        'detail_service'     => 'detail_service.php',
+        'print-bill'     => 'print-bill.php',
+        'login-admin'     => 'login-admin.php',
+        'auth'     => 'auth.php',
+        'detail_contact'     => 'detail_contact.php',
+        'edit-brand'     => 'edit-brand.php',
+        'manage-reviews'     => 'manage-reviews.php',
+        'manage-admin'     => 'manage-admin.php',
+        'manage-setting'     => 'manage-setting.php',
+        'update-setting'     => 'actions/update-setting.php',
         'add-news'     => 'actions/add-news.php',
-        'delete-order'     => 'actions/delete-order.php'
+        'delete-contact'     => 'actions/delete-contact.php',
+        'delete-order'     => 'actions/delete-order.php',
+        'delete-project'     => 'actions/delete-project.php'
     ];
     include("partials/header.php");
     include("partials/menu.php");

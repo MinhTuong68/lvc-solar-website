@@ -1,9 +1,10 @@
 <?php
     // 1. Nhúng file kết nối DB và toàn bộ các Class
-    include('../../config/admin/constants.php'); 
+    include('../../config/constants.php'); 
     include('../../classes/brands.php'); 
     include('../../classes/categories.php'); 
     include('../../classes/products.php'); 
+    include_once('../admin/auth.php');
 
     // 2. Kiểm tra xem có nhận đủ type và id không
     if (!isset($_GET['id']) || !isset($_GET['type'])) {

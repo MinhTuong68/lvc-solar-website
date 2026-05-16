@@ -1,9 +1,13 @@
 <?php
-session_start();
 header('Content-Type: application/json');
-include('../../config/publics/constants.php');
+include('../../config/constants.php');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (!isset($_POST['csrf_token']) || 
+        !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        echo json_encode(['status' => 'error', 'message' => 'Yêu cầu không hợp lệ']);
+        exit;
+    }
     $product_id = isset($_POST['product_id']) ? (int)$_POST['product_id'] : 0;
     $action = isset($_POST['action']) ? $_POST['action'] : ''; // Nhận diện hành động: 'update' hoặc 'remove'
 
@@ -17,14 +21,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Xóa món hàng khỏi mảng
             if (isset($cart[$product_id])) {
                 unset($cart[$product_id]);
+                unset($_SESSION['cart_details'][$product_id]);
             }
         } elseif ($action === 'update') {
             // Cập nhật số lượng mới
             $qty = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 1;
             //
             if ($qty > 0) {
-                $sql_check = "SELECT stock FROM tbl_products WHERE id = $product_id";
-                $result_check = $conn->query($sql_check);
+                $stmt = $conn->prepare("SELECT stock FROM tbl_products WHERE id = ?");
+                $stmt->bind_param("i", $product_id);
+                $stmt->execute();
+                $result_check = $stmt->get_result();
                 if ($result_check && $result_check->num_rows > 0) {
                     $product = $result_check->fetch_assoc();
                     $stock = (int)$product['stock'];
@@ -39,8 +46,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             //
             if ($qty > 0) {
                 $cart[$product_id] = $qty;
+                if (isset($_SESSION['cart_details'][$product_id])) {
+                    $_SESSION['cart_details'][$product_id]['quantity'] = $qty;
+                }
             } else {
                 unset($cart[$product_id]); // Lỡ số lượng tụt xuống 0 thì xóa luôn
+                unset($_SESSION['cart_details'][$product_id]);
             }
         }
 

@@ -1,9 +1,10 @@
 <?php
-    // 1. GỌI CÁC FILE CLASS OOP VÀO TRANG
     include ('../classes/categories.php');
     include ('../classes/brands.php');
     include ('../classes/products.php');
+    include ('../classes/reviews.php');
 
+    $reviewObj = new Review($conn);     
     $categoryObj = new Category($conn);
     $brandObj    = new Brand($conn);
     $productObj  = new Product($conn);
@@ -32,7 +33,18 @@
             }
         }
     }
+    $limit = 8; // Số danh mục hiển thị trên 1 trang (bạn có thể đổi thành 10, 20)
+    
+    // Lấy số trang hiện tại trên URL (vd: ?page=manage-category&p=2). Nếu không có thì mặc định là 1
+    $current_p = isset($_GET['p']) ? (int)$_GET['p'] : 1;
+    if ($current_p < 1) $current_p = 1;
 
+    // Tính toán bỏ qua bao nhiêu dòng
+    $offset = ($current_p - 1) * $limit;
+
+    $total_records = $productObj->getTotalProducts();
+    $total_pages = ceil($total_records / $limit);
+    $listCategories = $productObj->getProductPaginated($limit, $offset);
     $totalActiveProducts = 0;
     $filteredProducts = [];
 
@@ -43,12 +55,7 @@
             if ($selectedCatId !== null && $p['category_id'] != $selectedCatId) continue;
             if ($search !== '' && stripos($p['name'], $search) === false) continue;
             if (!empty($selectedBrands) && !in_array($p['brand_id'], $selectedBrands)) continue;
-            
-            // ==========================================
-            // LOGIC MỚI: KIỂM TRA LỌC CÔNG SUẤT, GIÁ, LOẠI
-            // ==========================================
-            
-            // 1. Lọc Công Suất (BÓC TÁCH SỐ ĐỂ SO SÁNH)
+   
             if (!empty($selectedPowers)) {
                 $powerMatch = false;
                 
@@ -109,6 +116,12 @@
             $filteredProducts[] = $p;
         }
     }
+    foreach ($filteredProducts as &$p) {
+        $revStats = $reviewObj->getReviewsAndStatsByProduct($p['id']);
+        $p['avg_rating'] = (float)($revStats['avg_rating'] ?? 0);
+        $p['total_reviews']  = (int)($revStats['total'] ?? 0);
+    }
+    unset($p); 
     
     usort($filteredProducts, function($a, $b) use ($sort) {
         // --- BƯỚC 1: XÉT XEM CÒN HÀNG HAY HẾT HÀNG ---
@@ -119,7 +132,17 @@
             return $stockB <=> $stockA; // Lệnh này sẽ tự động ép những thằng '0' (hết hàng) xuống dưới đáy
         }
 
-        // --- BƯỚC 2: NẾU CÙNG CÒN HOẶC CÙNG HẾT HÀNG -> SẮP XẾP THEO YÊU CẦU ---
+        // $ratingA = ($a['avg_rating'] >= 4) ? 1 : 0;
+        // $ratingB = ($b['avg_rating'] >= 4) ? 1 : 0;
+
+        $ratingA = ($a['avg_rating'] >= 4 && $a['total_reviews'] > 0) ? 1 : 0;
+        $ratingB = ($b['avg_rating'] >= 4 && $b['total_reviews'] > 0) ? 1 : 0;
+        if ($ratingA != $ratingB) return $ratingB <=> $ratingA;
+
+        $hasRevA = ($a['total_reviews'] > 0) ? 1 : 0;
+        $hasRevB = ($b['total_reviews'] > 0) ? 1 : 0;
+        if ($hasRevA != $hasRevB) return $hasRevB <=> $hasRevA;
+
         if ($sort === 'price_asc') {
             return $a['price'] <=> $b['price'];
         } elseif ($sort === 'price_desc') {
@@ -132,8 +155,16 @@
         }
     });
 
-    // 7. Tổng sản phẩm sau khi đã lọc xong
     $total = count($filteredProducts);
+    $limit = 12; // Số sản phẩm trên 1 trang
+    $current_p = isset($_GET['p']) ? (int)$_GET['p'] : 1;
+    if ($current_p < 1) $current_p = 1;
+
+    $total_pages = ceil($total / $limit);
+    $offset = ($current_p - 1) * $limit;
+
+    // Lệnh này sẽ cắt lấy đúng 12 sản phẩm của trang hiện tại
+    $paginatedProducts = array_slice($filteredProducts, $offset, $limit);
 ?>
 <link rel="stylesheet" href="assets/css/product.css">
 <!-- Breadcrumb -->
@@ -307,30 +338,34 @@
                 </div>
                 <?php endif; ?>
 
+                <?php
+                    // 1. Khai báo mảng chứa tất cả các công suất (viết thường 'w' làm chuẩn)
+                    $powerList = [
+                        '25w', '40w', '60w', '80w', '90w', '100w', 
+                        '150w', '200w', '250w', '300w', '400w', 
+                        '450w', '500w', '550w', '1000w'
+                    ];
+
+                    $normalizedSelectedPowers = array_map('strtolower', (array)$selectedPowers);
+                ?>
+
                 <div class="widget-panel">
                     <h3 class="widget-title">CÔNG SUẤT</h3>
                     <div class="brand-list-container">
-                        <label class="brand-filter-label">
-                            <input type="checkbox" name="power[]" value="25w" class="brand-filter-check" <?= in_array('25w', $selectedPowers) ? 'checked' : '' ?>> 25W
-                        </label>
-                        <label class="brand-filter-label">
-                            <input type="checkbox" name="power[]" value="60w" class="brand-filter-check" <?= in_array('60w', $selectedPowers) ? 'checked' : '' ?>> 60W
-                        </label>
-                        <label class="brand-filter-label">
-                            <input type="checkbox" name="power[]" value="100w" class="brand-filter-check" <?= in_array('100w', $selectedPowers) ? 'checked' : '' ?>> 100W
-                        </label>
-                        <label class="brand-filter-label">
-                            <input type="checkbox" name="power[]" value="200w" class="brand-filter-check" <?= in_array('200w', $selectedPowers) ? 'checked' : '' ?>> 200W
-                        </label>
-                        <label class="brand-filter-label">
-                            <input type="checkbox" name="power[]" value="300w" class="brand-filter-check" <?= in_array('300w', $selectedPowers) ? 'checked' : '' ?>> 300W
-                        </label>
-                        <label class="brand-filter-label">
-                            <input type="checkbox" name="power[]" value="400w" class="brand-filter-check" <?= in_array('400w', $selectedPowers) ? 'checked' : '' ?>> 400W
-                        </label>
-                        <label class="brand-filter-label">
-                            <input type="checkbox" name="power[]" value="500w" class="brand-filter-check" <?= in_array('500w', $selectedPowers) ? 'checked' : '' ?>> 500W
-                        </label>
+                        <?php
+                            foreach ($powerList as $powerValue){
+                                ?>
+                                     <label class="brand-filter-label">
+                                        <input type="checkbox" 
+                                            name="power[]" 
+                                            value="<?= $powerValue ?>" 
+                                            class="brand-filter-check" 
+                                            <?= in_array($powerValue, $normalizedSelectedPowers) ? 'checked' : '' ?>> 
+                                        <?= strtoupper($powerValue) ?>
+                                    </label>
+                                <?php
+                            }
+                        ?>
                     </div>
                     <div class="brand-toggle-btn">Xem thêm <i class="fa-solid fa-angle-down"></i></div>
                 </div>
@@ -448,7 +483,7 @@
                 <div class="products-data-grid">
                     <?php 
                         // BƯỚC 1: Kiểm tra xem mảng sản phẩm có rỗng không
-                        if (empty($filteredProducts)) { 
+                        if (empty($paginatedProducts)) { 
                         ?>
                             <div class="no-products-state">
                                 <i class="fa-solid fa-box-open no-products-icon"></i>
@@ -459,7 +494,7 @@
                         <?php 
                         } else { 
                             // Nếu có sản phẩm: Bắt đầu vòng lặp
-                            foreach ($filteredProducts as $p) { 
+                            foreach ($paginatedProducts as $p) { 
                                 
                                 // --- CHUẨN BỊ DỮ LIỆU TRƯỚC KHI IN RA HTML ---
                                 
@@ -482,11 +517,28 @@
                                     $oldPriceText = number_format($p['old_price'], 0, ',', '.') . 'đ';
                                 }
                                 
+                                $percent = 0;
+                                if ($p['old_price'] > $p['price'] && $p['price'] > 0) {
+                                    // Công thức: (Giá cũ - Giá mới) / Giá cũ * 100 (dùng round để làm tròn số)
+                                    $percent = round((($p['old_price'] - $p['price']) / $p['old_price']) * 100);
+                                }
                                 // ---------------------------------------------
                             ?>
                                 <div class="product-card">
                                     
                                     <div class="product-img-wrap">
+                                         <?php
+                                        if($p['price'] > 0){
+                                        ?>
+                                            <span class="product-badge badge-hot">-<?= $percent ?>%</span>
+                                        <?php 
+                                        }
+                                        else{
+                                        ?>
+                                            <span class="product-badge badge-new">Mới</span>
+                                        <?php
+                                        }
+                                    ?> 
                                         <img src="<?php echo ROOT_URL ?>uploads/products/images/<?= e($p['image']) ?>" alt="<?= e($p['name']) ?>" loading="lazy" onerror="this.onerror=null; this.src='<?php echo ROOT_URL ?>uploads/products/images/noimage.jpg';">
                                         
                                         <?php if ($p['stock'] == 0) { ?>
@@ -514,7 +566,7 @@
                                             }
                                         ?>
                                         
-                                        <div class="product-price-row">
+                                        <div class="product-price-row" style="margin-bottom: 5px;">
                                             <span class="product-price <?= $priceClass ?>">
                                                 <?= $priceText ?>
                                             </span>
@@ -522,6 +574,29 @@
                                             <?php if ($oldPriceText != '') { ?>
                                                 <span class="product-old-price"><?= $oldPriceText ?></span>
                                             <?php } ?>
+                                        </div>
+
+                             
+                                        <div class="product-card-rating" style="margin-bottom: 5px;">
+                                            <div class="stars-gold">
+                                                <?php 
+                                                    $avgRating = $p['avg_rating'];
+                                                    $totalRev  = $p['total_reviews'] ?? 0;
+
+                                                    for($i=1; $i<=5; $i++) {
+                                                        
+                                                        if($i <= round($avgRating)) {
+                                                            echo '<i class="fa-solid fa-star"></i>';
+                                                        } else {
+                                                            echo '<i class="fa-regular fa-star"></i>';
+                                                        }
+                                                    }
+                                                ?>
+                                            </div>
+                                            <span class="rating-count">
+                                                <?= $avgRating > 0 ? number_format($avgRating, 1) : '5.0' ?> 
+                                                (<?= $totalRev ?>)
+                                            </span>
                                         </div>
                                         
                                         <div class="product-actions">
@@ -546,7 +621,32 @@
                             } // Kết thúc vòng lặp foreach
                         } // Kết thúc if else kiểm tra mảng rỗng
                     ?>
-                </div>
+                </div><br>
+                <?php if ($total_pages > 1): 
+                    // Giữ lại toàn bộ tham số lọc trên URL (cat, sort, brand, power...)
+                    $query_string = $_GET;
+                    unset($query_string['p']); // Xóa biến p cũ đi
+                    $base_url = '?' . http_build_query($query_string) . '&p=';
+                ?>
+                    <div class="pagination-container">
+                        <span class="page-info">(Trang <?= $current_p ?>/<?= $total_pages ?>)</span>
+                        <div class="pagination">
+                            <a href="<?= $base_url . (($current_p > 1) ? ($current_p - 1) : 1) ?>" class="page-link <?= ($current_p <= 1) ? 'disabled' : '' ?>">
+                                <i class="fa-solid fa-angles-left"></i>
+                            </a>
+
+                            <?php for($i = 1; $i <= $total_pages; $i++): ?>
+                                <a href="<?= $base_url . $i ?>" class="page-link <?= ($current_p == $i) ? 'active' : '' ?>">
+                                    <?= $i ?>
+                                </a>
+                            <?php endfor; ?>
+
+                            <a href="<?= $base_url . (($current_p < $total_pages) ? ($current_p + 1) : $total_pages) ?>" class="page-link <?= ($current_p >= $total_pages) ? 'disabled' : '' ?>">
+                                <i class="fa-solid fa-angles-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -601,9 +701,21 @@
                         grid.innerHTML = newGrid.innerHTML;
                         grid.style.opacity = '1';
                     }
-                    if (newCountText && countText) {
-                        countText.innerHTML = newCountText.innerHTML;
+                    // --- BỔ SUNG ĐOẠN NÀY ĐỂ CẬP NHẬT MÀU ĐEN CỦA PHÂN TRANG ---
+                    const newPagination = doc.querySelector('.pagination-container');
+                    const oldPagination = document.querySelector('.pagination-container');
+                    
+                    if (newPagination && oldPagination) {
+                        // Có trang mới -> Cập nhật HTML để đổi màu nút
+                        oldPagination.innerHTML = newPagination.innerHTML;
+                    } else if (newPagination && !oldPagination) {
+                        // Lọc ra nhiều trang -> Gắn thanh phân trang vào dưới lưới
+                        grid.insertAdjacentHTML('afterend', '<br><div class="pagination-container">' + newPagination.innerHTML + '</div>');
+                    } else if (!newPagination && oldPagination) {
+                        // Lọc xong chỉ còn 1 trang -> Xóa thanh phân trang cũ đi
+                        oldPagination.remove();
                     }
+                    // ------------------------------------------------------------
 
                     // Cập nhật lại Widget Danh mục (Để bôi đen class 'active' vào đúng danh mục vừa bấm)
                     const oldCatItem = document.querySelector('.cat-list-item');
@@ -693,6 +805,14 @@
                 } else {
                     brandToggleBtn.innerHTML = 'Xem thêm <i class="fa-solid fa-angle-down"></i>';
                 }
+            }
+        });
+        // Sự kiện 3: Khi bấm vào nút Phân trang (1, 2, 3)
+        productsSection.addEventListener('click', function(e) {
+            const pageLink = e.target.closest('.page-link');
+            if (pageLink && !pageLink.classList.contains('disabled')) {
+                e.preventDefault(); // Chặn web F5
+                fetchFilteredProducts(pageLink.href); // Đẩy link vào tải ngầm
             }
         });
     });

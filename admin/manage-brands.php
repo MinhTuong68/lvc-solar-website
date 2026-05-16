@@ -170,7 +170,7 @@
                                                 <td class="text-center"><?= $status_html ?></td>
                                                 <td class="text-center">
                                                     <div class="action-btns">
-                                                        <a href="#" class="btn-icon btn-edit-icon" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></a>
+                                                        <a href="index.php?page=edit-brand&id=<?= $brand['id'] ?>" class="btn-icon btn-edit-icon" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></a>
                                                         <a href="actions/delete.php?type=brand&id=<?= $brand['id'] ?>" class="btn-icon btn-delete-icon" title="Xóa" onclick="event.preventDefault(); let urlXoa = this.href; openModal('Xác nhận xóa thương hiệu?', 'Bạn có chắc chắn muốn xóa thương hiệu này không? Toàn bộ dữ liệu và hình ảnh logo của thương hiệu sẽ bị xóa vĩnh viễn khỏi hệ thống!', 'fa-solid fa-trash', 'Xóa thương hiệu', function() { window.location.href = urlXoa; })">
                                                             <i class="fa-solid fa-trash"></i>
                                                         </a>

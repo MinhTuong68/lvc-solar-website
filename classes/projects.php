@@ -139,5 +139,81 @@
             
             return $projects;
         }
+
+        // HÀM XÓA DỰ ÁN (Xóa cả dữ liệu DB và ảnh vật lý)
+        public function deleteProject($id) {
+            $id = (int)$id;
+
+            // 1. Lấy thông tin dự án để xóa file ảnh chính
+            $sql_get = "SELECT image FROM tbl_projects WHERE id = $id";
+            $result = mysqli_query($this->conn, $sql_get);
+            if ($row = mysqli_fetch_assoc($result)) {
+                $img_path = "../../uploads/projects/images/" . $row['image'];
+                if (!empty($row['image']) && file_exists($img_path)) {
+                    unlink($img_path); // Xóa file ảnh gốc
+                }
+            }
+
+            // 2. Lấy thông tin và xóa các file ảnh trong thư viện (Gallery)
+            $sql_gal = "SELECT image FROM tbl_project_gallery WHERE project_id = $id";
+            $res_gal = mysqli_query($this->conn, $sql_gal);
+            while ($row_gal = mysqli_fetch_assoc($res_gal)) {
+                $gal_path = "../../uploads/projects/gallery/" . $row_gal['image'];
+                if (!empty($row_gal['image']) && file_exists($gal_path)) {
+                    unlink($gal_path); // Xóa file ảnh phụ
+                }
+            }
+            // Xóa các dòng dữ liệu của thư viện ảnh trong DB
+            mysqli_query($this->conn, "DELETE FROM tbl_project_gallery WHERE project_id = $id");
+
+            // 3. Cuối cùng, xóa dữ liệu dự án trong DB
+            $sql_del = "DELETE FROM tbl_projects WHERE id = $id";
+            if (mysqli_query($this->conn, $sql_del)) {
+                return true;
+            }
+            return false;
+        }
+
+        // 1. Lấy chi tiết dự án theo ID để đổ dữ liệu vào form sửa
+        public function getProjectByID($id) {
+            $id = (int)$id;
+            $sql = "SELECT * FROM tbl_projects WHERE id = $id";
+            $result = mysqli_query($this->conn, $sql);
+            if ($result && mysqli_num_rows($result) > 0) {
+                return mysqli_fetch_assoc($result);
+            }
+            return null;
+        }
+
+        // 2. Hàm cập nhật thông tin dự án
+        public function updateProject($id, $name, $slug, $client, $completion_date, $location, $capacity, $description, $image, $is_featured, $status, $content) {
+            $id = (int)$id;
+            $name = mysqli_real_escape_string($this->conn, $name);
+            $slug = mysqli_real_escape_string($this->conn, $slug);
+            $client = mysqli_real_escape_string($this->conn, $client);
+            $location = mysqli_real_escape_string($this->conn, $location);
+            $capacity = mysqli_real_escape_string($this->conn, $capacity);
+            $description = mysqli_real_escape_string($this->conn, $description);
+            $content = mysqli_real_escape_string($this->conn, $content);
+            $is_featured = (int)$is_featured;
+            $status = (int)$status;
+            $date_sql = ($completion_date != '') ? "'" . mysqli_real_escape_string($this->conn, $completion_date) . "'" : "NULL";
+
+            if ($image != "") {
+                $image = mysqli_real_escape_string($this->conn, $image);
+                $sql = "UPDATE tbl_projects SET 
+                        name='$name', slug='$slug', client='$client', completion_date=$date_sql, 
+                        location='$location', capacity='$capacity', description='$description', 
+                        image='$image', is_featured=$is_featured, status=$status, content='$content' 
+                        WHERE id=$id";
+            } else {
+                $sql = "UPDATE tbl_projects SET 
+                        name='$name', slug='$slug', client='$client', completion_date=$date_sql, 
+                        location='$location', capacity='$capacity', description='$description', 
+                        is_featured=$is_featured, status=$status, content='$content' 
+                        WHERE id=$id";
+            }
+            return mysqli_query($this->conn, $sql);
+        }
     }
 ?>

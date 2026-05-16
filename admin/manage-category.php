@@ -145,15 +145,21 @@
                                                     <td class="text-center"><?= $status_html ?></td>
                                                     <td class="text-center">
                                                         <?php
-                                                            if($product_count > 0){
+                                                            if ($cat['id'] == 24 || $cat['id'] == 29){
+                                                                ?>
+                                                                 <a href="index.php?page=edit-category&id=<?= $cat['id'] ?>" class="btn-icon btn-edit-icon" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></a>
+                                                                    <button class="btn-icon btn-lock-icon" disabled title="Danh mục hệ thống, không thể xóa!">
+                                                                        <i class="fa-solid fa-lock"></i>
+                                                                    </button>
+                                                                <?php
+                                                            }
+                                                            elseif($product_count > 0){
                                                                 ?>     
                                                                     <div class="action-btns">
+                                                                         <a href="index.php?page=edit-category&id=<?= $cat['id'] ?>" class="btn-icon btn-edit-icon" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></a>
                                                                         <button class="btn-icon btn-lock-icon" disabled title="Không thể xóa vì đang có <?= $product_count ?> sản phẩm">
                                                                             <i class="fa-solid fa-lock"></i>
                                                                         </button>
-                                                                        <a href="actions/delete.php?type=category&id=<?= $cat['id'] ?>" class="btn-icon btn-delete-icon" title="Xóa" onclick="event.preventDefault(); let urlXoa = this.href; openModal('Xác nhận xóa danh mục?', 'Bạn có chắc chắn muốn xóa danh mục này không? Các sản phẩm đang thuộc danh mục này có thể bị mất liên kết!', 'fa-solid fa-trash', 'Xóa danh mục', function() { window.location.href = urlXoa; })">
-                                                                            <i class="fa-solid fa-trash"></i>
-                                                                        </a> 
                                                                     </div>           
                                                                 <?php
                                                             }
@@ -183,7 +189,7 @@
                                 ?>
                             </tbody>
                      </table>
-                     <?php if ($total_pages > 1): ?>
+                    <?php if ($total_pages > 1): ?>
                         <div class="pagination-container">
                             <span class="page-info">(<?= $current_p ?>/<?= $total_pages ?> trang)</span>
                             <div class="pagination">

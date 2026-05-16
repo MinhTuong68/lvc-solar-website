@@ -84,5 +84,46 @@ class Category {
         
         return false;
     }
+    // Hàm lấy chi tiết một danh mục theo ID
+    public function getCategoryByID($id) {
+        $id = (int)$id;
+        $sql = "SELECT * FROM tbl_categories WHERE id = $id";
+        $result = mysqli_query($this->conn, $sql);
+        
+        if (mysqli_num_rows($result) > 0) {
+            return mysqli_fetch_assoc($result);
+        } else {
+            return null;
+        }
+    }
+
+    // Hàm cập nhật danh mục
+    public function updateCategory($id, $name, $slug, $status) {
+        $id = (int)$id;
+        $name = mysqli_real_escape_string($this->conn, $name);
+        $slug = mysqli_real_escape_string($this->conn, $slug);
+        $status = (int)$status;
+
+        // Kiểm tra xem Slug mới có bị trùng với danh mục khác không
+        $check_sql = "SELECT id FROM tbl_categories WHERE slug = '$slug' AND id != $id";
+        $check_res = mysqli_query($this->conn, $check_sql);
+        
+        if (mysqli_num_rows($check_res) > 0) {
+            return "exists"; // Trả về lỗi nếu trùng slug
+        } else {
+            // Nếu không trùng thì tiến hành Update
+            $sql = "UPDATE tbl_categories SET 
+                    name = '$name', 
+                    slug = '$slug', 
+                    status = $status 
+                    WHERE id = $id";
+
+            if (mysqli_query($this->conn, $sql)) {
+                return "success";
+            } else {
+                return "error";
+            }
+        }
+    }
 }
 ?>

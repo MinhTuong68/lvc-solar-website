@@ -40,16 +40,16 @@
                 <h1 class="form-page-title">Cập nhật sản phẩm</h1>
 
                 <div class="form-page-meta">
-                    <span class="form-chip form-chip-neutral">Mã ID: #</span>
+                    <span class="form-chip form-chip-neutral">Mã ID: #<?= $sp['id'] ?></span>
 
-                   
+                    <?php if ($sp['status'] == 1): ?>
                         <span class="form-chip form-chip-success">Đang bán</span>
-                    
+                    <?php else: ?>
                         <span class="form-chip form-chip-muted">Ngừng kinh doanh</span>
-                  
+                    <?php endif; ?>
 
                     <span class="form-chip form-chip-soft">
-                        Tồn kho: 
+                        Tồn kho: <?= $sp['stock'] ?>
                     </span>
                 </div>
             </div>
@@ -68,6 +68,7 @@
         </div>
 
         <form id="editProductForm" action="actions/edit-product.php" method="POST" enctype="multipart/form-data" class="form-layout">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
             <input type="hidden" name="id" value="<?php echo $id; ?>">
             <div class="form-main">
                 
@@ -505,8 +506,8 @@
 <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 <script>
     CKEDITOR.replace('content',{
-        filebrowserUploadUrl: '<?php echo ROOT_URL; ?>admin/actions/upload-ckeditor.php',
+        filebrowserUploadUrl: '<?php echo ROOT_URL; ?>actions/upload-ckeditor.php',
         filebrowserUploadMethod: 'xhr',
-        uploadUrl: '/webctylvc/admin/actions/upload-ckeditor.php'
+        uploadUrl: 'actions/upload-ckeditor.php'
     }); 
 </script>

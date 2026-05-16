@@ -52,7 +52,7 @@
                         <?php
                     }
                 ?>
-                <div class="article-body">
+                <div class="article-body editor-content">
                     <?php echo $item['content']; ?>
                 </div>
 

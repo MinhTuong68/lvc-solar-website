@@ -158,7 +158,7 @@
             }
             return $count;
         }
-        public function updateProduct($id, $category_id, $brand_id, $name, $slug, $image, $power_capacity, $price, $old_price, $warranty, $stock, $short_description,$content, $status) {
+        public function updateProduct($id, $category_id, $brand_id, $name, $slug, $image, $video, $power_capacity, $price, $old_price, $warranty, $stock, $short_description,$content, $status) {
             $id = (int)$id;
             $name = mysqli_real_escape_string($this->conn, $name);
             $slug = mysqli_real_escape_string($this->conn, $slug);
@@ -181,6 +181,11 @@
                 $image_query = ", image = '$image'";
             }
 
+            $video_query = "";
+            if ($video != "") {
+                $video_query = ", video = '$video'";
+            }
+
             $sql = "UPDATE tbl_products SET 
                     category_id = $category_id,
                     brand_id = $brand_sql,
@@ -195,9 +200,30 @@
                     content = '$content',
                     status = $status
                     $image_query
+                    $video_query
                     WHERE id = $id";
 
             return mysqli_query($this->conn, $sql);
         }
+
+        public function getTotalProducts() {
+            $sql = "SELECT COUNT(id) as total FROM tbl_products";
+            $result = mysqli_query($this->conn, $sql);
+            $row = mysqli_fetch_assoc($result);
+            return $row['total'];
+        }
+
+        public function getProductPaginated($limit, $offset) {
+        $sql = "SELECT * FROM tbl_products ORDER BY id DESC LIMIT $limit OFFSET $offset";
+        $result = mysqli_query($this->conn, $sql);
+        
+        $categories = [];
+        if (mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $categories[] = $row;
+            }
+        }
+        return $categories;
+    }
     }
 ?>

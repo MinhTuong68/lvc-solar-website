@@ -1,6 +1,6 @@
 <?php
-    define('IS_SECURE', true);
-    include('../config/admin/constants.php');
+    include('../admin/auth.php'); 
+    include('../config/constants.php');
 ?>
 <!DOCTYPE html>
 <html lang="vi">

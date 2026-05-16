@@ -1,15 +1,26 @@
 <?php
-session_start();
-include_once("../../config/admin/constants.php"); 
+include_once("../../config/constants.php"); 
 include_once("../../classes/news.php"); 
-
+include('../auth.php'); 
+if (!isset($_SESSION['admin_id'])) {
+    http_response_code(403);
+    die(json_encode(['uploaded' => 0, 'error' => ['message' => 'Unauthorized']]));
+}
 if (isset($_POST['btn_add_news'])) {
-    $title   = $_POST['title'];
-    $slug    = $_POST['slug'];
-    $summary = $_POST['summary'];
-    $content = $_POST['content'];
-    $status  = $_POST['status'];
+    if (!isset($_POST['csrf_token']) ||
+        !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        $_SESSION['toast_message'] = "Yêu cầu không hợp lệ!";
+        $_SESSION['toast_type'] = 'error';
+        header("Location: ../index.php?page=manage-add-news");
+        exit();
+    }
+
+    $title   = e($_POST['title'] ?? '');
+    $slug    = e($_POST['slug'] ?? '');
+    $summary = e($_POST['summary'] ?? '');
+    $status  = (int)($_POST['status'] ?? 0);
     $author  = 'Admin';
+    $content = $_POST['content'] ?? '';
     
     // --- XỬ LÝ UPLOAD ẢNH ĐẠI DIỆN ---
     $image_name = "default-news.png"; // Ảnh mặc định nếu không chọn ảnh
@@ -19,6 +30,11 @@ if (isset($_POST['btn_add_news'])) {
         $file_name = $_FILES['image']['name'];
        
         $image_name = time() . '_' . $file_name; 
+        $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+        $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+        if (!in_array($ext, $allowed)) {
+            die("Lỗi: Chỉ cho phép ảnh jpg, png, webp, gif!");
+        }
         
         $source_path = $_FILES['image']['tmp_name'];
        
@@ -43,7 +59,7 @@ if (isset($_POST['btn_add_news'])) {
     } else {
         $_SESSION['toast_message'] = "Thêm thất bại, vui lòng thử lại!";
         $_SESSION['toast_type'] = 'error';  
-        header("Location: ../index.php?page=service_type");
+        header("Location: ../index.php?page=manage-news");
     }
     exit();
 } else {

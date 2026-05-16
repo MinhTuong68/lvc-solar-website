@@ -1,5 +1,11 @@
 <?php
-include('../../config/admin/constants.php');
+include('../../config/constants.php');
+include_once('../admin/auth.php');
+if (!isset($_SESSION['admin_id'])) {
+    http_response_code(403);
+    die(json_encode(['uploaded' => 0, 'error' => ['message' => 'Unauthorized']]));
+}
+
 // Đường dẫn lưu ảnh (lùi lại 1 cấp từ thư mục actions ra ngoài, rồi vào thư mục uploads/editor)
 $upload_dir = '../../uploads/editor/'; 
 
@@ -15,6 +21,10 @@ if(isset($_FILES['upload']['name'])) {
     
     // Lấy đuôi mở rộng của file (ví dụ: jpg, png)
     $ext = pathinfo($file_name, PATHINFO_EXTENSION);
+    $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+    if (!in_array(strtolower($ext), $allowed)) {
+        die(json_encode(['uploaded' => 0, 'error' => ['message' => 'File không hợp lệ']]));
+    }
     
     // Đổi tên file để tránh trùng lặp (VD: img_171000_a1b2.jpg)
     $new_name = "img_" . time() . "_" . bin2hex(random_bytes(4)) . "." . $ext;

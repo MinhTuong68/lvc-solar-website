@@ -12,14 +12,18 @@
     <div class="abt-hero-bg"></div>
     <div class="container abt-hero-inner">
         <div class="abt-hero-content">
-            <span class="section-label" style="color:var(--amber,#f59e0b)">Về chúng tôi</span>
-            <h1 class="abt-hero-title">Đồng hành cùng <br><span>năng lượng sạch</span> Việt Nam</h1>
-            <p class="abt-hero-sub">LVC Solar – đơn vị tiên phong trong lĩnh vực điện mặt trời tại Bạc Liêu và khu vực Đồng bằng sông Cửu Long. Hơn 10 năm kinh nghiệm, hơn 500 công trình, hơn 500 gia đình và doanh nghiệp tin tưởng.</p>
+            <span class="section-label" style="color:var(--amber); font-weight: 600;">Thành lập từ tháng 04/2024</span>
+            <h1 class="abt-hero-title">
+                Công Ty TNHH <br><span>Năng Lượng LVC</span>
+            </h1>
+            <p class="abt-hero-sub">
+                <strong>LVC Solar</strong> – Đơn vị hàng đầu chuyên thi công, lắp đặt hệ thống điện mặt trời tại Bạc Liêu, Cà Mau và toàn khu vực Đồng bằng sông Cửu Long. Chúng tôi mang đến giải pháp năng lượng sạch, tiết kiệm và bền vững cho mọi gia đình và doanh nghiệp.
+            </p>
             <div class="abt-hero-btns">
                 <a href="?page=services#booking" class="btn btn-primary btn-lg">
                     <i class="fa-solid fa-calendar-check"></i> Đặt lịch khảo sát miễn phí
                 </a>
-                <a href="?page=contact" class="btn btn-outline btn-lg">
+                <a href="?page=contact" class="btn btn-outline-about btn-lg" style="border-color: white;">
                     <i class="fa-solid fa-phone"></i> Liên hệ ngay
                 </a>
             </div>
@@ -49,9 +53,9 @@
     <div class="container-slider">
         <div class="banner-slider">
             <div class="slider-track" id="bannerTrack">
-                <div class="slide"><img src="../webctylvc/uploads/web/banner/anh2.jpg" alt="Banner LVC 1"></div>
-                <div class="slide"><img src="../webctylvc/uploads/web/banner/anh5.jpg" alt="Banner LVC 2"></div>
-                <div class="slide"><img src="../webctylvc/uploads/web/banner/baner1.webp" alt="Banner LVC 3"></div>
+                <div class="slide"><img src="<?php echo ROOT_URL ?>/uploads/web/banner/anh2.jpg" alt="Banner LVC 1"></div>
+                <div class="slide"><img src="<?php echo ROOT_URL ?>/uploads/web/banner/lvc.jpg" alt="Banner LVC 2"></div>
+                <div class="slide"><img src="<?php echo ROOT_URL ?>/uploads/web/banner/baner1.webp" alt="Banner LVC 3"></div>
             </div>
             
             <button class="slider-btn prev-btn" onclick="moveSlide(-1)"><i class="fa-solid fa-chevron-left"></i></button>
@@ -84,6 +88,119 @@
                 <div class="abt-mvv-icon" style="background:rgba(59,130,246,.12);color:#3b82f6"><i class="fa-solid fa-gem"></i></div>
                 <h3>Giá trị cốt lõi</h3>
                 <p>Uy tín – Chất lượng – Chuyên nghiệp – Tận tâm. Chúng tôi cam kết mang đến trải nghiệm tốt nhất và đồng hành cùng khách hàng suốt vòng đời hệ thống.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="lvc-org-section" style="padding: 60px 0; background: #f1f2f6;">
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <span class="section-label" style="color: var(--green);">Cơ cấu tổ chức</span>
+            <h2 class="section-title" style="color: var(--navy);">Sơ đồ tổ chức LVC Solar</h2>
+        </div>
+
+        <div class="lvc-org-container">
+            <div class="lvc-org-level">
+                <div class="lvc-org-box director-box">
+                    <i class="fa-solid fa-user-tie"></i>
+                    <strong>Giám Đốc</strong>
+                    <small>Ban Lãnh Đạo</small>
+                </div>
+            </div>
+
+            <div class="lvc-org-level" style="gap: 20px; flex-wrap: wrap;">
+                <div class="lvc-org-box deputy-box">
+                    <i class="fa-solid fa-user-check"></i>
+                    <strong>Phó Giám Đốc Tài Chính</strong>
+                </div>
+                <div class="lvc-org-box dept-box" style="border-color: var(--amber);">
+                    <i class="fa-solid fa-user-pen"></i>
+                    <strong>Trợ Lý Điều Hành</strong>
+                </div>
+                <div class="lvc-org-box deputy-box">
+                    <i class="fa-solid fa-user-gear"></i>
+                    <strong>Phó Giám Đốc Kỹ Thuật</strong>
+                </div>
+            </div>
+
+            <div class="lvc-org-departments" style="gap: 15px; margin-top: 15px;">
+                <div class="lvc-org-box dept-box">
+                    <i class="fa-solid fa-folder-open"></i>
+                    <strong>Phòng Hành Chính Tổng Hợp</strong>
+                </div>
+                <div class="lvc-org-box dept-box">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <strong>Phòng Tài Chính Kế Toán</strong>
+                </div>
+                <div class="lvc-org-box dept-box">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <strong>Phòng Kinh Doanh</strong>
+                </div>
+                <div class="lvc-org-box dept-box">
+                    <i class="fa-solid fa-pen-ruler"></i>
+                    <strong>Phòng Thiết Kế</strong>
+                </div>
+                <div class="lvc-org-box dept-box">
+                    <i class="fa-solid fa-briefcase"></i>
+                    <strong>Ban Quản Lý Dự Án</strong>
+                </div>
+                <div class="lvc-org-box dept-box">
+                    <i class="fa-solid fa-bolt"></i>
+                    <strong>Phòng Thi Công Điện</strong>
+                </div>
+                <div class="lvc-org-box dept-box">
+                    <i class="fa-solid fa-gears"></i>
+                    <strong>Phòng Thi Công Cơ Khí</strong>
+                </div>
+                <div class="lvc-org-box dept-box">
+                    <i class="fa-solid fa-warehouse"></i>
+                    <strong>Phòng Quản Lý Kho</strong>
+                </div>
+                <div class="lvc-org-box dept-box">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <strong>Phòng Mua Bán</strong>
+                </div>
+                <div class="lvc-org-box dept-box">
+                    <i class="fa-solid fa-screwdriver-wrench"></i>
+                    <strong>Phòng Bảo Dưỡng</strong>
+                </div>
+            </div>
+
+            <div class="lvc-org-teams" style="margin-top: 15px;">
+                <div class="lvc-org-box team-box" style="padding: 15px 30px; font-size: 1rem;">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <strong>Các Đội Trực Tiếp Tham Gia Sản Xuất</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="lvc-abt-strategy" style="padding: 80px 0; background: white;">
+    <div class="container">
+        <div class="lvc-abt-strategy-flex">
+            <div class="lvc-abt-strategy-text">
+                <span class="section-label" style="color:var(--amber);">Chiến lược phát triển</span>
+                <h2 class="section-title">Phát triển bền vững là cốt lõi</h2>
+                <p>LVC Solar luôn đặt mục tiêu phát triển bền vững dựa trên ba trụ cột chính nhằm bảo vệ danh tiếng và duy trì thành công lâu dài[cite: 215, 216, 217].</p>
+            </div>
+            <div class="lvc-abt-strategy-cards">
+                <div class="strategy-card">
+                    <div class="card-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    <h4>Kinh tế</h4>
+                    <span>Tối ưu hóa lợi ích khách hàng</span>
+                </div>
+                <div class="strategy-card card-green">
+                    <div class="card-icon"><i class="fa-solid fa-leaf"></i></div>
+                    <h4>Môi trường</h4>
+                    <span>Vì thế hệ tương lai</span>
+                </div>
+                <div class="strategy-card">
+                    <div class="card-icon"><i class="fa-solid fa-users-rectangle"></i></div>
+                    <h4>Xã hội</h4>
+                    <span>Cuộc sống tốt đẹp hơn</span>
+                </div>
             </div>
         </div>
     </div>
@@ -159,6 +276,47 @@
                 </div>
             </div>
             <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+
+<section class="lvc-abt-values" style="padding: 30px 0; background: #fff;">
+    <div class="container">
+        <div style="text-align:center; margin-bottom: 50px;">
+            <span class="section-label" style="color:var(--green);">Văn hóa doanh nghiệp</span>
+            <h2 class="section-title">Giá trị cốt lõi của LVC Solar</h2>
+        </div>
+        <div class="lvc-abt-value-grid">
+            <div class="lvc-abt-value-item">
+                <i class="fa-solid fa-medal"></i>
+                <h3>Uy tín</h3>
+                <p>Xem uy tín là chìa khóa của sự thành công và thỏa mãn khách hàng.</p>
+            </div>
+            <div class="lvc-abt-value-item">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <h3>Tiến độ</h3>
+                <p>Đảm bảo tiến độ thi công đúng cam kết trong mọi dự án.</p>
+            </div>
+            <div class="lvc-abt-value-item">
+                <i class="fa-solid fa-shield-halved"></i>
+                <h3>Chất lượng</h3>
+                <p>Cung cấp sản phẩm hoàn hảo và công trình chất lượng tốt nhất.</p>
+            </div>
+            <div class="lvc-abt-value-item">
+                <i class="fa-solid fa-lightbulb"></i>
+                <h3>Sáng tạo</h3>
+                <p>Không ngừng tìm tòi, cải tiến và nâng cao chất lượng dịch vụ.</p>
+            </div>
+            <div class="lvc-abt-value-item">
+                <i class="fa-solid fa-briefcase"></i>
+                <h3>Chuyên nghiệp</h3>
+                <p>Đội ngũ nhân sự giàu kinh nghiệm, kỷ luật và trách nhiệm cao.</p>
+            </div>
+            <div class="lvc-abt-value-item">
+                <i class="fa-solid fa-fire-glow"></i>
+                <h3>Nỗ lực</h3>
+                <p>Tập thể đoàn kết, luôn nỗ lực vì sự phát triển bền vững.</p>
+            </div>
         </div>
     </div>
 </section>
@@ -335,7 +493,7 @@
             <a href="?page=services#booking" class="btn btn-primary btn-lg">
                 <i class="fa-solid fa-solar-panel"></i> Đăng ký khảo sát miễn phí
             </a>
-            <a href="tel:<?= preg_replace('/\D/','',$hotline) ?>" class="btn btn-outline-about btn-lg">
+            <a href="tel:<?= preg_replace('/\D/','',$hotline) ?>" class="btn btn-outline-about btn-lg" style="color: black;">
                 <i class="fa-solid fa-phone-flip"></i> Gọi <?= e($hotline) ?>
             </a>
         </div>

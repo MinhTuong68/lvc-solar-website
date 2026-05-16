@@ -16,9 +16,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     try {
         const payload = await getCartFromSession();
-        // #region agent log
-        fetch('http://127.0.0.1:7349/ingest/2b7fb723-2546-43fa-a3a0-fca4225729f2',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'6a4c11'},body:JSON.stringify({sessionId:'6a4c11',runId:'initial-2',hypothesisId:'H7',location:'public/assets/js/checkout.js:18',message:'checkout cart payload received',data:{success:payload?.success,itemsLength:Array.isArray(payload?.items)?payload.items.length:null,total:payload?.total,message:payload?.message||null},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
 
         if (!payload.success || !Array.isArray(payload.items) || payload.items.length === 0) {
             emptyWrap.style.display = 'block';
@@ -95,6 +92,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     formData.append('customer_address', address);
                     formData.append('note', note);
                     formData.append('payment_method', payment);
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+                    formData.append('csrf_token', csrfToken);
                     try {
                         const response = await fetch('ajax/checkout.php', {
                             method: 'POST',

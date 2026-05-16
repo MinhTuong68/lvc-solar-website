@@ -1,0 +1,6 @@
+AuthType Basic
+AuthName "Restricted Area"
+AuthUserFile "C:/xampp/htdocs/webctylvc/admin/.htpasswd"
+# AuthUserFile "/home/nhdierx1/public_html/admin/.htpasswd"
+# đưa lên miền thì sửa lại
+Require valid-user

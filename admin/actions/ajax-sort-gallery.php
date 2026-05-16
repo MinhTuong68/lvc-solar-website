@@ -1,6 +1,6 @@
 <?php
-    session_start();
-    include('../../config/admin/constants.php');
+    include('../../config/constants.php');
+    include_once('../admin/auth.php');
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['sort_order'])) {
         $sort_order = $_POST['sort_order']; // Đây là mảng chứa danh sách ID ảnh theo thứ tự mới

@@ -256,7 +256,9 @@
                                 <label class="form-label-add">Ghi chú của khách/admin</label>
                                 <textarea name="note" class="form-control" rows="4"><?= htmlspecialchars($order['note'] ?? '') ?></textarea>
                             </div>
-
+                            <a href="index.php?page=print-bill&id=<?= $order['id'] ?>" class="btn-print">
+                                <i class="fa-solid fa-file-invoice"></i> Xuất hóa đơn
+                            </a>
                             <button type="submit" name="update_order" class="cs-btn-filter" style="width: 100%; margin-top: 20px; padding: 12px; border-radius: 8px;">
                                 <i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi
                             </button>

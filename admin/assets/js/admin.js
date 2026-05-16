@@ -306,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                         isVideoLoading = false;
                         showToast("Tải video xem trước thành công!", "success");
-                    }, 2000);
+                    }, 3000);
                 };
 
                 // 3. Tạo nút X đỏ

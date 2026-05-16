@@ -3,7 +3,7 @@
         ?>
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    showToast("<?= $_SESSION['toast_message'] ?>", "<?= $type ?>");
+                    showToast("<?= addslashes(htmlspecialchars($_SESSION['toast_message'])) ?>", "<?= $type ?>");
                 });
             </script>
             

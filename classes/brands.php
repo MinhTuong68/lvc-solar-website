@@ -85,7 +85,7 @@ class Brand {
                 
                 // Chỉ xóa file nếu có tên ảnh VÀ không phải là ảnh mặc định
                 if (!empty($logo_name) && $logo_name !== 'default_brand.png') {
-                    $logo_path = "../uploads/brands/images/" . $logo_name;
+                    $logo_path = __DIR__ ."/../uploads/brands/images/" . $logo_name;
                     // Kiểm tra xem file có thực sự tồn tại trên máy chủ không rồi mới xóa
                     if (file_exists($logo_path)) {
                         unlink($logo_path); 

@@ -1,16 +1,115 @@
-# 1. BẢO MẬT: CHỐNG NHÌN TRỘM THƯ MỤC
+# ① CHỐNG NHÌN TRỘM THƯ MỤC (Directory Listing)
 Options -Indexes
 
-# 2. ĐIỀU HƯỚNG TÀNG HÌNH (URL REWRITE)
+# ② ẨN CHỮ KÝ SERVER DÙNG Ở HOST, LOCALHOST THÌ TẤT
+# ServerSignature Off
+
+# ============================================================
+#   REWRITE ENGINE
+# ============================================================
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /webctylvc/
+    # bỏ dòng webctylvc/
 
-    # NGOẠI LỆ: Nếu đang truy cập admin, uploads, hoặc ĐÃ VÀO public rồi thì BỎ QUA
+    # Ẩn /admin/ → đổi thành URL bí mật
+    RewriteRule ^quan-tri-he-thong-cong-ty-le-van-cho/(.*)$ admin/$1 [L,QSA]
+
+    # Chặn truy cập thẳng vào /admin/
+    RewriteCond %{THE_REQUEST} \s/webctylvc/admin/ [NC]
+    RewriteCond %{HTTP_REFERER} !^https://diennangluongmattroimientay\.com [NC]
+    RewriteRule ^ - [F,L]
+
+    # --- Chặn truy cập trực tiếp vào thư mục uploads (chỉ cho file tĩnh) ---
+    RewriteCond %{REQUEST_URI} ^/webctylvc/uploads/.*\.php [NC]
+    RewriteRule ^ - [F,L]
+
+    # --- Điều hướng vào public (bỏ qua admin & uploads) ---
     RewriteCond %{REQUEST_URI} !^/webctylvc/admin/
     RewriteCond %{REQUEST_URI} !^/webctylvc/uploads/
     RewriteCond %{REQUEST_URI} !^/webctylvc/public/
-
-    # CÁC TRƯỜNG HỢP CÒN LẠI: Mới điều hướng vào thư mục public
+    RewriteCond %{REQUEST_URI} !^/webctylvc/quan-tri-he-thong-cong-ty-le-van-cho/
     RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# ============================================================
+#   CHẶN FILE NHẠY CẢM
+# ============================================================
+<FilesMatch "\.(env|log|ini|sql|bak|sh|py|pl|cgi|config|htpasswd|DS_Store)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Chặn đọc thẳng file .htaccess & .htpasswd
+<Files ~ "^\.ht">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Chặn file .env
+<Files ".env">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Chặn file backup & editor swap (VSCode, vim, nano...)
+<FilesMatch "(~|\.swp|\.swo|\.orig|\.bak|\.old)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# ============================================================
+#   CHẶN PHP TRONG THƯ MỤC UPLOADS (User upload không chạy được)
+# ============================================================
+<IfModule mod_rewrite.c>
+    RewriteCond %{REQUEST_URI} ^/webctylvc/uploads/ [NC]
+    RewriteCond %{REQUEST_FILENAME} \.(php|php[0-9]|phtml|phar)$ [NC]
+    RewriteRule ^ - [F,L]
+</IfModule>
+
+# ============================================================
+#   BẢO VỆ HEADER HTTP (Chống XSS, Clickjacking, MIME Sniff)
+# ============================================================
+<IfModule mod_headers.c>
+    # Chống trình duyệt tự đoán loại file
+    Header set X-Content-Type-Options "nosniff"
+
+    # Chống nhúng website vào iframe (Clickjacking)
+    Header set X-Frame-Options "SAMEORIGIN"
+
+    # Bật bộ lọc XSS của trình duyệt
+    Header set X-XSS-Protection "1; mode=block"
+
+    # Ẩn thông tin Referrer khi ra ngoài
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Ẩn chữ ký PHP version
+    Header unset X-Powered-By
+</IfModule>
+
+# ============================================================
+#   CHẶN TẤN CÔNG PHỔ BIẾN (SQL Injection, Path Traversal...)
+# ============================================================
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Chặn Path Traversal (../../etc/passwd)
+    RewriteCond %{QUERY_STRING} (\.\./|\.\.%2F) [NC]
+    RewriteRule ^ - [F,L]
+
+    # Chặn SQL Injection cơ bản qua URL
+    RewriteCond %{QUERY_STRING} (union.*select|insert.*into|drop.*table|select.*from) [NC]
+    RewriteRule ^ - [F,L]
+
+    # Chặn XSS qua URL
+    RewriteCond %{QUERY_STRING} (<script|javascript:|vbscript:) [NC]
+    RewriteRule ^ - [F,L]
+</IfModule>
+
+# ============================================================
+#   CHẶN BAD BOTS & SCANNER TỰ ĐỘNG
+# ============================================================
+<IfModule mod_rewrite.c>
+    RewriteCond %{HTTP_USER_AGENT} (sqlmap|nikto|nmap|masscan|zgrab|python-requests|curl/7\.) [NC]
+    RewriteRule ^ - [F,L]
 </IfModule>

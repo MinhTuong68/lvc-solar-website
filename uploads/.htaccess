@@ -1,0 +1,11 @@
+# Chặn thực thi PHP trong thư mục uploads
+Options -ExecCGI
+
+<FilesMatch "\.(php|php[0-9]|phtml|pl|py|jsp|asp|sh|cgi)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+</IfModule>

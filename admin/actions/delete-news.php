@@ -1,7 +1,7 @@
 <?php
-session_start();
-include_once("../../config/admin/constants.php");
+include_once("../../config/constants.php");
 include_once("../../classes/news.php");
+include_once('../admin/auth.php');
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
